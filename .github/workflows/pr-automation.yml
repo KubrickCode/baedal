@@ -105,11 +105,11 @@ jobs:
 
           # Determine target status based on draft state
           if [ "$IS_DRAFT" = "true" ]; then
-            TARGET_STATUS="In progress"
-            echo "PR is draft, will move issue to In progress"
+            TARGET_STATUS="Progress"
+            echo "PR is draft, will move issue to Progress"
           else
-            TARGET_STATUS="In review"
-            echo "PR is ready for review, will move issue to In review"
+            TARGET_STATUS="Review"
+            echo "PR is ready for review, will move issue to Review"
             
             # Add Gemini review comment for non-draft PRs
             gh pr comment ${{ github.event.pull_request.number }} \
@@ -263,7 +263,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN  }}
 
-      - name: Move linked issue to In Review
+      - name: Move linked issue to Review
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           PROJECT_NUMBER: 4
@@ -322,11 +322,11 @@ jobs:
 
           PROJECT_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.id')
           STATUS_FIELD_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .id')
-          IN_REVIEW_OPTION_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == "In review") | .id')
+          REVIEW_OPTION_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == "Review") | .id')
 
           echo "Project ID: $PROJECT_ID"
           echo "Status Field ID: $STATUS_FIELD_ID"
-          echo "In Review Option ID: $IN_REVIEW_OPTION_ID"
+          echo "Review Option ID: $REVIEW_OPTION_ID"
 
           # Find item with pagination
           ITEM_ID=""
@@ -404,7 +404,7 @@ jobs:
 
           echo "Found item ID: $ITEM_ID"
 
-          # Update status to In Review
+          # Update status to Review
           gh api graphql -f query='
             mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
               updateProjectV2ItemFieldValue(input: {
@@ -418,9 +418,9 @@ jobs:
                 }
               }
             }
-          ' -f projectId="$PROJECT_ID" -f itemId="$ITEM_ID" -f fieldId="$STATUS_FIELD_ID" -f optionId="$IN_REVIEW_OPTION_ID"
+          ' -f projectId="$PROJECT_ID" -f itemId="$ITEM_ID" -f fieldId="$STATUS_FIELD_ID" -f optionId="$REVIEW_OPTION_ID"
 
-          echo "Successfully moved issue to In Review"
+          echo "Successfully moved issue to Review"
 
   converted-to-draft:
     if: github.event.action == 'converted_to_draft'
@@ -430,7 +430,7 @@ jobs:
       issues: write
       contents: read
     steps:
-      - name: Move linked issue to In Progress
+      - name: Move linked issue to Progress
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           PROJECT_NUMBER: 4
@@ -489,11 +489,11 @@ jobs:
 
           PROJECT_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.id')
           STATUS_FIELD_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .id')
-          IN_PROGRESS_OPTION_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == "In progress") | .id')
+          PROGRESS_OPTION_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == "Progress") | .id')
 
           echo "Project ID: $PROJECT_ID"
           echo "Status Field ID: $STATUS_FIELD_ID"
-          echo "In Progress Option ID: $IN_PROGRESS_OPTION_ID"
+          echo "Progress Option ID: $PROGRESS_OPTION_ID"
 
           # Find item with pagination
           ITEM_ID=""
@@ -571,7 +571,7 @@ jobs:
 
           echo "Found item ID: $ITEM_ID"
 
-          # Update status to In Progress
+          # Update status to Progress
           gh api graphql -f query='
             mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
               updateProjectV2ItemFieldValue(input: {
@@ -585,6 +585,6 @@ jobs:
                 }
               }
             }
-          ' -f projectId="$PROJECT_ID" -f itemId="$ITEM_ID" -f fieldId="$STATUS_FIELD_ID" -f optionId="$IN_PROGRESS_OPTION_ID"
+          ' -f projectId="$PROJECT_ID" -f itemId="$ITEM_ID" -f fieldId="$STATUS_FIELD_ID" -f optionId="$PROGRESS_OPTION_ID"
 
-          echo "Successfully moved issue to In Progress"
+          echo "Successfully moved issue to Progress"
