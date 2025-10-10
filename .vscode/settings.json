@@ -48,9 +48,9 @@
     },
     {
       "name": "Release",
-      "shortcut": "r",
       "color": "orange",
-      "command": "just",
+      "shortcut": "r",
+      "command": "just release",
       "terminalName": "Release"
     },
     {
