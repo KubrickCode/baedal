@@ -1,12 +1,11 @@
 {
-  "name": "template-repository",
+  "name": "baedal",
   "dockerComposeFile": "docker-compose.yml",
   "service": "workspace",
-  "workspaceFolder": "/workspaces/template-repository",
+  "workspaceFolder": "/workspaces/baedal",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "./local-features/just": {},
-    "./local-features/go": {},
     "./local-features/node": {}
   },
   "remoteUser": "root"

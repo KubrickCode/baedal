@@ -5,6 +5,6 @@ services:
     image: mcr.microsoft.com/devcontainers/base:debian
     privileged: true
     volumes:
-      - ..:/workspaces/template-repository:delegated
+      - ..:/workspaces/baedal:delegated
       - /var/run/docker.sock:/var/run/docker.sock
     command: sleep infinity

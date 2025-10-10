@@ -50,7 +50,7 @@
       "name": "Release",
       "shortcut": "r",
       "color": "orange",
-      "command": "git push -f origin main:release",
+      "command": "just",
       "terminalName": "Release"
     },
     {
