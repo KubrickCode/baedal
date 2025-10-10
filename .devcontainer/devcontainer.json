@@ -1,0 +1,13 @@
+{
+  "name": "template-repository",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "workspace",
+  "workspaceFolder": "/workspaces/template-repository",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "./local-features/just": {},
+    "./local-features/go": {},
+    "./local-features/node": {}
+  },
+  "remoteUser": "root"
+}
