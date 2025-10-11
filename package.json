@@ -46,7 +46,7 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
-    "commander": "^12.0.0",
+    "commander": "^14.0.1",
     "globby": "^14.0.0",
     "ky": "^1.8.3",
     "micromatch": "^4.0.8",
