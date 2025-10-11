@@ -1,10 +1,13 @@
 import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import pc from "picocolors";
 import type { BaedalOptions, DownloadResult } from "../types/index.js";
 import { parseSource } from "../utils/parser.js";
 import { downloadTarball } from "../utils/download.js";
-import { extractTarball } from "../utils/extract.js";
+import { extractTarball, getFileListFromTarball } from "../utils/extract.js";
+import { checkExistingFiles } from "../utils/check-existing.js";
+import { confirmOverwrite } from "../utils/prompt.js";
 
 export const baedal = async (
   source: string,
@@ -38,6 +41,71 @@ export const baedal = async (
     // For GitLab with subdir, the path parameter already filters at server side,
     // so we don't need to filter again during extraction
     const needsSubdirExtraction = subdir && provider !== "gitlab";
+
+    // Get file list from tarball to check for conflicts
+    const fileList = await getFileListFromTarball(
+      tarballPath,
+      needsSubdirExtraction ? subdir : undefined,
+      opts?.exclude
+    );
+
+    // Check for existing files
+    const { toOverwrite, toAdd } = await checkExistingFiles(
+      fileList,
+      outputPath
+    );
+
+    // Handle different modes
+    if (toOverwrite.length > 0) {
+      if (opts?.noClobber) {
+        throw new Error(
+          `Operation aborted as per --no-clobber: ${toOverwrite.length} file(s) already exist.`
+        );
+      }
+
+      if (opts?.skipExisting) {
+        // Only extract new files by adding existing files to exclude list
+        const excludePatterns = [...(opts?.exclude || []), ...toOverwrite];
+
+        await extractTarball(
+          tarballPath,
+          outputPath,
+          needsSubdirExtraction ? subdir : undefined,
+          excludePatterns
+        );
+
+        return {
+          files: toAdd,
+          path: outputPath,
+        };
+      }
+
+      // Interactive mode (default when not --force)
+      if (!opts?.force) {
+        console.log(
+          pc.yellow(`\n⚠️  The following files will be overwritten:`)
+        );
+        toOverwrite.forEach((file) => {
+          console.log(pc.yellow(`  - ${file}`));
+        });
+
+        if (toAdd.length > 0) {
+          console.log(
+            pc.green(`\n📁 ${toAdd.length} new file(s) will be added:`)
+          );
+          toAdd.forEach((file) => {
+            console.log(pc.green(`  + ${file}`));
+          });
+        }
+
+        const confirmed = await confirmOverwrite();
+        if (!confirmed) {
+          throw new Error("Operation cancelled by user");
+        }
+      }
+    }
+
+    // Extract files
     const files = await extractTarball(
       tarballPath,
       outputPath,
