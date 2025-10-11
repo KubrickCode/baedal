@@ -1,19 +1,26 @@
 import {
   GITHUB_ARCHIVE_URL,
   GITLAB_ARCHIVE_URL,
+  BITBUCKET_ARCHIVE_URL,
   type Provider,
 } from "../../types/providers.js";
 import { getGitHubDefaultBranch } from "./github.js";
 import { getGitLabDefaultBranch } from "./gitlab.js";
+import { getBitbucketDefaultBranch } from "./bitbucket.js";
 
 export const getDefaultBranch = async (
   owner: string,
   repo: string,
   provider: Provider
 ): Promise<string> => {
-  return provider === "gitlab"
-    ? getGitLabDefaultBranch(owner, repo)
-    : getGitHubDefaultBranch(owner, repo);
+  switch (provider) {
+    case "gitlab":
+      return getGitLabDefaultBranch(owner, repo);
+    case "bitbucket":
+      return getBitbucketDefaultBranch(owner, repo);
+    default:
+      return getGitHubDefaultBranch(owner, repo);
+  }
 };
 
 type GetArchiveUrlParams = {
@@ -31,8 +38,19 @@ export const getArchiveUrl = ({
   repo,
   subdir,
 }: GetArchiveUrlParams): string => {
-  const template =
-    provider === "gitlab" ? GITLAB_ARCHIVE_URL : GITHUB_ARCHIVE_URL;
+  let template: string;
+
+  switch (provider) {
+    case "gitlab":
+      template = GITLAB_ARCHIVE_URL;
+      break;
+    case "bitbucket":
+      template = BITBUCKET_ARCHIVE_URL;
+      break;
+    default:
+      template = GITHUB_ARCHIVE_URL;
+      break;
+  }
 
   let url = template
     .replace(/{owner}/g, owner)
