@@ -24,6 +24,11 @@ baedal user/repo ./output
 # Download specific folder or file
 baedal user/repo/src/components ./components
 
+# Exclude specific files or patterns
+baedal user/repo --exclude "*.test.ts"
+baedal user/repo --exclude "*.md" ".gitignore"
+baedal user/repo ./output --exclude "test/**" "docs/**"
+
 # Explicit GitHub prefix
 baedal github:user/repo
 
@@ -43,6 +48,10 @@ baedal gitlab:user/repo ./output
 # Download specific folder or file
 baedal gitlab:user/repo/src/components ./components
 
+# Exclude specific files or patterns
+baedal gitlab:user/repo --exclude "*.test.ts"
+baedal gitlab:user/repo --exclude "*.test.ts" "*.md"
+
 # Using GitLab URL
 baedal https://gitlab.com/user/repo
 ```
@@ -59,6 +68,10 @@ baedal bitbucket:user/repo ./output
 # Download specific folder or file
 baedal bitbucket:user/repo/src/components ./components
 
+# Exclude specific files or patterns
+baedal bitbucket:user/repo --exclude "*.test.ts"
+baedal bitbucket:user/repo --exclude "*.test.ts" "*.md"
+
 # Using Bitbucket URL
 baedal https://bitbucket.org/user/repo
 ```
@@ -67,6 +80,7 @@ baedal https://bitbucket.org/user/repo
 
 - Download from GitHub, GitLab, and Bitbucket repositories
 - Support for specific folders/files
+- Exclude specific files or patterns using glob patterns
 - Automatic branch detection (main/master)
 - Multiple input formats (prefix, URL, or simple user/repo)
 - Zero configuration
@@ -80,6 +94,16 @@ import { baedal } from "baedal";
 await baedal("user/repo");
 await baedal("user/repo", "./output");
 await baedal("user/repo/src", "./src");
+
+// With exclude option
+await baedal("user/repo", "./output", {
+  exclude: ["*.test.ts", "*.md", "test/**"],
+});
+
+// Exclude without specifying destination (uses current directory)
+await baedal("user/repo", {
+  exclude: ["*.test.ts", "docs/**"],
+});
 
 // GitLab
 await baedal("gitlab:user/repo");

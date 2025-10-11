@@ -1,17 +1,21 @@
 import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import type { DownloadResult } from "../types/index.js";
+import type { BaedalOptions, DownloadResult } from "../types/index.js";
 import { parseSource } from "../utils/parser.js";
 import { downloadTarball } from "../utils/download.js";
 import { extractTarball } from "../utils/extract.js";
 
 export const baedal = async (
   source: string,
-  destination = "."
+  destination: string | BaedalOptions = ".",
+  options?: BaedalOptions
 ): Promise<DownloadResult> => {
+  const destPath = typeof destination === "string" ? destination : ".";
+  const opts = typeof destination === "string" ? options : destination;
+
   const { owner, repo, subdir, provider } = await parseSource(source);
-  const outputPath = resolve(destination);
+  const outputPath = resolve(destPath);
 
   await mkdir(outputPath, { recursive: true });
 
@@ -27,7 +31,8 @@ export const baedal = async (
     const files = await extractTarball(
       tarballPath,
       outputPath,
-      needsSubdirExtraction ? subdir : undefined
+      needsSubdirExtraction ? subdir : undefined,
+      opts?.exclude
     );
 
     return {

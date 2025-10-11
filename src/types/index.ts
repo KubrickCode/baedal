@@ -11,3 +11,7 @@ export type RepoInfo = {
   repo: string;
   subdir?: string;
 };
+
+export type BaedalOptions = {
+  exclude?: string[];
+};

@@ -1,26 +1,37 @@
+import { Command } from "commander";
 import pc from "picocolors";
 import { baedal } from "./core/baedal.js";
+import type { BaedalOptions } from "./types/index.js";
 
-const [source, destination] = process.argv.slice(2);
+const program = new Command();
 
-if (!source) {
-  console.log(pc.cyan("Usage: baedal <user/repo> [destination]"));
-  console.log(pc.gray("\nExamples:"));
-  console.log(pc.gray("  baedal user/repo"));
-  console.log(pc.gray("  baedal user/repo ./output"));
-  console.log(pc.gray("  baedal user/repo/src/components ./components"));
-  process.exit(1);
-}
+program
+  .name("baedal")
+  .description("Download files/folders from Git repositories")
+  .argument("<source>", "Repository source (user/repo or URL)")
+  .argument("[destination]", "Destination directory", ".")
+  .option(
+    "-e, --exclude <patterns...>",
+    "Exclude files matching patterns (can specify multiple)"
+  )
+  .action(async (source: string, destination: string, options: BaedalOptions) => {
+    try {
+      const result = await baedal(source, destination, options);
+      console.log(
+        pc.green(`Downloaded ${result.files.length} files to ${result.path}`)
+      );
+      if (options.exclude && options.exclude.length > 0) {
+        console.log(
+          pc.gray(`Excluded patterns: ${options.exclude.join(", ")}`)
+        );
+      }
+    } catch (error) {
+      console.error(
+        pc.red("Error:"),
+        error instanceof Error ? error.message : String(error)
+      );
+      process.exit(1);
+    }
+  });
 
-try {
-  const result = await baedal(source, destination);
-  console.log(
-    pc.green(`Downloaded ${result.files.length} files to ${result.path}`)
-  );
-} catch (error) {
-  console.error(
-    pc.red("Error:"),
-    error instanceof Error ? error.message : String(error)
-  );
-  process.exit(1);
-}
+program.parse();
