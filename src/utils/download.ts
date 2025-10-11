@@ -1,4 +1,4 @@
-import { ofetch } from "ofetch";
+import ky from "ky";
 import { createWriteStream } from "node:fs";
 import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
@@ -16,10 +16,10 @@ const getGitHubDefaultBranch = async (
   repo: string
 ): Promise<string> => {
   try {
-    const response = await ofetch<{ default_branch: string }>(
-      `${GITHUB_API_URL}/repos/${owner}/${repo}`
-    );
-    return response.default_branch;
+    const data = await ky
+      .get(`${GITHUB_API_URL}/repos/${owner}/${repo}`)
+      .json<{ default_branch: string }>();
+    return data.default_branch;
   } catch {
     return DEFAULT_BRANCH;
   }
@@ -31,10 +31,10 @@ const getGitLabDefaultBranch = async (
 ): Promise<string> => {
   try {
     const projectPath = encodeURIComponent(`${owner}/${repo}`);
-    const response = await ofetch<{ default_branch: string }>(
-      `${GITLAB_API_URL}/projects/${projectPath}`
-    );
-    return response.default_branch;
+    const data = await ky
+      .get(`${GITLAB_API_URL}/projects/${projectPath}`)
+      .json<{ default_branch: string }>();
+    return data.default_branch;
   } catch {
     return DEFAULT_BRANCH;
   }
@@ -84,42 +84,24 @@ export const downloadTarball = async (
   const branch = await getDefaultBranch(owner, repo, provider);
   const url = getArchiveUrl(owner, repo, branch, provider, subdir);
 
-  // TODO: Unify fetch and ofetch usage
-  // Currently using native fetch for GitLab and ofetch for GitHub
-  // This could be simplified if ofetch supports mode: 'same-origin' option
-  //
-  // Use native fetch for GitLab with mode: 'same-origin' to avoid 406 error
+  // GitLab requires mode: 'same-origin' to avoid 406 error due to hotlinking protection
   // Reference: https://github.com/unjs/giget/issues/97
-  // GitLab has hotlinking protection that requires this mode
+  const response = await ky.get(url, {
+    ...(provider === "gitlab" && { mode: "same-origin" as const }),
+    headers: {
+      Accept: "application/octet-stream, */*",
+    },
+  });
 
-  // Create readable stream based on provider
-  let stream;
-
-  if (provider === "gitlab") {
-    const response = await fetch(url, {
-      mode: "same-origin",
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to download from GitLab: ${response.status} ${response.statusText}`
-      );
-    }
-
-    if (!response.body) {
-      throw new Error("Failed to download from GitLab: Response body is empty");
-    }
-
-    stream = Readable.fromWeb(response.body);
-  } else {
-    stream = await ofetch(url, {
-      responseType: "stream",
-      headers: {
-        Accept: "application/octet-stream, */*",
-      },
-    });
+  if (!response.body) {
+    throw new Error(
+      `Failed to download from ${
+        provider === "gitlab" ? "GitLab" : "GitHub"
+      }: Response body is empty`
+    );
   }
 
+  const stream = Readable.fromWeb(response.body);
   const writeStream = createWriteStream(destination);
   await pipeline(stream, writeStream);
 };
