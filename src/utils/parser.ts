@@ -2,7 +2,10 @@ import type { RepoInfo } from "../types/index.js";
 import { detectProvider } from "../core/providers/detector.js";
 import { validateGitLabProject } from "../core/providers/gitlab.js";
 
-export const parseSource = async (source: string): Promise<RepoInfo> => {
+export const parseSource = async (
+  source: string,
+  token?: string
+): Promise<RepoInfo> => {
   const provider = detectProvider(source);
 
   let cleanSource = source
@@ -18,7 +21,7 @@ export const parseSource = async (source: string): Promise<RepoInfo> => {
   }
 
   if (provider === "gitlab" && parts.length > 2) {
-    const { projectPath, subdir } = await validateGitLabProject(parts);
+    const { projectPath, subdir } = await validateGitLabProject(parts, token);
 
     const pathParts = projectPath.split("/");
     const owner = pathParts[0];
