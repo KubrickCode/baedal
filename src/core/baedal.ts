@@ -14,7 +14,10 @@ export const baedal = async (
   const destPath = typeof destination === "string" ? destination : ".";
   const opts = typeof destination === "string" ? options : destination;
 
-  const { owner, repo, subdir, provider } = await parseSource(source);
+  const { owner, repo, subdir, provider } = await parseSource(
+    source,
+    opts?.token
+  );
   const outputPath = resolve(destPath);
 
   await mkdir(outputPath, { recursive: true });
@@ -23,7 +26,14 @@ export const baedal = async (
   const tarballPath = join(tempDir, "archive.tar.gz");
 
   try {
-    await downloadTarball(owner, repo, tarballPath, provider, subdir);
+    await downloadTarball(
+      owner,
+      repo,
+      tarballPath,
+      provider,
+      subdir,
+      opts?.token
+    );
 
     // For GitLab with subdir, the path parameter already filters at server side,
     // so we don't need to filter again during extraction

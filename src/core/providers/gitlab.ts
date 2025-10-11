@@ -1,11 +1,13 @@
 import ky, { HTTPError } from "ky";
 import { GITLAB_API_URL, DEFAULT_BRANCH } from "../../types/providers.js";
+import { getAuthHeaders } from "../../utils/auth.js";
 
 const GITLAB_VALIDATION_MAX_ATTEMPTS = 5;
 const GITLAB_API_TIMEOUT_MS = 5000;
 
 export const validateGitLabProject = async (
-  parts: string[]
+  parts: string[],
+  token?: string
 ): Promise<{ projectPath: string; subdir?: string }> => {
   const maxAttempts = Math.min(parts.length, GITLAB_VALIDATION_MAX_ATTEMPTS);
 
@@ -18,8 +20,11 @@ export const validateGitLabProject = async (
       const encodedPath = encodeURIComponent(projectPath);
       const url = `${GITLAB_API_URL}/projects/${encodedPath}`;
 
+      const headers = token ? getAuthHeaders("gitlab", token) : {};
+
       await ky.get(url, {
         timeout: GITLAB_API_TIMEOUT_MS,
+        headers,
       });
 
       const subdir = parts.slice(i).join("/");
@@ -42,12 +47,17 @@ export const validateGitLabProject = async (
 
 export const getGitLabDefaultBranch = async (
   owner: string,
-  repo: string
+  repo: string,
+  token?: string
 ): Promise<string> => {
   try {
     const projectPath = encodeURIComponent(`${owner}/${repo}`);
+    const headers = token ? getAuthHeaders("gitlab", token) : {};
+
     const data = await ky
-      .get(`${GITLAB_API_URL}/projects/${projectPath}`)
+      .get(`${GITLAB_API_URL}/projects/${projectPath}`, {
+        headers,
+      })
       .json<{ default_branch: string }>();
     return data.default_branch;
   } catch (error) {

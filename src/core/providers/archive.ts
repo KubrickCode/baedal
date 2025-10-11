@@ -11,15 +11,16 @@ import { getBitbucketDefaultBranch } from "./bitbucket.js";
 export const getDefaultBranch = async (
   owner: string,
   repo: string,
-  provider: Provider
+  provider: Provider,
+  token?: string
 ): Promise<string> => {
   switch (provider) {
     case "gitlab":
-      return getGitLabDefaultBranch(owner, repo);
+      return getGitLabDefaultBranch(owner, repo, token);
     case "bitbucket":
-      return getBitbucketDefaultBranch(owner, repo);
+      return getBitbucketDefaultBranch(owner, repo, token);
     default:
-      return getGitHubDefaultBranch(owner, repo);
+      return getGitHubDefaultBranch(owner, repo, token);
   }
 };
 
