@@ -1,4 +1,4 @@
-import { ofetch, FetchError } from "ofetch";
+import ky, { HTTPError } from "ky";
 import type { RepoInfo } from "../types/index.js";
 import type { Provider } from "../types/providers.js";
 import { GITLAB_API_URL } from "../types/providers.js";
@@ -30,8 +30,7 @@ const validateGitLabProject = async (
       const encodedPath = encodeURIComponent(projectPath);
       const url = `${GITLAB_API_URL}/projects/${encodedPath}`;
 
-      await ofetch(url, {
-        method: "GET",
+      await ky.get(url, {
         timeout: GITLAB_API_TIMEOUT_MS,
       });
 
@@ -40,7 +39,7 @@ const validateGitLabProject = async (
     } catch (error) {
       // Only continue for 404 errors (project not found)
       // Re-throw other errors (network issues, timeouts, etc.)
-      if (error instanceof FetchError && error.statusCode === 404) {
+      if (error instanceof HTTPError && error.response.status === 404) {
         continue;
       }
       throw error;
