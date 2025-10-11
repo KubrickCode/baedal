@@ -19,9 +19,25 @@ program
     "-t, --token <token>",
     "Authentication token for private repositories (GitHub: Personal Access Token, GitLab: Private Token, Bitbucket: App Password)"
   )
+  .option("-f, --force", "Force overwrite without confirmation")
+  .option("-s, --skip-existing", "Skip existing files, only add new files")
+  .option("-n, --no-clobber", "Abort if any file would be overwritten")
   .action(
     async (source: string, destination: string, options: BaedalOptions) => {
       try {
+        // Validate conflicting options
+        const conflictingOptions = [
+          options.force,
+          options.skipExisting,
+          options.noClobber,
+        ].filter(Boolean);
+
+        if (conflictingOptions.length > 1) {
+          throw new Error(
+            "Cannot use --force, --skip-existing, and --no-clobber together"
+          );
+        }
+
         // Resolve token based on provider
         let token = options.token || process.env.BAEDAL_TOKEN;
         if (!token) {
@@ -39,22 +55,29 @@ program
           }
         }
 
-        const result = await baedal(source, destination, {
+        const baedalOptions: BaedalOptions = {
           ...options,
           ...(token && { token }),
-        });
+        };
+
+        const result = await baedal(source, destination, baedalOptions);
 
         console.log(
-          pc.green(`Downloaded ${result.files.length} files to ${result.path}`)
+          pc.green(
+            `\n✓ Downloaded ${result.files.length} file(s) to ${result.path}`
+          )
         );
         if (options.exclude && options.exclude.length > 0) {
           console.log(
             pc.gray(`Excluded patterns: ${options.exclude.join(", ")}`)
           );
         }
+        if (options.skipExisting) {
+          console.log(pc.gray(`Skipped existing files`));
+        }
       } catch (error) {
         console.error(
-          pc.red("Error:"),
+          pc.red("\n✗ Error:"),
           error instanceof Error ? error.message : String(error)
         );
         process.exit(1);

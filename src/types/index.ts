@@ -14,5 +14,13 @@ export type RepoInfo = {
 
 export type BaedalOptions = {
   exclude?: string[];
+  force?: boolean;
+  noClobber?: boolean;
+  skipExisting?: boolean;
   token?: string;
+};
+
+export type FileCheckResult = {
+  toAdd: string[];
+  toOverwrite: string[];
 };

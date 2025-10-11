@@ -1,9 +1,39 @@
-import { extract } from "tar";
+import { extract, list } from "tar";
 import { globby } from "globby";
 import { basename, join } from "node:path";
 import { copyFile, cp, mkdir, mkdtemp, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import micromatch from "micromatch";
+
+/**
+ * Normalize tar entry path by stripping repository root and applying subdir/exclude logic
+ * @returns normalized path if file should be included, null otherwise
+ */
+const getNormalizedTarPath = (
+  entryPath: string,
+  subdir?: string,
+  shouldExclude?: ((path: string) => boolean) | null
+): string | null => {
+  // Strip the first path segment (repository root)
+  const strippedPath = entryPath.split("/").slice(1).join("/");
+
+  let targetPath: string;
+  if (subdir) {
+    if (!strippedPath.startsWith(subdir)) {
+      return null;
+    }
+    // Remove the subdir prefix
+    targetPath = strippedPath.slice(subdir.length + 1);
+  } else {
+    targetPath = strippedPath;
+  }
+
+  if (!targetPath || (shouldExclude && shouldExclude(targetPath))) {
+    return null;
+  }
+
+  return targetPath;
+};
 
 export const extractTarball = async (
   tarballPath: string,
@@ -23,9 +53,12 @@ export const extractTarball = async (
     ...(shouldExclude
       ? {
           filter: (path: string) => {
-            // Strip the first path segment since tar strip:1 is applied
-            const strippedPath = path.split("/").slice(1).join("/");
-            return !shouldExclude(strippedPath);
+            const normalizedPath = getNormalizedTarPath(
+              path,
+              undefined,
+              shouldExclude
+            );
+            return normalizedPath !== null;
           },
         }
       : {}),
@@ -61,5 +94,39 @@ export const extractTarball = async (
     onlyFiles: true,
     dot: true, // Include hidden files like .gitignore
   });
+  return files;
+};
+
+export const getFileListFromTarball = async (
+  tarballPath: string,
+  subdir?: string,
+  exclude?: string[]
+): Promise<string[]> => {
+  const files: string[] = [];
+
+  const shouldExclude =
+    exclude && exclude.length > 0
+      ? (path: string) => micromatch.isMatch(path, exclude)
+      : null;
+
+  await list({
+    file: tarballPath,
+    onentry: (entry) => {
+      if (entry.type !== "File") {
+        return;
+      }
+
+      const normalizedPath = getNormalizedTarPath(
+        entry.path,
+        subdir,
+        shouldExclude
+      );
+
+      if (normalizedPath) {
+        files.push(normalizedPath);
+      }
+    },
+  });
+
   return files;
 };
