@@ -2,7 +2,7 @@
 
 > 🚧 **Work in Progress** - This project is under active development.
 
-Simple Git repository downloader CLI tool supporting GitHub and GitLab.
+Simple Git repository downloader CLI tool supporting GitHub, GitLab, and Bitbucket.
 
 ## Installation
 
@@ -47,9 +47,25 @@ baedal gitlab:user/repo/src/components ./components
 baedal https://gitlab.com/user/repo
 ```
 
+### Bitbucket
+
+```bash
+# Download from Bitbucket using prefix
+baedal bitbucket:user/repo
+
+# Download to specific directory
+baedal bitbucket:user/repo ./output
+
+# Download specific folder or file
+baedal bitbucket:user/repo/src/components ./components
+
+# Using Bitbucket URL
+baedal https://bitbucket.org/user/repo
+```
+
 ## Features
 
-- Download from GitHub and GitLab repositories
+- Download from GitHub, GitLab, and Bitbucket repositories
 - Support for specific folders/files
 - Automatic branch detection (main/master)
 - Multiple input formats (prefix, URL, or simple user/repo)
@@ -69,6 +85,11 @@ await baedal("user/repo/src", "./src");
 await baedal("gitlab:user/repo");
 await baedal("gitlab:user/repo", "./output");
 await baedal("https://gitlab.com/user/repo/src", "./src");
+
+// Bitbucket
+await baedal("bitbucket:user/repo");
+await baedal("bitbucket:user/repo", "./output");
+await baedal("https://bitbucket.org/user/repo/src", "./src");
 ```
 
 ## License

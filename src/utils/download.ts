@@ -31,10 +31,14 @@ export const downloadTarball = async (
   });
 
   if (!response.body) {
+    const providerNameMap: Record<Provider, string> = {
+      github: "GitHub",
+      gitlab: "GitLab",
+      bitbucket: "Bitbucket",
+    };
+    const providerName = providerNameMap[provider];
     throw new Error(
-      `Failed to download from ${
-        provider === "gitlab" ? "GitLab" : "GitHub"
-      }: Response body is empty`
+      `Failed to download from ${providerName}: Response body is empty`
     );
   }
 
