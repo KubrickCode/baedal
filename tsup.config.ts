@@ -44,4 +44,14 @@ export default defineConfig({
   esbuildOptions(options) {
     options.platform = "node";
   },
+
+  // Add shebang for CLI entry
+  banner: ({ format }) => {
+    if (format === "esm") {
+      return {
+        js: "#!/usr/bin/env node",
+      };
+    }
+    return {};
+  },
 });
