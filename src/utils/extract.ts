@@ -31,6 +31,10 @@ export const extractTarball = async (
     }
   }
 
-  const files = await globby("**/*", { cwd: destination, onlyFiles: true });
+  const files = await globby("**/*", {
+    cwd: destination,
+    onlyFiles: true,
+    dot: true, // Include hidden files like .gitignore
+  });
   return files;
 };
