@@ -14,4 +14,5 @@ export type RepoInfo = {
 
 export type BaedalOptions = {
   exclude?: string[];
+  token?: string;
 };
