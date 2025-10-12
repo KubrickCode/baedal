@@ -1,0 +1,69 @@
+name: Lint Code
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - reopened
+      - unlocked
+    paths:
+      - "src/**"
+      - "**/*.json"
+      - "**/*.yml"
+      - "**/*.yaml"
+      - "**/*.md"
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "**/*.json"
+      - "**/*.yml"
+      - "**/*.yaml"
+      - "**/*.md"
+  workflow_dispatch:
+
+jobs:
+  lint-src:
+    name: Lint src Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22.18.0"
+
+      - name: Install Prettier globally
+        run: npm install -g prettier
+
+      - uses: extractions/setup-just@v3
+
+      - name: Install dependencies
+        run: just deps
+
+      - name: Lint src
+        run: just lint src
+
+  lint-config:
+    name: Lint Config Files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22.18.0"
+
+      - name: Install Prettier globally
+        run: npm install -g prettier
+
+      - uses: extractions/setup-just@v3
+
+      - name: Lint Config Files
+        run: just lint config
