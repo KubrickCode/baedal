@@ -1,7 +1,5 @@
 # Baedal
 
-> 🚧 **Work in Progress** - This project is under active development.
-
 Simple Git repository downloader CLI tool supporting GitHub, GitLab, and Bitbucket.
 
 ## Requirements
@@ -11,6 +9,8 @@ Simple Git repository downloader CLI tool supporting GitHub, GitLab, and Bitbuck
 ## Installation
 
 ```bash
+npm install -g baedal
+# or
 yarn global add baedal
 ```
 
