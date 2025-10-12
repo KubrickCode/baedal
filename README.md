@@ -4,6 +4,10 @@
 
 Simple Git repository downloader CLI tool supporting GitHub, GitLab, and Bitbucket.
 
+## Requirements
+
+- Node.js >= 18.0.0
+
 ## Installation
 
 ```bash
@@ -28,6 +32,11 @@ baedal user/repo/src/components ./components
 baedal user/repo --exclude "*.test.ts"
 baedal user/repo --exclude "*.md" ".gitignore"
 baedal user/repo ./output --exclude "test/**" "docs/**"
+
+# File conflict handling
+baedal user/repo --force                # Force overwrite without confirmation
+baedal user/repo --skip-existing        # Skip existing files, only add new files
+baedal user/repo --no-clobber          # Abort if any file would be overwritten
 
 # Explicit GitHub prefix
 baedal github:user/repo
@@ -125,6 +134,7 @@ baedal user/private-repo
 - Support for private repositories with authentication tokens
 - Support for specific folders/files
 - Exclude specific files or patterns using glob patterns
+- File conflict handling modes (force, skip-existing, no-clobber)
 - Automatic branch detection (main/master)
 - Multiple input formats (prefix, URL, or simple user/repo)
 - Zero configuration
@@ -147,6 +157,17 @@ await baedal("user/repo", "./output", {
 // Exclude without specifying destination (uses current directory)
 await baedal("user/repo", {
   exclude: ["*.test.ts", "docs/**"],
+});
+
+// File conflict handling
+await baedal("user/repo", "./output", {
+  force: true,              // Force overwrite without confirmation
+});
+await baedal("user/repo", "./output", {
+  skipExisting: true,       // Skip existing files, only add new files
+});
+await baedal("user/repo", "./output", {
+  noClobber: true,          // Abort if any file would be overwritten
 });
 
 // Private repository with token
