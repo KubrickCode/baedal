@@ -4,15 +4,15 @@ import {
   BITBUCKET_ARCHIVE_URL,
   type Provider,
 } from "../../types/providers.js";
+import { getBitbucketDefaultBranch } from "./bitbucket.js";
 import { getGitHubDefaultBranch } from "./github.js";
 import { getGitLabDefaultBranch } from "./gitlab.js";
-import { getBitbucketDefaultBranch } from "./bitbucket.js";
 
 export const getDefaultBranch = async (
   owner: string,
   repo: string,
   provider: Provider,
-  token?: string
+  token?: string,
 ): Promise<string> => {
   switch (provider) {
     case "gitlab":

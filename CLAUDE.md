@@ -65,12 +65,14 @@ src/
 **Subdir Handling**: GitLab has special handling where subdirectories are filtered server-side using a `?path=` query parameter, reducing download size. Other providers filter during extraction.
 
 **File Conflict Resolution**: The `baedal.ts` orchestrator implements three modes for handling existing files:
+
 - `--force`: Overwrite without asking
 - `--skip-existing`: Skip existing files, only add new ones
 - `--no-clobber`: Abort if any file would be overwritten
 - Default: Interactive prompt showing files to overwrite/add
 
 **Authentication**: Token-based auth supports both CLI flags (`--token`) and environment variables. The CLI resolves tokens in this order:
+
 1. `--token` flag
 2. `BAEDAL_TOKEN` (generic)
 3. Provider-specific env vars (`GITHUB_TOKEN`, `GITLAB_TOKEN`, `BITBUCKET_TOKEN`)
@@ -87,6 +89,7 @@ src/
 ## TypeScript Configuration
 
 The project uses strict TypeScript with additional safety:
+
 - `strict: true`
 - `noUnusedLocals`, `noUnusedParameters`, `noImplicitReturns`
 - `noUncheckedIndexedAccess: true` (requires null checks on array/object access)

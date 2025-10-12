@@ -13,7 +13,7 @@ export const confirmOverwrite = (): Promise<boolean> => {
 
     const onKeypress = (
       _char: string,
-      key: { name: string; ctrl?: boolean }
+      key: { ctrl?: boolean; name: string },
     ) => {
       const keyName = key.name.toLowerCase();
       let confirmed: boolean | null = null;

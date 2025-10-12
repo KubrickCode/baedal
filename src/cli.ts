@@ -1,8 +1,8 @@
 import { Command } from "commander";
 import pc from "picocolors";
 import { baedal } from "./core/baedal.js";
-import type { BaedalOptions } from "./types/index.js";
 import { detectProvider } from "./core/providers/detector.js";
+import type { BaedalOptions } from "./types/index.js";
 
 const program = new Command();
 
@@ -13,11 +13,11 @@ program
   .argument("[destination]", "Destination directory", ".")
   .option(
     "-e, --exclude <patterns...>",
-    "Exclude files matching patterns (can specify multiple)"
+    "Exclude files matching patterns (can specify multiple)",
   )
   .option(
     "-t, --token <token>",
-    "Authentication token for private repositories (GitHub: Personal Access Token, GitLab: Private Token, Bitbucket: App Password)"
+    "Authentication token for private repositories (GitHub: Personal Access Token, GitLab: Private Token, Bitbucket: App Password)",
   )
   .option("-f, --force", "Force overwrite without confirmation")
   .option("-s, --skip-existing", "Skip existing files, only add new files")
@@ -34,7 +34,7 @@ program
 
         if (conflictingOptions.length > 1) {
           throw new Error(
-            "Cannot use --force, --skip-existing, and --no-clobber together"
+            "Cannot use --force, --skip-existing, and --no-clobber together",
           );
         }
 
@@ -64,12 +64,12 @@ program
 
         console.log(
           pc.green(
-            `\n✓ Downloaded ${result.files.length} file(s) to ${result.path}`
-          )
+            `\n✓ Downloaded ${result.files.length} file(s) to ${result.path}`,
+          ),
         );
         if (options.exclude && options.exclude.length > 0) {
           console.log(
-            pc.gray(`Excluded patterns: ${options.exclude.join(", ")}`)
+            pc.gray(`Excluded patterns: ${options.exclude.join(", ")}`),
           );
         }
         if (options.skipExisting) {
@@ -78,11 +78,11 @@ program
       } catch (error) {
         console.error(
           pc.red("\n✗ Error:"),
-          error instanceof Error ? error.message : String(error)
+          error instanceof Error ? error.message : String(error),
         );
         process.exit(1);
       }
-    }
+    },
   );
 
 program.parse();

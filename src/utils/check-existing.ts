@@ -4,7 +4,7 @@ import type { FileCheckResult } from "../types/index.js";
 
 export const checkExistingFiles = async (
   files: string[],
-  destination: string
+  destination: string,
 ): Promise<FileCheckResult> => {
   const toOverwrite: string[] = [];
   const toAdd: string[] = [];
@@ -18,7 +18,7 @@ export const checkExistingFiles = async (
       } catch {
         toAdd.push(file);
       }
-    })
+    }),
   );
 
   return { toAdd, toOverwrite };

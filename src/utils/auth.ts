@@ -2,7 +2,7 @@ import type { Provider } from "../types/providers.js";
 
 export const getAuthHeaders = (
   provider: Provider,
-  token: string
+  token: string,
 ): Record<string, string> => {
   switch (provider) {
     case "github":

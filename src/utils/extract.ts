@@ -1,9 +1,9 @@
-import { extract, list } from "tar";
-import { globby } from "globby";
-import { basename, join } from "node:path";
 import { copyFile, cp, mkdir, mkdtemp, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { basename, join } from "node:path";
+import { globby } from "globby";
 import micromatch from "micromatch";
+import { extract, list } from "tar";
 
 /**
  * Normalize tar entry path by stripping repository root and applying subdir/exclude logic
@@ -12,7 +12,7 @@ import micromatch from "micromatch";
 const getNormalizedTarPath = (
   entryPath: string,
   subdir?: string,
-  shouldExclude?: ((path: string) => boolean) | null
+  shouldExclude?: ((path: string) => boolean) | null,
 ): string | null => {
   // Strip the first path segment (repository root)
   const strippedPath = entryPath.split("/").slice(1).join("/");
@@ -39,7 +39,7 @@ export const extractTarball = async (
   tarballPath: string,
   destination: string,
   subdir?: string,
-  exclude?: string[]
+  exclude?: string[],
 ): Promise<string[]> => {
   const shouldExclude =
     exclude && exclude.length > 0
@@ -56,7 +56,7 @@ export const extractTarball = async (
             const normalizedPath = getNormalizedTarPath(
               path,
               undefined,
-              shouldExclude
+              shouldExclude,
             );
             return normalizedPath !== null;
           },
@@ -91,8 +91,8 @@ export const extractTarball = async (
 
   const files = await globby("**/*", {
     cwd: destination,
-    onlyFiles: true,
     dot: true, // Include hidden files like .gitignore
+    onlyFiles: true,
   });
   return files;
 };
@@ -100,7 +100,7 @@ export const extractTarball = async (
 export const getFileListFromTarball = async (
   tarballPath: string,
   subdir?: string,
-  exclude?: string[]
+  exclude?: string[],
 ): Promise<string[]> => {
   const files: string[] = [];
 
@@ -119,7 +119,7 @@ export const getFileListFromTarball = async (
       const normalizedPath = getNormalizedTarPath(
         entry.path,
         subdir,
-        shouldExclude
+        shouldExclude,
       );
 
       if (normalizedPath) {

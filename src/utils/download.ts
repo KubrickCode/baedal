@@ -1,9 +1,9 @@
-import ky from "ky";
 import { createWriteStream } from "node:fs";
-import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
-import type { Provider } from "../types/providers.js";
+import { pipeline } from "node:stream/promises";
+import ky from "ky";
 import { getDefaultBranch, getArchiveUrl } from "../core/providers/archive.js";
+import type { Provider } from "../types/providers.js";
 import { getAuthHeaders } from "./auth.js";
 
 export const downloadTarball = async (
@@ -12,7 +12,7 @@ export const downloadTarball = async (
   destination: string,
   provider: Provider,
   subdir?: string,
-  token?: string
+  token?: string,
 ): Promise<void> => {
   const branch = await getDefaultBranch(owner, repo, provider, token);
   const url = getArchiveUrl({
@@ -37,13 +37,13 @@ export const downloadTarball = async (
 
   if (!response.body) {
     const providerNameMap: Record<Provider, string> = {
+      bitbucket: "Bitbucket",
       github: "GitHub",
       gitlab: "GitLab",
-      bitbucket: "Bitbucket",
     };
     const providerName = providerNameMap[provider];
     throw new Error(
-      `Failed to download from ${providerName}: Response body is empty`
+      `Failed to download from ${providerName}: Response body is empty`,
     );
   }
 

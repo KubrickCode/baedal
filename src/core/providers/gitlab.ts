@@ -7,7 +7,7 @@ const GITLAB_API_TIMEOUT_MS = 5000;
 
 export const validateGitLabProject = async (
   parts: string[],
-  token?: string
+  token?: string,
 ): Promise<{ projectPath: string; subdir?: string }> => {
   const maxAttempts = Math.min(parts.length, GITLAB_VALIDATION_MAX_ATTEMPTS);
 
@@ -23,8 +23,8 @@ export const validateGitLabProject = async (
       const headers = token ? getAuthHeaders("gitlab", token) : {};
 
       await ky.get(url, {
-        timeout: GITLAB_API_TIMEOUT_MS,
         headers,
+        timeout: GITLAB_API_TIMEOUT_MS,
       });
 
       const subdir = parts.slice(i).join("/");
@@ -41,14 +41,14 @@ export const validateGitLabProject = async (
 
   // If no valid project found after all attempts, throw error
   throw new Error(
-    `Could not find a valid GitLab project for: ${parts.join("/")}`
+    `Could not find a valid GitLab project for: ${parts.join("/")}`,
   );
 };
 
 export const getGitLabDefaultBranch = async (
   owner: string,
   repo: string,
-  token?: string
+  token?: string,
 ): Promise<string> => {
   try {
     const projectPath = encodeURIComponent(`${owner}/${repo}`);
@@ -63,7 +63,7 @@ export const getGitLabDefaultBranch = async (
   } catch (error) {
     console.error(
       `Failed to fetch GitLab default branch for ${owner}/${repo}:`,
-      error
+      error,
     );
     return DEFAULT_BRANCH;
   }
