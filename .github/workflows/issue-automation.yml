@@ -80,14 +80,14 @@ jobs:
             }
           ' -f projectId="$PROJECT_ID" -f itemId="$ITEM_ID" -f fieldId="$STATUS_FIELD_ID" -f optionId="$BACKLOG_OPTION_ID"
 
-  bug-to-progress:
+  bug-to-in-progress:
     if: github.event.action == 'labeled' && github.event.label.name == 'bug'
     runs-on: ubuntu-latest
     permissions:
       issues: write
       contents: read
     steps:
-      - name: Move bug issue to Progress
+      - name: Move bug issue to In Progress
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           ISSUE_ID: ${{ github.event.issue.node_id }}
@@ -120,11 +120,11 @@ jobs:
 
           PROJECT_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.id')
           STATUS_FIELD_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .id')
-          PROGRESS_OPTION_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == "Progress") | .id')
+          IN_PROGRESS_OPTION_ID=$(echo "$PROJECT_QUERY" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == "Progress") | .id')
 
           echo "Project ID: $PROJECT_ID"
           echo "Status Field ID: $STATUS_FIELD_ID"
-          echo "Progress Option ID: $PROGRESS_OPTION_ID"
+          echo "In Progress Option ID: $IN_PROGRESS_OPTION_ID"
 
           # Search for item with pagination
           ITEM_ID=""
@@ -202,7 +202,7 @@ jobs:
 
           echo "Found item ID: $ITEM_ID"
 
-          # Update status to Progress
+          # Update status to In Progress
           gh api graphql -f query='
             mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
               updateProjectV2ItemFieldValue(input: {
@@ -216,9 +216,9 @@ jobs:
                 }
               }
             }
-          ' -f projectId="$PROJECT_ID" -f itemId="$ITEM_ID" -f fieldId="$STATUS_FIELD_ID" -f optionId="$PROGRESS_OPTION_ID"
+          ' -f projectId="$PROJECT_ID" -f itemId="$ITEM_ID" -f fieldId="$STATUS_FIELD_ID" -f optionId="$IN_PROGRESS_OPTION_ID"
 
-          echo "Successfully moved issue to Progress"
+          echo "Successfully moved issue to In Progress"
 
   remove-needs-thinking-on-close:
     if: github.event.action == 'closed'
