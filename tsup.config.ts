@@ -32,7 +32,7 @@ export default defineConfig({
   target: "node18",
 
   // External dependencies (don't bundle)
-  external: ["commander", "globby", "ofetch", "picocolors", "tar"],
+  external: ["commander", "globby", "ky", "micromatch", "picocolors", "tar"],
 
   // Tree shaking
   treeshake: true,
