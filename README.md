@@ -161,13 +161,13 @@ await baedal("user/repo", {
 
 // File conflict handling
 await baedal("user/repo", "./output", {
-  force: true,              // Force overwrite without confirmation
+  force: true, // Force overwrite without confirmation
 });
 await baedal("user/repo", "./output", {
-  skipExisting: true,       // Skip existing files, only add new files
+  skipExisting: true, // Skip existing files, only add new files
 });
 await baedal("user/repo", "./output", {
-  noClobber: true,          // Abort if any file would be overwritten
+  noClobber: true, // Abort if any file would be overwritten
 });
 
 // Private repository with token
