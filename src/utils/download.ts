@@ -12,7 +12,7 @@ export const downloadTarball = async (
   destination: string,
   provider: Provider,
   subdir?: string,
-  token?: string,
+  token?: string
 ): Promise<void> => {
   const branch = await getDefaultBranch(owner, repo, provider, token);
   const url = getArchiveUrl({
@@ -42,9 +42,7 @@ export const downloadTarball = async (
       gitlab: "GitLab",
     };
     const providerName = providerNameMap[provider];
-    throw new Error(
-      `Failed to download from ${providerName}: Response body is empty`,
-    );
+    throw new Error(`Failed to download from ${providerName}: Response body is empty`);
   }
 
   const stream = Readable.fromWeb(response.body);

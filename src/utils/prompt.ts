@@ -11,10 +11,7 @@ export const confirmOverwrite = (): Promise<boolean> => {
     process.stdin.resume();
     emitKeypressEvents(process.stdin);
 
-    const onKeypress = (
-      _char: string,
-      key: { ctrl?: boolean; name: string },
-    ) => {
+    const onKeypress = (_char: string, key: { ctrl?: boolean; name: string }) => {
       const keyName = key.name.toLowerCase();
       let confirmed: boolean | null = null;
       let output = "";
@@ -26,11 +23,7 @@ export const confirmOverwrite = (): Promise<boolean> => {
       } else if (keyName === "y") {
         confirmed = true;
         output = "y\n";
-      } else if (
-        keyName === "n" ||
-        keyName === "return" ||
-        keyName === "escape"
-      ) {
+      } else if (keyName === "n" || keyName === "return" || keyName === "escape") {
         confirmed = false;
         output = "n\n";
       }

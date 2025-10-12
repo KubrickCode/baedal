@@ -2,10 +2,7 @@ import { detectProvider } from "../core/providers/detector.js";
 import { validateGitLabProject } from "../core/providers/gitlab.js";
 import type { RepoInfo } from "../types/index.js";
 
-export const parseSource = async (
-  source: string,
-  token?: string,
-): Promise<RepoInfo> => {
+export const parseSource = async (source: string, token?: string): Promise<RepoInfo> => {
   const provider = detectProvider(source);
 
   const cleanSource = source
@@ -16,7 +13,7 @@ export const parseSource = async (
 
   if (parts.length < 2) {
     throw new Error(
-      "Invalid source format. Use: user/repo, github:user/repo, gitlab:user/repo, bitbucket:user/repo, or full URL",
+      "Invalid source format. Use: user/repo, github:user/repo, gitlab:user/repo, bitbucket:user/repo, or full URL"
     );
   }
 
@@ -29,20 +26,18 @@ export const parseSource = async (
 
     if (!owner || !repo) {
       throw new Error(
-        "Invalid source format. Use: user/repo, github:user/repo, gitlab:user/repo, or full URL",
+        "Invalid source format. Use: user/repo, github:user/repo, gitlab:user/repo, or full URL"
       );
     }
 
-    return subdir
-      ? { owner, provider, repo, subdir }
-      : { owner, provider, repo };
+    return subdir ? { owner, provider, repo, subdir } : { owner, provider, repo };
   }
 
   const [owner, repo, ...subdirParts] = parts;
 
   if (!owner || !repo) {
     throw new Error(
-      "Invalid source format. Use: user/repo, github:user/repo, gitlab:user/repo, bitbucket:user/repo, or full URL",
+      "Invalid source format. Use: user/repo, github:user/repo, gitlab:user/repo, bitbucket:user/repo, or full URL"
     );
   }
 

@@ -5,7 +5,7 @@ import { getAuthHeaders } from "../../utils/auth.js";
 export const getGitHubDefaultBranch = async (
   owner: string,
   repo: string,
-  token?: string,
+  token?: string
 ): Promise<string> => {
   try {
     const headers = token ? getAuthHeaders("github", token) : {};
@@ -17,10 +17,7 @@ export const getGitHubDefaultBranch = async (
       .json<{ default_branch: string }>();
     return data.default_branch;
   } catch (error) {
-    console.error(
-      `Failed to fetch GitHub default branch for ${owner}/${repo}:`,
-      error,
-    );
+    console.error(`Failed to fetch GitHub default branch for ${owner}/${repo}:`, error);
     return DEFAULT_BRANCH;
   }
 };

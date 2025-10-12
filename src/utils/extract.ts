@@ -12,7 +12,7 @@ import { extract, list } from "tar";
 const getNormalizedTarPath = (
   entryPath: string,
   subdir?: string,
-  shouldExclude?: ((path: string) => boolean) | null,
+  shouldExclude?: ((path: string) => boolean) | null
 ): string | null => {
   // Strip the first path segment (repository root)
   const strippedPath = entryPath.split("/").slice(1).join("/");
@@ -39,12 +39,10 @@ export const extractTarball = async (
   tarballPath: string,
   destination: string,
   subdir?: string,
-  exclude?: string[],
+  exclude?: string[]
 ): Promise<string[]> => {
   const shouldExclude =
-    exclude && exclude.length > 0
-      ? (path: string) => micromatch.isMatch(path, exclude)
-      : null;
+    exclude && exclude.length > 0 ? (path: string) => micromatch.isMatch(path, exclude) : null;
 
   const extractOptions = {
     cwd: destination,
@@ -53,11 +51,7 @@ export const extractTarball = async (
     ...(shouldExclude
       ? {
           filter: (path: string) => {
-            const normalizedPath = getNormalizedTarPath(
-              path,
-              undefined,
-              shouldExclude,
-            );
+            const normalizedPath = getNormalizedTarPath(path, undefined, shouldExclude);
             return normalizedPath !== null;
           },
         }
@@ -100,14 +94,12 @@ export const extractTarball = async (
 export const getFileListFromTarball = async (
   tarballPath: string,
   subdir?: string,
-  exclude?: string[],
+  exclude?: string[]
 ): Promise<string[]> => {
   const files: string[] = [];
 
   const shouldExclude =
-    exclude && exclude.length > 0
-      ? (path: string) => micromatch.isMatch(path, exclude)
-      : null;
+    exclude && exclude.length > 0 ? (path: string) => micromatch.isMatch(path, exclude) : null;
 
   await list({
     file: tarballPath,
@@ -116,11 +108,7 @@ export const getFileListFromTarball = async (
         return;
       }
 
-      const normalizedPath = getNormalizedTarPath(
-        entry.path,
-        subdir,
-        shouldExclude,
-      );
+      const normalizedPath = getNormalizedTarPath(entry.path, subdir, shouldExclude);
 
       if (normalizedPath) {
         files.push(normalizedPath);

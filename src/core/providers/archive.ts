@@ -12,7 +12,7 @@ export const getDefaultBranch = async (
   owner: string,
   repo: string,
   provider: Provider,
-  token?: string,
+  token?: string
 ): Promise<string> => {
   switch (provider) {
     case "gitlab":

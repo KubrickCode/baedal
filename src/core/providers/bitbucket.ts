@@ -11,7 +11,7 @@ type BitbucketRepoResponse = {
 export const getBitbucketDefaultBranch = async (
   owner: string,
   repo: string,
-  token?: string,
+  token?: string
 ): Promise<string> => {
   try {
     const headers = token ? getAuthHeaders("bitbucket", token) : {};
@@ -23,10 +23,7 @@ export const getBitbucketDefaultBranch = async (
       .json<BitbucketRepoResponse>();
     return data.mainbranch.name;
   } catch (error) {
-    console.error(
-      `Failed to fetch Bitbucket default branch for ${owner}/${repo}:`,
-      error,
-    );
+    console.error(`Failed to fetch Bitbucket default branch for ${owner}/${repo}:`, error);
     return DEFAULT_BRANCH;
   }
 };
