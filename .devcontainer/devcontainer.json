@@ -8,5 +8,6 @@
     "./local-features/just": {},
     "./local-features/node": {}
   },
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code && npm install -g baedal",
   "remoteUser": "root"
 }
