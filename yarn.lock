@@ -1751,9 +1751,9 @@ keyv@^4.5.4:
     json-buffer "3.0.1"
 
 ky@^1.8.3:
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/ky/-/ky-1.11.0.tgz#85e80fab76034a7fc0790ee1e3d0897f69d882ab"
-  integrity sha512-NEyo0ICpS0cqSuyoJFMCnHOZJILqXsKhIZlHJGDYaH8OB5IFrGzuBpEwyoMZG6gUKMPrazH30Ax5XKaujvD8ag==
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/ky/-/ky-1.12.0.tgz#5eff5df2920b8e560add4e8bfd2f7b06d70b05d9"
+  integrity sha512-YRLmSUHCwOJRBMArtqMRLOmO7fewn3yOoui6aB8ERkRVXupa0UiaQaKbIXteMt4jUElhbdqTMsLFHs8APxxUoQ==
 
 levn@^0.4.1:
   version "0.4.1"
