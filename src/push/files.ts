@@ -1,17 +1,13 @@
-import { readFileSync, statSync } from "node:fs";
+import { readFile, stat } from "node:fs/promises";
 import { join, normalize, relative } from "node:path";
 import { globby } from "globby";
 import type { CollectedFile } from "./types.js";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-const getFileSize = (filePath: string): number => {
-  try {
-    const stats = statSync(filePath);
-    return stats.size;
-  } catch {
-    return 0;
-  }
+const getFileSize = async (filePath: string): Promise<number> => {
+  const stats = await stat(filePath);
+  return stats.size;
 };
 
 export const normalizePath = (path: string): string => {
@@ -28,10 +24,9 @@ export const getRelativePath = (basePath: string, targetPath: string): string =>
 
 const collectSingleFile = async (
   absolutePath: string,
-  _baseDir: string,
   originalPath: string
 ): Promise<CollectedFile[]> => {
-  const size = getFileSize(absolutePath);
+  const size = await getFileSize(absolutePath);
 
   if (size > MAX_FILE_SIZE) {
     throw new Error(
@@ -41,7 +36,7 @@ const collectSingleFile = async (
     );
   }
 
-  const content = readFileSync(absolutePath, "utf-8");
+  const content = await readFile(absolutePath, "utf-8");
   const path = normalizePath(originalPath);
 
   return [
@@ -73,7 +68,7 @@ const collectDirectory = async (
 
   for (const filePath of filePaths) {
     try {
-      const size = getFileSize(filePath);
+      const size = await getFileSize(filePath);
 
       if (size > MAX_FILE_SIZE) {
         console.warn(
@@ -82,7 +77,7 @@ const collectDirectory = async (
         continue;
       }
 
-      const content = readFileSync(filePath, "utf-8");
+      const content = await readFile(filePath, "utf-8");
       const relativePath = getRelativePath(baseDir, filePath);
 
       collected.push({
@@ -91,7 +86,8 @@ const collectDirectory = async (
         size,
       });
     } catch (error) {
-      console.warn(`Skipping ${filePath}:`, error);
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn(`Skipping ${filePath}: ${message}`);
     }
   }
 
@@ -109,10 +105,10 @@ export const collectFiles = async (
   const base = baseDir ?? process.cwd();
   const absoluteSource = join(base, sourcePath);
 
-  const stats = statSync(absoluteSource);
+  const stats = await stat(absoluteSource);
 
   if (stats.isFile()) {
-    return await collectSingleFile(absoluteSource, base, sourcePath);
+    return await collectSingleFile(absoluteSource, sourcePath);
   }
 
   if (stats.isDirectory()) {

@@ -1,13 +1,29 @@
-export type PushConfig = {
-  syncs: SyncConfig[];
-  token: string;
-};
+import { z } from "zod";
 
-export type SyncConfig = {
-  dest: string;
-  repos: string[];
-  source: string;
-};
+/**
+ * Git file mode (Unix octal format)
+ * - "100644": Normal file (rw-r--r--)
+ * - "100755": Executable file (rwxr-xr-x)
+ */
+export type GitFileMode = "100644" | "100755";
+
+export const GIT_FILE_MODES = {
+  EXECUTABLE: "100755",
+  NORMAL: "100644",
+} as const;
+
+export const SyncConfigSchema = z.object({
+  dest: z.string(),
+  repos: z.array(z.string()),
+  source: z.string(),
+});
+export type SyncConfig = z.infer<typeof SyncConfigSchema>;
+
+export const PushConfigSchema = z.object({
+  syncs: z.array(SyncConfigSchema),
+  token: z.string(),
+});
+export type PushConfig = z.infer<typeof PushConfigSchema>;
 
 export type PushResult = {
   error?: string;
@@ -25,15 +41,9 @@ export type PushExecutionResult = {
 
 export type CollectedFile = {
   content: string;
+  mode?: GitFileMode;
   path: string;
   size: number;
-};
-
-export type GitHubTreeEntry = {
-  content: string;
-  mode: "100644" | "100755";
-  path: string;
-  type: "blob";
 };
 
 export type PushInitCLIOptions = {

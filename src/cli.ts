@@ -3,9 +3,15 @@ import pc from "picocolors";
 import { baedal } from "./core/baedal.js";
 import { detectProvider } from "./core/providers/detector.js";
 import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./push/index.js";
+import type { PushInitCLIOptions } from "./push/types.js";
 import type { BaedalOptions } from "./types/index.js";
 
 const program = new Command();
+
+const handleError = (error: unknown): never => {
+  console.error(pc.red("\n✗ Error:"), error instanceof Error ? error.message : String(error));
+  process.exit(1);
+};
 
 program.name("baedal");
 
@@ -66,8 +72,7 @@ program
         console.log(pc.gray(`Skipped existing files`));
       }
     } catch (error) {
-      console.error(pc.red("\n✗ Error:"), error instanceof Error ? error.message : String(error));
-      process.exit(1);
+      handleError(error);
     }
   });
 
@@ -85,8 +90,7 @@ program
         process.exit(1);
       }
     } catch (error) {
-      console.error(pc.red("\n✗ Error:"), error instanceof Error ? error.message : String(error));
-      process.exit(1);
+      handleError(error);
     }
   });
 
@@ -95,13 +99,12 @@ program
   .command("push:init <sync-name>")
   .description("Create a new push configuration file")
   .option("-f, --force", "Overwrite existing configuration file")
-  .action(async (syncName: string, options: { force?: boolean }) => {
+  .action(async (syncName: string, options: PushInitCLIOptions) => {
     try {
       const configPath = initPushConfig(syncName, undefined, options.force);
       printInitSuccess(configPath, syncName);
     } catch (error) {
-      console.error(pc.red("\n✗ Error:"), error instanceof Error ? error.message : String(error));
-      process.exit(1);
+      handleError(error);
     }
   });
 

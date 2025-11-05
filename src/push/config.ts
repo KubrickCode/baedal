@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import yaml from "js-yaml";
-import type { PushConfig } from "./types.js";
+import { PushConfigSchema, type PushConfig } from "./types.js";
 
 const CONFIG_DIR = ".baedal/push";
 
@@ -20,9 +20,5 @@ export const loadPushConfig = (syncName: string, baseDir?: string): PushConfig =
   const yamlContent = readFileSync(configPath, "utf-8");
   const parsed = yaml.load(yamlContent);
 
-  if (!parsed || typeof parsed !== "object") {
-    throw new Error(`Invalid configuration format in ${configPath}`);
-  }
-
-  return parsed as PushConfig;
+  return PushConfigSchema.parse(parsed);
 };

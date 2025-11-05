@@ -1,8 +1,7 @@
 import { Octokit } from "@octokit/rest";
-import type { CollectedFile } from "./types.js";
+import { GIT_FILE_MODES, type CollectedFile } from "./types.js";
 
 const DEFAULT_BRANCH = "main";
-const DEFAULT_COMMIT_MESSAGE = "chore: sync files via baedal";
 
 export class GitHubClient {
   private octokit: Octokit;
@@ -14,12 +13,25 @@ export class GitHubClient {
     });
   }
 
-  async createBranch(owner: string, repo: string, branchName: string, baseSha: string): Promise<void> {
+  async createBranch(options: {
+    baseSha: string;
+    branchName: string;
+    owner: string;
+    repo: string;
+  }): Promise<void> {
+    const { baseSha, branchName, owner, repo } = options;
     const ref = `refs/heads/${branchName}`;
     await this.octokit.git.createRef({ owner, ref, repo, sha: baseSha });
   }
 
-  async createCommit(owner: string, repo: string, message: string, treeSha: string, parentSha: string): Promise<string> {
+  async createCommit(options: {
+    message: string;
+    owner: string;
+    parentSha: string;
+    repo: string;
+    treeSha: string;
+  }): Promise<string> {
+    const { message, owner, parentSha, repo, treeSha } = options;
     const { data } = await this.octokit.git.createCommit({
       message,
       owner,
@@ -31,27 +43,15 @@ export class GitHubClient {
     return data.sha;
   }
 
-  async createPullRequest(
-    owner: string,
-    repo: string,
-    title: string,
-    head: string,
-    base: string,
-    body?: string
-  ): Promise<{ number: number; url: string }> {
-    const requestBody: { base: string; body?: string; head: string; owner: string; repo: string; title: string } = {
-      base,
-      head,
-      owner,
-      repo,
-      title,
-    };
-
-    if (body) {
-      requestBody.body = body;
-    }
-
-    const { data } = await this.octokit.pulls.create(requestBody);
+  async createPullRequest(options: {
+    base: string;
+    body?: string;
+    head: string;
+    owner: string;
+    repo: string;
+    title: string;
+  }): Promise<{ number: number; url: string }> {
+    const { data } = await this.octokit.pulls.create(options);
 
     return {
       number: data.number,
@@ -59,10 +59,16 @@ export class GitHubClient {
     };
   }
 
-  async createTree(owner: string, repo: string, baseSha: string, files: CollectedFile[]): Promise<string> {
+  async createTree(options: {
+    baseSha: string;
+    files: CollectedFile[];
+    owner: string;
+    repo: string;
+  }): Promise<string> {
+    const { baseSha, files, owner, repo } = options;
     const tree = files.map((file) => ({
       content: file.content,
-      mode: "100644" as const,
+      mode: file.mode ?? GIT_FILE_MODES.NORMAL,
       path: file.path,
       type: "blob" as const,
     }));
@@ -87,33 +93,52 @@ export class GitHubClient {
     return data.commit.sha;
   }
 
-  async pushFilesAndCreatePR(
-    owner: string,
-    repo: string,
-    branchName: string,
-    files: CollectedFile[],
-    prTitle: string,
-    prBody?: string,
-    baseBranch?: string
-  ): Promise<{ number: number; url: string }> {
+  async pushFilesAndCreatePR(options: {
+    baseBranch?: string;
+    branchName: string;
+    files: CollectedFile[];
+    owner: string;
+    prBody?: string;
+    prTitle: string;
+    repo: string;
+  }): Promise<{ number: number; url: string }> {
+    const { baseBranch, branchName, files, owner, prBody, prTitle, repo } = options;
     const defaultBranch = await this.getDefaultBranch(owner, repo);
     const base = baseBranch || defaultBranch;
 
     const baseCommitSha = await this.getLatestCommitSha(owner, repo, base);
 
-    await this.createBranch(owner, repo, branchName, baseCommitSha);
+    await this.createBranch({ baseSha: baseCommitSha, branchName, owner, repo });
 
-    const treeSha = await this.createTree(owner, repo, baseCommitSha, files);
+    const treeSha = await this.createTree({ baseSha: baseCommitSha, files, owner, repo });
 
-    const commitMessage = prTitle || DEFAULT_COMMIT_MESSAGE;
-    const commitSha = await this.createCommit(owner, repo, commitMessage, treeSha, baseCommitSha);
+    const commitSha = await this.createCommit({
+      message: prTitle,
+      owner,
+      parentSha: baseCommitSha,
+      repo,
+      treeSha,
+    });
 
-    await this.updateBranchRef(owner, repo, branchName, commitSha);
+    await this.updateBranchRef({ branch: branchName, commitSha, owner, repo });
 
-    return await this.createPullRequest(owner, repo, prTitle, branchName, base, prBody);
+    return await this.createPullRequest({
+      base,
+      ...(prBody && { body: prBody }),
+      head: branchName,
+      owner,
+      repo,
+      title: prTitle,
+    });
   }
 
-  async updateBranchRef(owner: string, repo: string, branch: string, commitSha: string): Promise<void> {
+  async updateBranchRef(options: {
+    branch: string;
+    commitSha: string;
+    owner: string;
+    repo: string;
+  }): Promise<void> {
+    const { branch, commitSha, owner, repo } = options;
     const ref = `heads/${branch}`;
     await this.octokit.git.updateRef({
       force: false,

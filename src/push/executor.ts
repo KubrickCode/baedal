@@ -1,9 +1,11 @@
+import { join, relative } from "node:path";
 import picocolors from "picocolors";
 import { collectFiles } from "./files.js";
 import { createGitHubClient } from "./github.js";
 import type { PushConfig, PushExecutionResult, PushResult } from "./types.js";
 
 const BRANCH_PREFIX = "sync";
+const SUMMARY_SEPARATOR_LENGTH = 60;
 
 const generateBranchName = (syncName: string): string => {
   const timestamp = Date.now();
@@ -11,17 +13,20 @@ const generateBranchName = (syncName: string): string => {
   return `${BRANCH_PREFIX}/${sanitized}-${timestamp}`;
 };
 
-const processRepository = async (
-  repoName: string,
-  sourcePath: string,
-  destPath: string,
-  branchName: string,
-  token: string,
-  syncName: string
-): Promise<PushResult> => {
+type ProcessRepositoryOptions = {
+  branchName: string;
+  destPath: string;
+  repoName: string;
+  sourcePath: string;
+  syncName: string;
+  token: string;
+};
+
+const processRepository = async (options: ProcessRepositoryOptions): Promise<PushResult> => {
+  const { branchName, destPath, repoName, sourcePath, syncName, token } = options;
   try {
     console.log(picocolors.cyan(`  [${repoName}] Collecting files from ${sourcePath}...`));
-    const files = await collectFiles(sourcePath);
+    let files = await collectFiles(sourcePath);
 
     if (files.length === 0) {
       return {
@@ -32,22 +37,35 @@ const processRepository = async (
     }
 
     if (destPath !== sourcePath) {
-      files.forEach((file) => {
-        file.path = file.path.replace(sourcePath, destPath);
+      files = files.map((file) => {
+        const relativePath = relative(sourcePath, file.path);
+        return {
+          ...file,
+          path: join(destPath, relativePath).replace(/\\/g, "/"),
+        };
       });
     }
 
     console.log(picocolors.cyan(`  [${repoName}] Pushing ${files.length} files...`));
 
-    const [owner, repo] = repoName.split("/");
-    if (!owner || !repo) {
+    const parts = repoName.split("/");
+    const owner = parts[0];
+    const repo = parts[1];
+    if (!owner || !repo || parts.length !== 2) {
       throw new Error(`Invalid repository format: ${repoName}. Expected format: owner/repo`);
     }
 
     const client = createGitHubClient(token);
     const prTitle = `chore: sync files from ${syncName}`;
     const prBody = `Automated file sync via baedal push\n\nSync: ${syncName}`;
-    const pr = await client.pushFilesAndCreatePR(owner, repo, branchName, files, prTitle, prBody);
+    const pr = await client.pushFilesAndCreatePR({
+      branchName,
+      files,
+      owner,
+      prBody,
+      prTitle,
+      repo,
+    });
 
     console.log(picocolors.green(`  [${repoName}] ✓ PR created: ${pr.url}`));
 
@@ -82,55 +100,57 @@ export const executePush = async (
     throw new Error("GitHub token is required. Specify 'token' in config file.");
   }
 
-  const results: PushResult[] = [];
-
-  for (const sync of config.syncs) {
-    for (const repo of sync.repos) {
-      const result = await processRepository(
-        repo,
-        sync.source,
-        sync.dest,
+  const promises = config.syncs.flatMap((sync) =>
+    sync.repos.map((repo) =>
+      processRepository({
         branchName,
-        config.token,
-        syncName
-      );
+        destPath: sync.dest,
+        repoName: repo,
+        sourcePath: sync.source,
+        syncName,
+        token: config.token,
+      })
+    )
+  );
 
-      results.push(result);
+  const results = await Promise.all(promises);
+
+  const successful: PushResult[] = [];
+  const failed: PushResult[] = [];
+
+  for (const result of results) {
+    if (result.success) {
+      successful.push(result);
+    } else {
+      failed.push(result);
     }
   }
 
-  const successCount = results.filter((r) => r.success).length;
-  const failureCount = results.filter((r) => !r.success).length;
-
-  console.log(picocolors.bold("\n" + "=".repeat(60)));
+  console.log(picocolors.bold("\n" + "=".repeat(SUMMARY_SEPARATOR_LENGTH)));
   console.log(picocolors.bold("Summary"));
-  console.log("=".repeat(60));
+  console.log("=".repeat(SUMMARY_SEPARATOR_LENGTH));
   console.log(`Total: ${results.length} repositories`);
-  console.log(picocolors.green(`Success: ${successCount}`));
-  console.log(picocolors.red(`Failed: ${failureCount}`));
+  console.log(picocolors.green(`Success: ${successful.length}`));
+  console.log(picocolors.red(`Failed: ${failed.length}`));
 
-  if (successCount > 0) {
+  if (successful.length > 0) {
     console.log(picocolors.bold("\nSuccessful PRs:"));
-    results
-      .filter((r) => r.success)
-      .forEach((r) => {
-        console.log(picocolors.green(`  ✓ ${r.repo}: ${r.prUrl}`));
-      });
+    for (const result of successful) {
+      console.log(picocolors.green(`  ✓ ${result.repo}: ${result.prUrl}`));
+    }
   }
 
-  if (failureCount > 0) {
+  if (failed.length > 0) {
     console.log(picocolors.bold("\nFailed repositories:"));
-    results
-      .filter((r) => !r.success)
-      .forEach((r) => {
-        console.log(picocolors.red(`  ✗ ${r.repo}: ${r.error}`));
-      });
+    for (const result of failed) {
+      console.log(picocolors.red(`  ✗ ${result.repo}: ${result.error}`));
+    }
   }
 
   return {
-    failureCount,
+    failureCount: failed.length,
     results,
-    successCount,
+    successCount: successful.length,
     totalCount: results.length,
   };
 };
