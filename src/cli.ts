@@ -2,12 +2,22 @@ import { Command } from "commander";
 import pc from "picocolors";
 import { baedal } from "./core/baedal.js";
 import { detectProvider } from "./core/providers/detector.js";
+import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./push/index.js";
+import type { PushInitCLIOptions } from "./push/types.js";
 import type { BaedalOptions } from "./types/index.js";
 
 const program = new Command();
 
+const handleError = (error: unknown): never => {
+  console.error(pc.red("\n✗ Error:"), error instanceof Error ? error.message : String(error));
+  process.exit(1);
+};
+
+program.name("baedal");
+
+// TODO: default -> pull
 program
-  .name("baedal")
+  .command("download", { isDefault: true })
   .description("Download files/folders from Git repositories")
   .argument("<source>", "Repository source (user/repo or URL)")
   .argument("[destination]", "Destination directory", ".")
@@ -62,8 +72,39 @@ program
         console.log(pc.gray(`Skipped existing files`));
       }
     } catch (error) {
-      console.error(pc.red("\n✗ Error:"), error instanceof Error ? error.message : String(error));
-      process.exit(1);
+      handleError(error);
+    }
+  });
+
+program
+  .command("push <sync-name>")
+  .description("Sync files to multiple repositories and create PRs")
+  .action(async (syncName: string) => {
+    try {
+      console.log(pc.dim(`Loading configuration for '${syncName}'...`));
+      const config = loadPushConfig(syncName);
+
+      const result = await executePush(config, syncName);
+
+      if (result.failureCount > 0) {
+        process.exit(1);
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  });
+
+// Push init command: create configuration template
+program
+  .command("push:init <sync-name>")
+  .description("Create a new push configuration file")
+  .option("-f, --force", "Overwrite existing configuration file")
+  .action(async (syncName: string, options: PushInitCLIOptions) => {
+    try {
+      const configPath = initPushConfig(syncName, undefined, options.force);
+      printInitSuccess(configPath, syncName);
+    } catch (error) {
+      handleError(error);
     }
   });
 
