@@ -47,14 +47,17 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
+    "@octokit/rest": "^22.0.1",
     "commander": "^14.0.1",
     "globby": "^14.0.0",
+    "js-yaml": "^4.1.0",
     "ky": "^1.8.3",
     "micromatch": "^4.0.8",
     "picocolors": "^1.0.0",
     "tar": "^7.5.1"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/micromatch": "^4.0.9",
     "@types/node": "^24.7.1",
     "@types/tar": "^6.1.13",
