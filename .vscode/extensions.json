@@ -13,11 +13,6 @@
     "streetsidesoftware.code-spell-checker",
     "wayou.vscode-todo-highlight",
     "usernamehw.errorlens",
-    "kubrickcode.tlog-vscode",
-    "kubrickcode.quick-command-buttons",
-    "rust-lang.rust-analyzer",
-    "vadimcn.vscode-lldb",
-    "tamasfe.even-better-toml",
-    "serayuzgur.crates"
+    "kubrickcode.quick-command-buttons"
   ]
 }
