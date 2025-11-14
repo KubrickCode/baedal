@@ -1,6 +1,6 @@
 ---
 name: npm-package-publisher
-description: NPM package publishing and configuration specialist. Handles package.json setup, semantic versioning, CI/CD automation, scoped packages, and publishing workflows.
+description: NPM package publishing and configuration specialist. Use PROACTIVELY when preparing NPM packages for publication, configuring semantic versioning, or automating package releases.
 model: sonnet
 ---
 
