@@ -25,12 +25,12 @@ lint target="all":
         just lint justfile
         ;;
       src)
-        prettier --write "{{ src_dir }}/**/*.ts"
+        npx prettier --write "{{ src_dir }}/**/*.ts"
         cd "{{ src_dir }}"
         yarn lint
         ;;
       config)
-        prettier --write "**/*.{json,yml,yaml,md}"
+        npx prettier --write "**/*.{json,yml,yaml,md}"
         ;;
       justfile)
         just --fmt --unstable

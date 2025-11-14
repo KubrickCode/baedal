@@ -37,9 +37,6 @@ jobs:
         with:
           node-version: "22.18.0"
 
-      - name: Install Prettier globally
-        run: npm install -g prettier
-
       - uses: extractions/setup-just@v3
 
       - name: Install dependencies
@@ -60,10 +57,10 @@ jobs:
         with:
           node-version: "22.18.0"
 
-      - name: Install Prettier globally
-        run: npm install -g prettier
-
       - uses: extractions/setup-just@v3
+
+      - name: Install dependencies
+        run: just deps
 
       - name: Lint Config Files
         run: just lint config
