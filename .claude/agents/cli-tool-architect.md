@@ -1,6 +1,6 @@
 ---
 name: cli-tool-architect
-description: Architect for TypeScript-based CLI tools
+description: Architect for TypeScript-based CLI tools. Use PROACTIVELY when designing command-line interfaces, implementing CLI commands with Commander.js, or building dual-purpose packages (CLI + library).
 model: sonnet
 ---
 
