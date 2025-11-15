@@ -4,11 +4,23 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
   - package-ecosystem: "devcontainers"
     directory: "/"
     schedule:
       interval: daily
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
