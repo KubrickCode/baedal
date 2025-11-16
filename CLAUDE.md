@@ -125,3 +125,14 @@ GitLab's API supports server-side subdir filtering via `path` parameter, so subd
 - Node.js >= 18.0.0
 - ESM modules only (no CommonJS)
 - All imports must use `.js` extension (TypeScript ESM requirement)
+
+## Release Management
+
+**Automated Release Process**
+
+- **Version Determination**: Automatically calculated from commit types
+  - `feat` → minor version bump
+  - `fix`, `ifix`, `perf`, `docs`, `style`, `refactor`, `test`, `ci`, `chore` → patch version bump
+- **Release Notes**: Auto-generated with two-tier structure (주요 기능/유지보수)
+- **Workflow**: push to `release` branch → GitHub Actions → automatic tag/release/CHANGELOG generation
+- **Commit Format**: Must follow Conventional Commits (enforced by commitlint)
