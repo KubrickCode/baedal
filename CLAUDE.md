@@ -41,19 +41,19 @@ Baedal is a TypeScript-based CLI tool and npm library for downloading files/fold
 **Build**
 
 ```bash
-yarn build          # Build the project using tsup
+pnpm build          # Build the project using tsup
 ```
 
 **Lint**
 
 ```bash
-yarn lint           # Run ESLint on src/**/*.ts
+pnpm lint           # Run ESLint on src/**/*.ts
 ```
 
 **Package Preparation**
 
 ```bash
-yarn prepublishOnly # Auto-runs yarn build before publishing
+pnpm prepublishOnly # Auto-runs pnpm build before publishing
 ```
 
 ## Architecture

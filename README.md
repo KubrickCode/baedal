@@ -11,7 +11,7 @@ Simple Git repository downloader CLI tool supporting GitHub, GitLab, and Bitbuck
 ```bash
 npm install -g baedal
 # or
-yarn global add baedal
+pnpm add -g baedal
 ```
 
 ## Usage
