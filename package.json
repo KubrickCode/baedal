@@ -1,6 +1,6 @@
 {
   "name": "baedal",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A TypeScript-based CLI tool and npm library for downloading files/folders from Git repositories",
   "keywords": [
     "git",

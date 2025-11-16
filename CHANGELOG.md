@@ -1,3 +1,9 @@
+## [1.0.3](https://github.com/KubrickCode/baedal/compare/v1.0.2...v1.0.3) (2025-11-16)
+
+### 🔧 Internal Fixes
+
+- fix release to main sync by using --no-edit instead of --ff-only ([d7e6332](https://github.com/KubrickCode/baedal/commit/d7e63327b6ed2a64056947031355bf2068807ea9))
+
 ## [1.0.2](https://github.com/KubrickCode/baedal/compare/v1.0.1...v1.0.2) (2025-11-16)
 
 ### 🔧 Internal Fixes
