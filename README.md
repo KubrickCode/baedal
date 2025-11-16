@@ -202,6 +202,11 @@ This project started as a small personal project with a development environment 
 
 If you'd like to contribute, please contact kubrickcode@gmail.com and we'll adapt the environment to accommodate contributions.
 
+### Development Guidelines
+
+- **Commit Format**: Follow [Conventional Commits](https://www.conventionalcommits.org/) specification
+- **Additional Info**: See [CLAUDE.md](./CLAUDE.md) for detailed development guidelines
+
 ## License
 
 MIT
