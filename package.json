@@ -45,7 +45,7 @@
     "build": "tsup",
     "lint": "eslint \"src/**/*.ts\"",
     "prepare": "husky",
-    "prepublishOnly": "yarn build"
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "@octokit/rest": "22.0.1",

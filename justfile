@@ -7,13 +7,13 @@ cli *args:
     node dist/cli.js {{ args }}
 
 deps:
-    yarn install
+    pnpm install
 
 build:
-    yarn build
+    pnpm build
 
 link:
-    yarn link
+    pnpm link --global
 
 lint target="all":
     #!/usr/bin/env bash
@@ -27,7 +27,7 @@ lint target="all":
       src)
         npx prettier --write "{{ src_dir }}/**/*.ts"
         cd "{{ src_dir }}"
-        yarn lint
+        pnpm lint
         ;;
       config)
         npx prettier --write "**/*.{json,yml,yaml,md}"
