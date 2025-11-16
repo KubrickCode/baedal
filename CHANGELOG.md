@@ -1,3 +1,9 @@
+## [1.0.2](https://github.com/KubrickCode/baedal/compare/v1.0.1...v1.0.2) (2025-11-16)
+
+### 🔧 Internal Fixes
+
+- Fixed an issue where the package.json version was not updated even after release. ([319de11](https://github.com/KubrickCode/baedal/commit/319de1107fa97ba490f1d4c0198eeb5e50164ff2))
+
 ## [1.0.1](https://github.com/KubrickCode/baedal/compare/v1.0.0...v1.0.1) (2025-11-16)
 
 ### 📚 Documentation
