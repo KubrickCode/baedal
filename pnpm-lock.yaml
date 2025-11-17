@@ -31,6 +31,9 @@ importers:
       tar:
         specifier: 7.5.1
         version: 7.5.1
+      ts-custom-error:
+        specifier: 3.3.1
+        version: 3.3.1
       zod:
         specifier: 4.1.12
         version: 4.1.12
@@ -5877,6 +5880,13 @@ packages:
     peerDependencies:
       typescript: ">=4.8.4"
 
+  ts-custom-error@3.3.1:
+    resolution:
+      {
+        integrity: sha512-5OX1tzOjxWEgsr/YEUWSuPrQ00deKLh6D7OTWcvNHm12/7QPyRh8SYpyWvA4IZv8H/+GQWQEh/kwo95Q9OVW1A==,
+      }
+    engines: { node: ">=14.0.0" }
+
   ts-interface-checker@0.1.13:
     resolution:
       {
@@ -10155,6 +10165,8 @@ snapshots:
   ts-api-utils@2.1.0(typescript@5.9.3):
     dependencies:
       typescript: 5.9.3
+
+  ts-custom-error@3.3.1: {}
 
   ts-interface-checker@0.1.13: {}
 
