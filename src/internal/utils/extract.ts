@@ -1,29 +1,24 @@
 import { copyFile, cp, mkdir, mkdtemp, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { basename, join } from "node:path";
+import { basename } from "node:path";
 import { globby } from "globby";
 import micromatch from "micromatch";
 import { extract, list } from "tar";
+import { ExtractionError, FileSystemError } from "../errors/index.js";
+import { joinPathSafe, stripRootDirectory } from "./path-helpers.js";
 
-/**
- * Normalize tar entry path by stripping repository root and applying subdir/exclude logic
- * @returns normalized path if file should be included, null if excluded (optional type pattern)
- */
 const getNormalizedTarPath = (
   entryPath: string,
   subdir?: string,
-  // Use null for optional type pattern: function = has exclusion logic, null = no exclusion
   shouldExclude?: ((path: string) => boolean) | null
 ): string | null => {
-  // Strip the first path segment (repository root)
-  const strippedPath = entryPath.split("/").slice(1).join("/");
+  const strippedPath = stripRootDirectory(entryPath);
 
   let targetPath: string;
   if (subdir) {
     if (!strippedPath.startsWith(subdir)) {
       return null;
     }
-    // Remove the subdir prefix
     targetPath = strippedPath.slice(subdir.length + 1);
   } else {
     targetPath = strippedPath;
@@ -36,86 +31,133 @@ const getNormalizedTarPath = (
   return targetPath;
 };
 
+const copySubdirectory = async (
+  tempDir: string,
+  destination: string,
+  subdir: string
+): Promise<void> => {
+  const sourcePath = joinPathSafe(tempDir, subdir);
+
+  try {
+    const sourceStats = await stat(sourcePath);
+
+    if (sourceStats.isFile()) {
+      await mkdir(destination, { recursive: true });
+      await copyFile(sourcePath, joinPathSafe(destination, basename(subdir)));
+    } else {
+      await cp(sourcePath, destination, { recursive: true });
+    }
+  } catch (error) {
+    throw new FileSystemError(
+      `Failed to copy subdirectory: ${error instanceof Error ? error.message : String(error)}`,
+      sourcePath
+    );
+  }
+};
+
+/**
+ * Extracts a GitHub tarball to the specified directory.
+ */
 export const extractTarball = async (
   tarballPath: string,
   destination: string,
   subdir?: string,
   exclude?: string[]
 ): Promise<string[]> => {
-  const shouldExclude =
-    exclude && exclude.length > 0 ? (path: string) => micromatch.isMatch(path, exclude) : null;
+  const shouldExclude = exclude?.length
+    ? (path: string) => micromatch.isMatch(path, exclude)
+    : null;
 
-  const extractOptions = {
-    cwd: destination,
-    file: tarballPath,
-    strip: 1,
-    ...(shouldExclude
-      ? {
-          filter: (path: string) => {
-            const normalizedPath = getNormalizedTarPath(path, undefined, shouldExclude);
-            return normalizedPath !== null;
-          },
-        }
-      : {}),
-  };
+  try {
+    if (!subdir) {
+      await mkdir(destination, { recursive: true });
 
-  if (!subdir) {
-    await extract(extractOptions);
-  } else {
-    const tempExtract = await mkdtemp(join(tmpdir(), "baedal-extract-"));
-
-    try {
       await extract({
-        ...extractOptions,
-        cwd: tempExtract,
+        cwd: destination,
+        file: tarballPath,
+        strip: 1,
+        ...(shouldExclude
+          ? {
+              filter: (path) => getNormalizedTarPath(path, undefined, shouldExclude) !== null,
+            }
+          : {}),
       });
+    } else {
+      const tempExtract = await mkdtemp(joinPathSafe(tmpdir(), "baedal-extract-"));
 
-      const sourcePath = join(tempExtract, subdir);
-      const sourceStats = await stat(sourcePath);
+      try {
+        await mkdir(tempExtract, { recursive: true });
+        await extract({
+          cwd: tempExtract,
+          file: tarballPath,
+          strip: 1,
+          ...(shouldExclude
+            ? {
+                filter: (path) => getNormalizedTarPath(path, subdir, shouldExclude) !== null,
+              }
+            : {}),
+        });
 
-      if (sourceStats.isFile()) {
-        await mkdir(destination, { recursive: true });
-        await copyFile(sourcePath, join(destination, basename(subdir)));
-      } else {
-        await cp(sourcePath, destination, { recursive: true });
+        await copySubdirectory(tempExtract, destination, subdir);
+      } finally {
+        await rm(tempExtract, { force: true, recursive: true }).catch(() => {
+          // Ignore cleanup failures
+        });
       }
-    } finally {
-      await rm(tempExtract, { force: true, recursive: true });
     }
-  }
 
-  const files = await globby("**/*", {
-    cwd: destination,
-    dot: true, // Include hidden files like .gitignore
-    onlyFiles: true,
-  });
-  return files;
+    return await globby("**/*", {
+      cwd: destination,
+      dot: true,
+      onlyFiles: true,
+    });
+  } catch (error) {
+    if (error instanceof ExtractionError || error instanceof FileSystemError) {
+      throw error;
+    }
+    throw new ExtractionError(
+      `Failed to extract tarball: ${error instanceof Error ? error.message : String(error)}`,
+      tarballPath,
+      error instanceof Error ? error : undefined
+    );
+  }
 };
 
+/**
+ * Lists files in a tarball without extracting.
+ */
 export const getFileListFromTarball = async (
   tarballPath: string,
   subdir?: string,
   exclude?: string[]
 ): Promise<string[]> => {
   const files: string[] = [];
+  const shouldExclude = exclude?.length
+    ? (path: string) => micromatch.isMatch(path, exclude)
+    : null;
 
-  const shouldExclude =
-    exclude && exclude.length > 0 ? (path: string) => micromatch.isMatch(path, exclude) : null;
+  try {
+    await list({
+      file: tarballPath,
+      onentry: (entry) => {
+        if (entry.type !== "File") {
+          return;
+        }
 
-  await list({
-    file: tarballPath,
-    onentry: (entry) => {
-      if (entry.type !== "File") {
-        return;
-      }
+        const normalizedPath = getNormalizedTarPath(entry.path, subdir, shouldExclude);
 
-      const normalizedPath = getNormalizedTarPath(entry.path, subdir, shouldExclude);
-
-      if (normalizedPath) {
-        files.push(normalizedPath);
-      }
-    },
-  });
+        if (normalizedPath) {
+          files.push(normalizedPath);
+        }
+      },
+    });
+  } catch (error) {
+    throw new ExtractionError(
+      `Failed to list tarball contents: ${error instanceof Error ? error.message : String(error)}`,
+      tarballPath,
+      error instanceof Error ? error : undefined
+    );
+  }
 
   return files;
 };
