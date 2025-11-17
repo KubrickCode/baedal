@@ -58,3 +58,6 @@ release:
     @echo "   5. Publish to npm"
     @echo ""
     @echo "📊 Check progress: https://github.com/KubrickCode/baedal/actions"
+
+test:
+    pnpm test

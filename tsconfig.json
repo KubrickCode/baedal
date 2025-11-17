@@ -37,5 +37,5 @@
     "skipLibCheck": true
   },
   "include": ["src/**/*", "eslint.config.js"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+  "exclude": ["node_modules", "dist"]
 }
