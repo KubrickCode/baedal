@@ -1,3 +1,28 @@
+## [1.0.4](https://github.com/KubrickCode/baedal/compare/v1.0.3...v1.0.4) (2025-11-17)
+
+### 🔧 Internal Fixes
+
+- Add missing dependencies ([41fe386](https://github.com/KubrickCode/baedal/commit/41fe3863935cf8a3f93b6aaf0e55a4e7e69030a4))
+
+### 📚 Documentation
+
+- Synchronizing documentation from the ai-config-toolkit repository ([625763f](https://github.com/KubrickCode/baedal/commit/625763fe34ad9c18b069fa8c43d41248fafc3ac0))
+
+### ♻️ Refactoring
+
+- apply null/undefined policy with safer operators ([baf6eb9](https://github.com/KubrickCode/baedal/commit/baf6eb92675c18f076352b97f80ad8432cf12203)), closes [#64](https://github.com/KubrickCode/baedal/issues/64)
+- introduce ConflictMode Union Type and Adapter Pattern for type safety ([162fe41](https://github.com/KubrickCode/baedal/commit/162fe41b6a0da473ae69c71535f41d76259b290c)), closes [#65](https://github.com/KubrickCode/baedal/issues/65)
+- remove GitLab/Bitbucket support and optimize for GitHub-only ([43002ff](https://github.com/KubrickCode/baedal/commit/43002fff15f5e512026a7b49e90e82b6ee3b5658)), closes [#61](https://github.com/KubrickCode/baedal/issues/61)
+- rename download command to pull and unify related types ([8d4ed93](https://github.com/KubrickCode/baedal/commit/8d4ed931899675deb3871f993431499e91199d85)), closes [#66](https://github.com/KubrickCode/baedal/issues/66)
+
+### ✅ Tests
+
+- setup Jest test infrastructure with first parser tests ([0bf42ae](https://github.com/KubrickCode/baedal/commit/0bf42ae079185f0948afded5d36cf02fee663270)), closes [#63](https://github.com/KubrickCode/baedal/issues/63)
+
+### 🔨 Chore
+
+- Fix out-of-conformance dependency versions ([7c13a4f](https://github.com/KubrickCode/baedal/commit/7c13a4f28f8ee6a08b3249d8bccf3b333b25ffcf))
+
 ## [1.0.3](https://github.com/KubrickCode/baedal/compare/v1.0.2...v1.0.3) (2025-11-16)
 
 ### 🔧 Internal Fixes
