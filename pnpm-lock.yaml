@@ -36,7 +36,7 @@ importers:
         version: 4.1.12
     devDependencies:
       "@eslint/js":
-        specifier: ^9.39.1
+        specifier: 9.39.1
         version: 9.39.1
       "@semantic-release/changelog":
         specifier: 6.0.3
@@ -45,7 +45,7 @@ importers:
         specifier: 13.0.0
         version: 13.0.0(semantic-release@24.2.0(typescript@5.9.3))
       "@semantic-release/exec":
-        specifier: ^7.1.0
+        specifier: 7.1.0
         version: 7.1.0(semantic-release@24.2.0(typescript@5.9.3))
       "@semantic-release/git":
         specifier: 10.0.1
@@ -54,7 +54,7 @@ importers:
         specifier: 11.0.1
         version: 11.0.1(semantic-release@24.2.0(typescript@5.9.3))
       "@semantic-release/npm":
-        specifier: ^13.1.2
+        specifier: 13.1.2
         version: 13.1.2(semantic-release@24.2.0(typescript@5.9.3))
       "@semantic-release/release-notes-generator":
         specifier: 14.0.1
