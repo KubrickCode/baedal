@@ -1,9 +1,10 @@
 import { Command } from "commander";
 import pc from "picocolors";
+import { adaptCLIOptions } from "./cli/adapter.js";
+import type { DownloadCLIOptions } from "./cli/types.js";
 import { baedal } from "./core/baedal.js";
 import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./push/index.js";
 import type { PushInitCLIOptions } from "./push/types.js";
-import type { BaedalOptions } from "./types/index.js";
 
 const program = new Command();
 
@@ -28,32 +29,17 @@ program
   .option("-f, --force", "Force overwrite without confirmation")
   .option("-s, --skip-existing", "Skip existing files, only add new files")
   .option("-n, --no-clobber", "Abort if any file would be overwritten")
-  .action(async (source: string, destination: string, options: BaedalOptions) => {
+  .action(async (source: string, destination: string, cliOptions: DownloadCLIOptions) => {
     try {
-      // Validate conflicting options
-      const conflictingOptions = [options.force, options.skipExisting, options.noClobber].filter(
-        Boolean
-      );
-
-      if (conflictingOptions.length > 1) {
-        throw new Error("Cannot use --force, --skip-existing, and --no-clobber together");
-      }
-
-      // Resolve token
-      const token = options.token ?? process.env.GITHUB_TOKEN ?? process.env.BAEDAL_TOKEN;
-
-      const baedalOptions: BaedalOptions = {
-        ...options,
-        ...(token && { token }),
-      };
+      const baedalOptions = adaptCLIOptions(cliOptions);
 
       const result = await baedal(source, destination, baedalOptions);
 
       console.log(pc.green(`\n✓ Downloaded ${result.files.length} file(s) to ${result.path}`));
-      if (options.exclude?.length) {
-        console.log(pc.gray(`Excluded patterns: ${options.exclude.join(", ")}`));
+      if (cliOptions.exclude?.length) {
+        console.log(pc.gray(`Excluded patterns: ${cliOptions.exclude.join(", ")}`));
       }
-      if (options.skipExisting) {
+      if (cliOptions.skipExisting) {
         console.log(pc.gray(`Skipped existing files`));
       }
     } catch (error) {
