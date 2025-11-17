@@ -40,7 +40,7 @@ program
       }
 
       // Resolve token
-      const token = options.token || process.env.GITHUB_TOKEN || process.env.BAEDAL_TOKEN;
+      const token = options.token ?? process.env.GITHUB_TOKEN ?? process.env.BAEDAL_TOKEN;
 
       const baedalOptions: BaedalOptions = {
         ...options,
@@ -50,7 +50,7 @@ program
       const result = await baedal(source, destination, baedalOptions);
 
       console.log(pc.green(`\n✓ Downloaded ${result.files.length} file(s) to ${result.path}`));
-      if (options.exclude && options.exclude.length > 0) {
+      if (options.exclude?.length) {
         console.log(pc.gray(`Excluded patterns: ${options.exclude.join(", ")}`));
       }
       if (options.skipExisting) {

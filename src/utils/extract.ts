@@ -7,11 +7,12 @@ import { extract, list } from "tar";
 
 /**
  * Normalize tar entry path by stripping repository root and applying subdir/exclude logic
- * @returns normalized path if file should be included, null otherwise
+ * @returns normalized path if file should be included, null if excluded (optional type pattern)
  */
 const getNormalizedTarPath = (
   entryPath: string,
   subdir?: string,
+  // Use null for optional type pattern: function = has exclusion logic, null = no exclusion
   shouldExclude?: ((path: string) => boolean) | null
 ): string | null => {
   // Strip the first path segment (repository root)

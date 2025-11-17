@@ -85,7 +85,7 @@ export class GitHubClient {
 
   async getDefaultBranch(owner: string, repo: string): Promise<string> {
     const { data } = await this.octokit.repos.get({ owner, repo });
-    return data.default_branch || DEFAULT_BRANCH;
+    return data.default_branch ?? DEFAULT_BRANCH;
   }
 
   async getLatestCommitSha(owner: string, repo: string, branch: string): Promise<string> {
@@ -104,7 +104,7 @@ export class GitHubClient {
   }): Promise<{ number: number; url: string }> {
     const { baseBranch, branchName, files, owner, prBody, prTitle, repo } = options;
     const defaultBranch = await this.getDefaultBranch(owner, repo);
-    const base = baseBranch || defaultBranch;
+    const base = baseBranch ?? defaultBranch;
 
     const baseCommitSha = await this.getLatestCommitSha(owner, repo, base);
 
