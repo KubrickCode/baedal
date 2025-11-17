@@ -1,0 +1,47 @@
+name: Run Tests
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - reopened
+      - unlocked
+    paths:
+      - "src/**"
+      - "jest.config.js"
+      - "package.json"
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "jest.config.js"
+      - "package.json"
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22.18.0"
+
+      - uses: extractions/setup-just@v3
+
+      - name: Install dependencies
+        run: just deps
+
+      - name: Run tests
+        run: just test
