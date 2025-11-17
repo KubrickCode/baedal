@@ -1,5 +1,5 @@
 import { adaptCLIOptions } from "./adapter.js";
-import type { DownloadCLIOptions } from "./types.js";
+import type { PullCLIOptions } from "./types.js";
 
 describe("adaptCLIOptions", () => {
   const originalEnv = process.env;
@@ -14,28 +14,28 @@ describe("adaptCLIOptions", () => {
 
   describe("ConflictMode conversion", () => {
     it("should convert force flag to force mode", () => {
-      const cliOptions: DownloadCLIOptions = { force: true };
+      const cliOptions: PullCLIOptions = { force: true };
       const result = adaptCLIOptions(cliOptions);
 
       expect(result.conflictMode).toEqual({ mode: "force" });
     });
 
     it("should convert skipExisting flag to skip-existing mode", () => {
-      const cliOptions: DownloadCLIOptions = { skipExisting: true };
+      const cliOptions: PullCLIOptions = { skipExisting: true };
       const result = adaptCLIOptions(cliOptions);
 
       expect(result.conflictMode).toEqual({ mode: "skip-existing" });
     });
 
     it("should convert noClobber flag to no-clobber mode", () => {
-      const cliOptions: DownloadCLIOptions = { noClobber: true };
+      const cliOptions: PullCLIOptions = { noClobber: true };
       const result = adaptCLIOptions(cliOptions);
 
       expect(result.conflictMode).toEqual({ mode: "no-clobber" });
     });
 
     it("should return undefined conflictMode when no flags are set", () => {
-      const cliOptions: DownloadCLIOptions = {};
+      const cliOptions: PullCLIOptions = {};
       const result = adaptCLIOptions(cliOptions);
 
       expect(result.conflictMode).toBeUndefined();
@@ -44,7 +44,7 @@ describe("adaptCLIOptions", () => {
 
   describe("Conflict flag validation", () => {
     it("should throw error when force and skipExisting are both set", () => {
-      const cliOptions: DownloadCLIOptions = {
+      const cliOptions: PullCLIOptions = {
         force: true,
         skipExisting: true,
       };
@@ -55,7 +55,7 @@ describe("adaptCLIOptions", () => {
     });
 
     it("should throw error when force and noClobber are both set", () => {
-      const cliOptions: DownloadCLIOptions = {
+      const cliOptions: PullCLIOptions = {
         force: true,
         noClobber: true,
       };
@@ -66,7 +66,7 @@ describe("adaptCLIOptions", () => {
     });
 
     it("should throw error when skipExisting and noClobber are both set", () => {
-      const cliOptions: DownloadCLIOptions = {
+      const cliOptions: PullCLIOptions = {
         noClobber: true,
         skipExisting: true,
       };
@@ -77,7 +77,7 @@ describe("adaptCLIOptions", () => {
     });
 
     it("should throw error when all three flags are set", () => {
-      const cliOptions: DownloadCLIOptions = {
+      const cliOptions: PullCLIOptions = {
         force: true,
         noClobber: true,
         skipExisting: true,
@@ -91,7 +91,7 @@ describe("adaptCLIOptions", () => {
 
   describe("Token resolution", () => {
     it("should use CLI token when provided", () => {
-      const cliOptions: DownloadCLIOptions = { token: "cli-token" };
+      const cliOptions: PullCLIOptions = { token: "cli-token" };
       const result = adaptCLIOptions(cliOptions);
 
       expect(result.token).toBe("cli-token");
@@ -99,7 +99,7 @@ describe("adaptCLIOptions", () => {
 
     it("should use GITHUB_TOKEN when CLI token is not provided", () => {
       process.env.GITHUB_TOKEN = "github-token";
-      const cliOptions: DownloadCLIOptions = {};
+      const cliOptions: PullCLIOptions = {};
       const result = adaptCLIOptions(cliOptions);
 
       expect(result.token).toBe("github-token");
@@ -107,7 +107,7 @@ describe("adaptCLIOptions", () => {
 
     it("should use BAEDAL_TOKEN when neither CLI token nor GITHUB_TOKEN is provided", () => {
       process.env.BAEDAL_TOKEN = "baedal-token";
-      const cliOptions: DownloadCLIOptions = {};
+      const cliOptions: PullCLIOptions = {};
       const result = adaptCLIOptions(cliOptions);
 
       expect(result.token).toBe("baedal-token");
@@ -116,7 +116,7 @@ describe("adaptCLIOptions", () => {
     it("should prioritize CLI token over environment variables", () => {
       process.env.GITHUB_TOKEN = "github-token";
       process.env.BAEDAL_TOKEN = "baedal-token";
-      const cliOptions: DownloadCLIOptions = { token: "cli-token" };
+      const cliOptions: PullCLIOptions = { token: "cli-token" };
       const result = adaptCLIOptions(cliOptions);
 
       expect(result.token).toBe("cli-token");
@@ -125,14 +125,14 @@ describe("adaptCLIOptions", () => {
     it("should prioritize GITHUB_TOKEN over BAEDAL_TOKEN", () => {
       process.env.GITHUB_TOKEN = "github-token";
       process.env.BAEDAL_TOKEN = "baedal-token";
-      const cliOptions: DownloadCLIOptions = {};
+      const cliOptions: PullCLIOptions = {};
       const result = adaptCLIOptions(cliOptions);
 
       expect(result.token).toBe("github-token");
     });
 
     it("should return undefined token when none are provided", () => {
-      const cliOptions: DownloadCLIOptions = {};
+      const cliOptions: PullCLIOptions = {};
       const result = adaptCLIOptions(cliOptions);
 
       expect(result.token).toBeUndefined();
@@ -141,7 +141,7 @@ describe("adaptCLIOptions", () => {
 
   describe("Exclude patterns", () => {
     it("should include exclude patterns when provided", () => {
-      const cliOptions: DownloadCLIOptions = {
+      const cliOptions: PullCLIOptions = {
         exclude: ["*.test.ts", "*.spec.ts"],
       };
       const result = adaptCLIOptions(cliOptions);
@@ -150,7 +150,7 @@ describe("adaptCLIOptions", () => {
     });
 
     it("should not include exclude field when not provided", () => {
-      const cliOptions: DownloadCLIOptions = {};
+      const cliOptions: PullCLIOptions = {};
       const result = adaptCLIOptions(cliOptions);
 
       expect(result.exclude).toBeUndefined();
@@ -160,7 +160,7 @@ describe("adaptCLIOptions", () => {
   describe("Complete options", () => {
     it("should convert all options correctly", () => {
       process.env.GITHUB_TOKEN = "env-token";
-      const cliOptions: DownloadCLIOptions = {
+      const cliOptions: PullCLIOptions = {
         exclude: ["*.log"],
         force: true,
         token: "cli-token",
@@ -175,7 +175,7 @@ describe("adaptCLIOptions", () => {
     });
 
     it("should only include defined values", () => {
-      const cliOptions: DownloadCLIOptions = {};
+      const cliOptions: PullCLIOptions = {};
       const result = adaptCLIOptions(cliOptions);
 
       expect(Object.keys(result)).toHaveLength(0);

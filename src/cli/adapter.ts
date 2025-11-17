@@ -1,7 +1,7 @@
 import type { BaedalOptions, ConflictMode } from "../types/index.js";
-import type { DownloadCLIOptions } from "./types.js";
+import type { PullCLIOptions } from "./types.js";
 
-const validateConflictFlags = (options: DownloadCLIOptions): void => {
+const validateConflictFlags = (options: PullCLIOptions): void => {
   const conflictFlags = [options.force, options.skipExisting, options.noClobber].filter(Boolean);
 
   if (conflictFlags.length > 1) {
@@ -9,7 +9,7 @@ const validateConflictFlags = (options: DownloadCLIOptions): void => {
   }
 };
 
-const resolveConflictMode = (options: DownloadCLIOptions): ConflictMode | undefined => {
+const resolveConflictMode = (options: PullCLIOptions): ConflictMode | undefined => {
   if (options.force) return { mode: "force" };
   if (options.skipExisting) return { mode: "skip-existing" };
   if (options.noClobber) return { mode: "no-clobber" };
@@ -20,7 +20,7 @@ const resolveToken = (cliToken: string | undefined): string | undefined => {
   return cliToken ?? process.env.GITHUB_TOKEN ?? process.env.BAEDAL_TOKEN;
 };
 
-export const adaptCLIOptions = (cliOptions: DownloadCLIOptions): BaedalOptions => {
+export const adaptCLIOptions = (cliOptions: PullCLIOptions): BaedalOptions => {
   validateConflictFlags(cliOptions);
 
   const conflictMode = resolveConflictMode(cliOptions);

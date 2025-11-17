@@ -1,6 +1,6 @@
 import type { Provider } from "./providers.js";
 
-export type DownloadResult = {
+export type PullResult = {
   files: string[];
   path: string;
 };

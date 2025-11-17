@@ -1,2 +1,2 @@
 export { baedal } from "./core/baedal.js";
-export type { BaedalOptions, DownloadResult } from "./types/index.js";
+export type { BaedalOptions, PullResult } from "./types/index.js";
