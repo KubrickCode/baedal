@@ -35,6 +35,9 @@ importers:
         specifier: 4.1.12
         version: 4.1.12
     devDependencies:
+      "@eslint/js":
+        specifier: ^9.39.1
+        version: 9.39.1
       "@semantic-release/changelog":
         specifier: 6.0.3
         version: 6.0.3(semantic-release@24.2.0(typescript@5.9.3))

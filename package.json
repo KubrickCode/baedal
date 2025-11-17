@@ -1,14 +1,12 @@
 {
   "name": "baedal",
   "version": "1.0.3",
-  "description": "A TypeScript-based CLI tool and npm library for downloading files/folders from Git repositories",
+  "description": "A TypeScript-based CLI tool and npm library for downloading files/folders from GitHub repositories",
   "keywords": [
     "git",
     "download",
     "cli",
     "github",
-    "gitlab",
-    "bitbucket",
     "degit",
     "repository"
   ],
@@ -59,6 +57,7 @@
     "zod": "4.1.12"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/commit-analyzer": "13.0.0",
     "@semantic-release/exec": "^7.1.0",
