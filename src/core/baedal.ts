@@ -28,9 +28,7 @@ export const baedal = async (
   try {
     await downloadTarball(owner, repo, tarballPath, provider, subdir, opts?.token);
 
-    // For GitLab with subdir, the path parameter already filters at server side,
-    // so we don't need to filter again during extraction
-    const needsSubdirExtraction = subdir && provider !== "gitlab";
+    const needsSubdirExtraction = !!subdir;
 
     // Get file list from tarball to check for conflicts
     const fileList = await getFileListFromTarball(
