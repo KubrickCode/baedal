@@ -4,7 +4,6 @@ import { pipeline } from "node:stream/promises";
 import ky from "ky";
 import { getDefaultBranch, getArchiveUrl } from "../core/providers/archive.js";
 import type { Provider } from "../types/providers.js";
-import { getAuthHeaders } from "./auth.js";
 
 export const downloadTarball = async (
   owner: string,
@@ -25,24 +24,13 @@ export const downloadTarball = async (
 
   const headers: Record<string, string> = {
     Accept: "application/octet-stream, */*",
-    ...(token && getAuthHeaders(provider, token)),
+    ...(token && { Authorization: `token ${token}` }),
   };
 
-  // GitLab requires mode: 'same-origin' to avoid 406 error due to hotlinking protection
-  // Reference: https://github.com/unjs/giget/issues/97
-  const response = await ky.get(url, {
-    ...(provider === "gitlab" && { mode: "same-origin" as const }),
-    headers,
-  });
+  const response = await ky.get(url, { headers });
 
   if (!response.body) {
-    const providerNameMap: Record<Provider, string> = {
-      bitbucket: "Bitbucket",
-      github: "GitHub",
-      gitlab: "GitLab",
-    };
-    const providerName = providerNameMap[provider];
-    throw new Error(`Failed to download from ${providerName}: Response body is empty`);
+    throw new Error(`Failed to download from GitHub: Response body is empty`);
   }
 
   const stream = Readable.fromWeb(response.body);

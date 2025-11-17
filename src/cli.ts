@@ -1,7 +1,6 @@
 import { Command } from "commander";
 import pc from "picocolors";
 import { baedal } from "./core/baedal.js";
-import { detectProvider } from "./core/providers/detector.js";
 import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./push/index.js";
 import type { PushInitCLIOptions } from "./push/types.js";
 import type { BaedalOptions } from "./types/index.js";
@@ -24,7 +23,7 @@ program
   .option("-e, --exclude <patterns...>", "Exclude files matching patterns (can specify multiple)")
   .option(
     "-t, --token <token>",
-    "Authentication token for private repositories (GitHub: Personal Access Token, GitLab: Private Token, Bitbucket: App Password)"
+    "Authentication token for private repositories (GitHub Personal Access Token)"
   )
   .option("-f, --force", "Force overwrite without confirmation")
   .option("-s, --skip-existing", "Skip existing files, only add new files")
@@ -40,22 +39,8 @@ program
         throw new Error("Cannot use --force, --skip-existing, and --no-clobber together");
       }
 
-      // Resolve token based on provider
-      let token = options.token || process.env.BAEDAL_TOKEN;
-      if (!token) {
-        const provider = detectProvider(source);
-        switch (provider) {
-          case "gitlab":
-            token = process.env.GITLAB_TOKEN;
-            break;
-          case "bitbucket":
-            token = process.env.BITBUCKET_TOKEN;
-            break;
-          default:
-            token = process.env.GITHUB_TOKEN;
-            break;
-        }
-      }
+      // Resolve token
+      const token = options.token || process.env.GITHUB_TOKEN || process.env.BAEDAL_TOKEN;
 
       const baedalOptions: BaedalOptions = {
         ...options,

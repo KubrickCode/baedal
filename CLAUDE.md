@@ -34,7 +34,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Baedal is a TypeScript-based CLI tool and npm library for downloading files/folders from Git repositories (GitHub, GitLab, Bitbucket). It supports both public and private repositories with authentication tokens, and offers features like file exclusion patterns and subdirectory downloads.
+Baedal is a TypeScript-based CLI tool and npm library for downloading files/folders from GitHub repositories. It supports both public and private repositories with authentication tokens, and offers features like file exclusion patterns and subdirectory downloads.
 
 ## Development Commands
 
@@ -66,30 +66,25 @@ pnpm prepublishOnly # Auto-runs pnpm build before publishing
 **Core Flow (src/core/baedal.ts)**
 The main `baedal()` function orchestrates:
 
-1. Parse source using `parseSource()` to extract provider, owner, repo, subdir
-2. Detect provider (GitHub/GitLab/Bitbucket) via `detectProvider()`
-3. Download tarball from provider API to temp directory
-4. Check for existing files and handle conflicts (force/skip/interactive modes)
-5. Extract files with optional subdir filtering and exclude patterns
-6. Clean up temp files
+1. Parse source using `parseSource()` to extract owner, repo, subdir
+2. Download tarball from GitHub API to temp directory
+3. Check for existing files and handle conflicts (force/skip/interactive modes)
+4. Extract files with optional subdir filtering and exclude patterns
+5. Clean up temp files
 
 **Provider Architecture (src/core/providers/)**
 
-- `detector.ts` - Detects git provider from source string/URL
-- `github.ts`, `gitlab.ts`, `bitbucket.ts` - Provider-specific API implementations
-- `archive.ts` - Handles tarball URL construction and branch detection
+- `detector.ts` - Returns "github" (simplified from multi-provider detection)
+- `github.ts` - GitHub API implementation for default branch detection
+- `archive.ts` - Handles GitHub tarball URL construction and branch detection
 
 **Utilities (src/utils/)**
 
-- `parser.ts` - Parses various input formats (user/repo, gitlab:user/repo, URLs)
-- `auth.ts` - Manages authentication tokens from CLI flags or environment variables
-- `download.ts` - Downloads tarballs using ky HTTP client
+- `parser.ts` - Parses various input formats (user/repo, github:user/repo, URLs)
+- `download.ts` - Downloads tarballs using ky HTTP client with GitHub authentication
 - `extract.ts` - Extracts tarball contents with filtering support
 - `check-existing.ts` - Checks for file conflicts before extraction
 - `prompt.ts` - Interactive prompts for user confirmation
-
-**Key Design Pattern**
-GitLab's API supports server-side subdir filtering via `path` parameter, so subdirectory extraction is handled differently for GitLab vs GitHub/Bitbucket (see `needsSubdirExtraction` logic in baedal.ts:43).
 
 ## Build Configuration
 
