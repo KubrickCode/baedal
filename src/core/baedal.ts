@@ -40,15 +40,17 @@ export const baedal = async (
     // Check for existing files
     const { toAdd, toOverwrite } = await checkExistingFiles(fileList, outputPath);
 
+    const resolvedMode = opts?.conflictMode?.mode ?? "interactive";
+
     // Handle different modes
     if (toOverwrite.length > 0) {
-      if (opts?.noClobber) {
+      if (resolvedMode === "no-clobber") {
         throw new Error(
           `Operation aborted as per --no-clobber: ${toOverwrite.length} file(s) already exist.`
         );
       }
 
-      if (opts?.skipExisting) {
+      if (resolvedMode === "skip-existing") {
         // Only extract new files by adding existing files to exclude list
         const excludePatterns = [...(opts?.exclude ?? []), ...toOverwrite];
 
@@ -65,8 +67,8 @@ export const baedal = async (
         };
       }
 
-      // Interactive mode (default when not --force)
-      if (!opts?.force) {
+      // Interactive mode (default when not force)
+      if (resolvedMode === "interactive") {
         console.log(pc.yellow(`\n⚠️  The following files will be overwritten:`));
         toOverwrite.forEach((file) => {
           console.log(pc.yellow(`  - ${file}`));

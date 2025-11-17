@@ -12,11 +12,15 @@ export type RepoInfo = {
   subdir?: string;
 };
 
+export type ConflictMode =
+  | { mode: "force" }
+  | { mode: "skip-existing" }
+  | { mode: "no-clobber" }
+  | { mode: "interactive" };
+
 export type BaedalOptions = {
+  conflictMode?: ConflictMode;
   exclude?: string[];
-  force?: boolean;
-  noClobber?: boolean;
-  skipExisting?: boolean;
   token?: string;
 };
 
