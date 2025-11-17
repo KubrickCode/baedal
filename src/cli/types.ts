@@ -1,4 +1,4 @@
-export type DownloadCLIOptions = {
+export type PullCLIOptions = {
   exclude?: string[];
   force?: boolean;
   noClobber?: boolean;

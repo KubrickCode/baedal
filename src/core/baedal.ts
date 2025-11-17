@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import pc from "picocolors";
-import type { BaedalOptions, DownloadResult } from "../types/index.js";
+import type { BaedalOptions, PullResult } from "../types/index.js";
 import { checkExistingFiles } from "../utils/check-existing.js";
 import { downloadTarball } from "../utils/download.js";
 import { extractTarball, getFileListFromTarball } from "../utils/extract.js";
@@ -13,7 +13,7 @@ export const baedal = async (
   source: string,
   destination: string | BaedalOptions = ".",
   options?: BaedalOptions
-): Promise<DownloadResult> => {
+): Promise<PullResult> => {
   const destPath = typeof destination === "string" ? destination : ".";
   const opts = typeof destination === "string" ? options : destination;
 

@@ -44,7 +44,7 @@
     "lint": "eslint \"src/**/*.ts\"",
     "prepare": "husky",
     "prepublishOnly": "pnpm build",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@octokit/rest": "22.0.1",

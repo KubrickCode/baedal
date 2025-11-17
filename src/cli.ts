@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import pc from "picocolors";
 import { adaptCLIOptions } from "./cli/adapter.js";
-import type { DownloadCLIOptions } from "./cli/types.js";
+import type { PullCLIOptions } from "./cli/types.js";
 import { baedal } from "./core/baedal.js";
 import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./push/index.js";
 import type { PushInitCLIOptions } from "./push/types.js";
@@ -15,9 +15,8 @@ const handleError = (error: unknown): never => {
 
 program.name("baedal");
 
-// TODO: default -> pull
 program
-  .command("download", { isDefault: true })
+  .command("pull", { isDefault: true })
   .description("Download files/folders from Git repositories")
   .argument("<source>", "Repository source (user/repo or URL)")
   .argument("[destination]", "Destination directory", ".")
@@ -29,7 +28,7 @@ program
   .option("-f, --force", "Force overwrite without confirmation")
   .option("-s, --skip-existing", "Skip existing files, only add new files")
   .option("-n, --no-clobber", "Abort if any file would be overwritten")
-  .action(async (source: string, destination: string, cliOptions: DownloadCLIOptions) => {
+  .action(async (source: string, destination: string, cliOptions: PullCLIOptions) => {
     try {
       const baedalOptions = adaptCLIOptions(cliOptions);
 
@@ -79,4 +78,8 @@ program
     }
   });
 
-program.parse();
+export { program };
+
+if (process.env.NODE_ENV !== "test") {
+  program.parse();
+}

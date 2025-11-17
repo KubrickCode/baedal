@@ -18,29 +18,32 @@ pnpm add -g baedal
 
 ```bash
 # Download entire repository
-baedal user/repo
+baedal pull user/repo
 
 # Download to specific directory
-baedal user/repo ./output
+baedal pull user/repo ./output
 
 # Download specific folder or file
-baedal user/repo/src/components ./components
+baedal pull user/repo/src/components ./components
 
 # Exclude specific files or patterns
-baedal user/repo --exclude "*.test.ts"
-baedal user/repo --exclude "*.md" ".gitignore"
-baedal user/repo ./output --exclude "test/**" "docs/**"
+baedal pull user/repo --exclude "*.test.ts"
+baedal pull user/repo --exclude "*.md" ".gitignore"
+baedal pull user/repo ./output --exclude "test/**" "docs/**"
 
 # File conflict handling
-baedal user/repo --force                # Force overwrite without confirmation
-baedal user/repo --skip-existing        # Skip existing files, only add new files
-baedal user/repo --no-clobber          # Abort if any file would be overwritten
+baedal pull user/repo --force                # Force overwrite without confirmation
+baedal pull user/repo --skip-existing        # Skip existing files, only add new files
+baedal pull user/repo --no-clobber          # Abort if any file would be overwritten
 
 # Explicit GitHub prefix
-baedal github:user/repo
+baedal pull github:user/repo
 
 # Using GitHub URL
-baedal https://github.com/user/repo
+baedal pull https://github.com/user/repo
+
+# Note: 'pull' is the default command, so 'baedal user/repo' also works
+baedal user/repo
 ```
 
 ## Private Repository Authentication
@@ -50,7 +53,7 @@ Baedal supports downloading from private repositories using GitHub authenticatio
 ### Using CLI Flag
 
 ```bash
-baedal user/private-repo --token YOUR_GITHUB_TOKEN
+baedal pull user/private-repo --token YOUR_GITHUB_TOKEN
 ```
 
 ### Using Environment Variables
@@ -62,7 +65,7 @@ export GITHUB_TOKEN=your_github_token
 export BAEDAL_TOKEN=your_token
 
 # Then use baedal normally
-baedal user/private-repo
+baedal pull user/private-repo
 ```
 
 ### Token Generation
