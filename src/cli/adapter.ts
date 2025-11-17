@@ -1,4 +1,4 @@
-import type { BaedalOptions, ConflictMode } from "../types/index.js";
+import type { BaedalOptions, ConflictMode } from "../internal/types/index.js";
 import type { PullCLIOptions } from "./types.js";
 
 const validateConflictFlags = (options: PullCLIOptions): void => {

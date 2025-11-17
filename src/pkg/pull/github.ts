@@ -1,5 +1,5 @@
 import ky from "ky";
-import { GITHUB_API_URL, DEFAULT_BRANCH } from "../../types/providers.js";
+import { DEFAULT_BRANCH, GITHUB_API_URL } from "../../internal/types/providers.js";
 
 export const getGitHubDefaultBranch = async (
   owner: string,

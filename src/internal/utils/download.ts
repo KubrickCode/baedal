@@ -2,7 +2,7 @@ import { createWriteStream } from "node:fs";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import ky from "ky";
-import { getDefaultBranch, getArchiveUrl } from "../core/providers/archive.js";
+import { getArchiveUrl, getDefaultBranch } from "../../pkg/pull/archive.js";
 import type { Provider } from "../types/providers.js";
 
 export const downloadTarball = async (

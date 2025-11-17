@@ -1,4 +1,5 @@
-import { GITHUB_ARCHIVE_URL, type Provider } from "../../types/providers.js";
+import type { Provider } from "../../internal/types/providers.js";
+import { GITHUB_ARCHIVE_URL } from "../../internal/types/providers.js";
 import { getGitHubDefaultBranch } from "./github.js";
 
 export const getDefaultBranch = async (
