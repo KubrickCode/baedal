@@ -2,9 +2,9 @@ import { Command } from "commander";
 import pc from "picocolors";
 import { adaptCLIOptions } from "./cli/adapter.js";
 import type { PullCLIOptions } from "./cli/types.js";
-import { baedal } from "./core/baedal.js";
-import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./push/index.js";
-import type { PushInitCLIOptions } from "./push/types.js";
+import { baedal } from "./pkg/pull/index.js";
+import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./pkg/push/index.js";
+import type { PushInitCLIOptions } from "./pkg/push/types.js";
 
 const program = new Command();
 

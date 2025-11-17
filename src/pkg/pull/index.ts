@@ -2,12 +2,12 @@ import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import pc from "picocolors";
-import type { BaedalOptions, PullResult } from "../types/index.js";
-import { checkExistingFiles } from "../utils/check-existing.js";
-import { downloadTarball } from "../utils/download.js";
-import { extractTarball, getFileListFromTarball } from "../utils/extract.js";
-import { parseSource } from "../utils/parser.js";
-import { confirmOverwrite } from "../utils/prompt.js";
+import type { BaedalOptions, PullResult } from "../../internal/types/index.js";
+import { checkExistingFiles } from "../../internal/utils/check-existing.js";
+import { downloadTarball } from "../../internal/utils/download.js";
+import { extractTarball, getFileListFromTarball } from "../../internal/utils/extract.js";
+import { parseSource } from "../../internal/utils/parser.js";
+import { confirmOverwrite } from "../../internal/utils/prompt.js";
 
 export const baedal = async (
   source: string,

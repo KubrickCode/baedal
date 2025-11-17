@@ -1,8 +1,7 @@
-import { detectProvider } from "../core/providers/detector.js";
 import type { RepoInfo } from "../types/index.js";
 
 export const parseSource = async (source: string, _token?: string): Promise<RepoInfo> => {
-  const provider = detectProvider(source);
+  const provider = "github" as const;
 
   const cleanSource = source.replace(/^github:/, "").replace(/^https?:\/\/github\.com\//, "");
 
