@@ -50,7 +50,7 @@ export const baedal = async (
 
       if (opts?.skipExisting) {
         // Only extract new files by adding existing files to exclude list
-        const excludePatterns = [...(opts?.exclude || []), ...toOverwrite];
+        const excludePatterns = [...(opts?.exclude ?? []), ...toOverwrite];
 
         await extractTarball(
           tarballPath,

@@ -13,6 +13,7 @@ export const confirmOverwrite = (): Promise<boolean> => {
 
     const onKeypress = (_char: string, key: { ctrl?: boolean; name: string }) => {
       const keyName = key.name.toLowerCase();
+      // Use null for 3-state: null = not yet selected, true = yes, false = no
       let confirmed: boolean | null = null;
       let output = "";
 
