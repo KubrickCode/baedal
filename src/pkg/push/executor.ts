@@ -92,15 +92,16 @@ const processRepository = async (options: ProcessRepositoryOptions): Promise<Pus
   }
 };
 
-export const executePush = async (
-  config: PushConfig,
-  syncName: string
-): Promise<PushExecutionResult> => {
-  const branchName = generateBranchName(syncName);
+type Repository = {
+  branchName: string;
+  destPath: string;
+  repoName: string;
+  sourcePath: string;
+  syncName: string;
+  token: string;
+};
 
-  logger.log(`\nExecuting push: ${syncName}`);
-  logger.log(`Branch: ${branchName}\n`);
-
+export const validatePushConfig = (config: PushConfig): void => {
   if (!config.token || config.token.trim() === "") {
     throw new ConfigError(
       "GitHub token is required. Specify 'token' in config file.",
@@ -108,22 +109,36 @@ export const executePush = async (
       undefined
     );
   }
+};
 
-  const promises = config.syncs.flatMap((sync) =>
-    sync.repos.map((repo) =>
-      processRepository({
-        branchName,
-        destPath: sync.dest,
-        repoName: repo,
-        sourcePath: sync.source,
-        syncName,
-        token: config.token,
-      })
-    )
+export const prepareRepositories = (
+  config: PushConfig,
+  branchName: string,
+  syncName: string
+): Repository[] => {
+  return config.syncs.flatMap((sync) =>
+    sync.repos.map((repo) => ({
+      branchName,
+      destPath: sync.dest,
+      repoName: repo,
+      sourcePath: sync.source,
+      syncName,
+      token: config.token,
+    }))
   );
+};
 
-  const results = await Promise.all(promises);
+const executeParallelPush = async (repos: Repository[]): Promise<PushResult[]> => {
+  const promises = repos.map((repo) => processRepository(repo));
+  return await Promise.all(promises);
+};
 
+type CategorizedResults = {
+  failed: PushResult[];
+  successful: PushResult[];
+};
+
+export const categorizeResults = (results: PushResult[]): CategorizedResults => {
   const successful: PushResult[] = [];
   const failed: PushResult[] = [];
 
@@ -134,6 +149,12 @@ export const executePush = async (
       failed.push(result);
     }
   }
+
+  return { failed, successful };
+};
+
+const generateSummaryReport = (results: PushResult[], categorized: CategorizedResults): void => {
+  const { failed, successful } = categorized;
 
   logger.log("\n" + "=".repeat(SUMMARY_SEPARATOR_LENGTH));
   logger.log("Summary");
@@ -155,11 +176,29 @@ export const executePush = async (
       logger.error(`  ✗ ${result.repo}: ${result.error}`);
     }
   }
+};
+
+export const executePush = async (
+  config: PushConfig,
+  syncName: string
+): Promise<PushExecutionResult> => {
+  const branchName = generateBranchName(syncName);
+
+  logger.log(`\nExecuting push: ${syncName}`);
+  logger.log(`Branch: ${branchName}\n`);
+
+  validatePushConfig(config);
+
+  const repos = prepareRepositories(config, branchName, syncName);
+  const results = await executeParallelPush(repos);
+  const categorized = categorizeResults(results);
+
+  generateSummaryReport(results, categorized);
 
   return {
-    failureCount: failed.length,
+    failureCount: categorized.failed.length,
     results,
-    successCount: successful.length,
+    successCount: categorized.successful.length,
     totalCount: results.length,
   };
 };

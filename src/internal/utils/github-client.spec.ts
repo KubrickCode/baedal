@@ -69,39 +69,46 @@ describe("github-client", () => {
   });
 
   describe("createGitHubClient", () => {
-    it("should create Octokit instance with explicit token", () => {
+    it("should create Octokit instance with explicit token", async () => {
       const token = "ghp_explicit_token";
       const octokit = createGitHubClient(token);
 
       expect(octokit).toBeInstanceOf(Octokit);
-      // Octokit's auth is a function, check it's defined
-      expect(typeof (octokit as any).auth).toBe("function");
+      const auth = await octokit.auth();
+      expect(auth).toBeDefined();
+      expect(auth).toHaveProperty("token");
     });
 
-    it("should create Octokit instance with GITHUB_TOKEN from environment", () => {
+    it("should create Octokit instance with GITHUB_TOKEN from environment", async () => {
       process.env.GITHUB_TOKEN = "ghp_env_token";
       const octokit = createGitHubClient();
 
       expect(octokit).toBeInstanceOf(Octokit);
-      expect(typeof (octokit as any).auth).toBe("function");
+      const auth = await octokit.auth();
+      expect(auth).toBeDefined();
+      expect(auth).toHaveProperty("token");
     });
 
-    it("should create Octokit instance with GH_TOKEN from environment", () => {
+    it("should create Octokit instance with GH_TOKEN from environment", async () => {
       delete process.env.GITHUB_TOKEN;
       process.env.GH_TOKEN = "ghp_gh_env_token";
       const octokit = createGitHubClient();
 
       expect(octokit).toBeInstanceOf(Octokit);
-      expect(typeof (octokit as any).auth).toBe("function");
+      const auth = await octokit.auth();
+      expect(auth).toBeDefined();
+      expect(auth).toHaveProperty("token");
     });
 
-    it("should prioritize explicit token over environment variables", () => {
+    it("should prioritize explicit token over environment variables", async () => {
       process.env.GITHUB_TOKEN = "ghp_env_token";
       const explicitToken = "ghp_explicit_token";
       const octokit = createGitHubClient(explicitToken);
 
       expect(octokit).toBeInstanceOf(Octokit);
-      expect(typeof (octokit as any).auth).toBe("function");
+      const auth = await octokit.auth();
+      expect(auth).toBeDefined();
+      expect(auth).toHaveProperty("token");
     });
 
     it("should create unauthenticated Octokit instance when no token is provided", () => {
@@ -118,22 +125,31 @@ describe("github-client", () => {
       const octokit = createGitHubClient();
 
       expect(octokit).toBeInstanceOf(Octokit);
+
+      // Verify user agent is configured by checking Octokit's internal request defaults
+      // Using type assertion as Octokit doesn't expose this in public types
+      const headers = (octokit.request as any).endpoint.DEFAULTS.headers;
+      expect(headers["user-agent"]).toContain("baedal/1.0");
     });
 
-    it("should handle empty string token by falling back to environment", () => {
+    it("should handle empty string token by falling back to environment", async () => {
       process.env.GITHUB_TOKEN = "ghp_env_token";
       const octokit = createGitHubClient("");
 
       expect(octokit).toBeInstanceOf(Octokit);
-      expect(typeof (octokit as any).auth).toBe("function");
+      const auth = await octokit.auth();
+      expect(auth).toBeDefined();
+      expect(auth).toHaveProperty("token");
     });
 
-    it("should handle whitespace-only token by falling back to environment", () => {
+    it("should handle whitespace-only token by falling back to environment", async () => {
       process.env.GH_TOKEN = "ghp_env_token";
       const octokit = createGitHubClient("   ");
 
       expect(octokit).toBeInstanceOf(Octokit);
-      expect(typeof (octokit as any).auth).toBe("function");
+      const auth = await octokit.auth();
+      expect(auth).toBeDefined();
+      expect(auth).toHaveProperty("token");
     });
   });
 });

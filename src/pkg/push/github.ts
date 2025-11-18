@@ -5,7 +5,7 @@ import { GIT_FILE_MODES, type CollectedFile } from "./types.js";
 const DEFAULT_BRANCH = "main";
 
 export class GitHubClient {
-  private octokit: Octokit;
+  private readonly octokit: Octokit;
 
   constructor(token: string) {
     this.octokit = createOctokitClient(token);
