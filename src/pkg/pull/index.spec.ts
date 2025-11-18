@@ -5,8 +5,8 @@ import { create } from "tar";
 import { FileSystemError, ValidationError } from "../../internal/errors/index.js";
 
 /**
- * Integration test for pull functionality with focus on error handling.
- * These tests verify custom error classes are thrown correctly.
+ * Integration test for pull functionality with focus on decomposed functions.
+ * These tests verify custom error classes and ConflictMode handling.
  */
 const createTestTarball = async (files: Record<string, string>, prefix = "test-repo-main") => {
   const tempDir = join(
@@ -21,6 +21,8 @@ const createTestTarball = async (files: Record<string, string>, prefix = "test-r
 
   for (const [filePath, content] of Object.entries(files)) {
     const fullPath = join(prefixDir, filePath);
+    const dir = join(fullPath, "..");
+    await mkdir(dir, { recursive: true });
     await writeFile(fullPath, content, "utf-8");
   }
 
@@ -29,7 +31,7 @@ const createTestTarball = async (files: Record<string, string>, prefix = "test-r
   return { tarballPath, tempDir };
 };
 
-describe("baedal - error handling", () => {
+describe("baedal", () => {
   let testTempDir: string;
 
   afterEach(async () => {
@@ -51,12 +53,10 @@ describe("baedal - error handling", () => {
       });
 
       try {
-        // Mock download to use our test tarball
-        // Since this is integration test, we'll test the error type indirectly
+        // This would fail in real scenario, but demonstrates error type
         // by checking the actual implementation throws correct error
 
         await expect(async () => {
-          // This would fail in real scenario, but demonstrates error type
           throw new FileSystemError(
             "Operation aborted as per --no-clobber: 1 file(s) already exist."
           );
