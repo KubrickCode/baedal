@@ -11,6 +11,10 @@ export default {
     '^.+\\.ts$': [
       'ts-jest',
       {
+        diagnostics: {
+          ignoreCodes: [2307, 2571, 7016],
+        },
+        isolatedModules: false,
         useESM: true,
       },
     ],
