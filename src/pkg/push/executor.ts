@@ -1,5 +1,5 @@
 import { join, relative } from "node:path";
-import picocolors from "picocolors";
+import { logger } from "../../internal/utils/logger.js";
 import { collectFiles } from "./files.js";
 import { createGitHubClient } from "./github.js";
 import type { PushConfig, PushExecutionResult, PushResult } from "./types.js";
@@ -25,7 +25,7 @@ type ProcessRepositoryOptions = {
 const processRepository = async (options: ProcessRepositoryOptions): Promise<PushResult> => {
   const { branchName, destPath, repoName, sourcePath, syncName, token } = options;
   try {
-    console.log(picocolors.cyan(`  [${repoName}] Collecting files from ${sourcePath}...`));
+    logger.info(`  [${repoName}] Collecting files from ${sourcePath}...`);
     let files = await collectFiles(sourcePath);
 
     if (files.length === 0) {
@@ -46,7 +46,7 @@ const processRepository = async (options: ProcessRepositoryOptions): Promise<Pus
       });
     }
 
-    console.log(picocolors.cyan(`  [${repoName}] Pushing ${files.length} files...`));
+    logger.info(`  [${repoName}] Pushing ${files.length} files...`);
 
     const parts = repoName.split("/");
     const owner = parts[0];
@@ -67,7 +67,7 @@ const processRepository = async (options: ProcessRepositoryOptions): Promise<Pus
       repo,
     });
 
-    console.log(picocolors.green(`  [${repoName}] ✓ PR created: ${pr.url}`));
+    logger.success(`  [${repoName}] ✓ PR created: ${pr.url}`);
 
     return {
       prUrl: pr.url,
@@ -77,7 +77,7 @@ const processRepository = async (options: ProcessRepositoryOptions): Promise<Pus
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
 
-    console.log(picocolors.red(`  [${repoName}] ✗ Failed: ${message}`));
+    logger.error(`  [${repoName}] ✗ Failed: ${message}`);
 
     return {
       error: message,
@@ -93,8 +93,8 @@ export const executePush = async (
 ): Promise<PushExecutionResult> => {
   const branchName = generateBranchName(syncName);
 
-  console.log(picocolors.bold(`\nExecuting push: ${syncName}`));
-  console.log(picocolors.dim(`Branch: ${branchName}\n`));
+  logger.log(`\nExecuting push: ${syncName}`);
+  logger.log(`Branch: ${branchName}\n`);
 
   if (!config.token) {
     throw new Error("GitHub token is required. Specify 'token' in config file.");
@@ -126,24 +126,24 @@ export const executePush = async (
     }
   }
 
-  console.log(picocolors.bold("\n" + "=".repeat(SUMMARY_SEPARATOR_LENGTH)));
-  console.log(picocolors.bold("Summary"));
-  console.log("=".repeat(SUMMARY_SEPARATOR_LENGTH));
-  console.log(`Total: ${results.length} repositories`);
-  console.log(picocolors.green(`Success: ${successful.length}`));
-  console.log(picocolors.red(`Failed: ${failed.length}`));
+  logger.log("\n" + "=".repeat(SUMMARY_SEPARATOR_LENGTH));
+  logger.log("Summary");
+  logger.log("=".repeat(SUMMARY_SEPARATOR_LENGTH));
+  logger.log(`Total: ${results.length} repositories`);
+  logger.success(`Success: ${successful.length}`);
+  logger.error(`Failed: ${failed.length}`);
 
   if (successful.length > 0) {
-    console.log(picocolors.bold("\nSuccessful PRs:"));
+    logger.log("\nSuccessful PRs:");
     for (const result of successful) {
-      console.log(picocolors.green(`  ✓ ${result.repo}: ${result.prUrl}`));
+      logger.success(`  ✓ ${result.repo}: ${result.prUrl}`);
     }
   }
 
   if (failed.length > 0) {
-    console.log(picocolors.bold("\nFailed repositories:"));
+    logger.log("\nFailed repositories:");
     for (const result of failed) {
-      console.log(picocolors.red(`  ✗ ${result.repo}: ${result.error}`));
+      logger.error(`  ✗ ${result.repo}: ${result.error}`);
     }
   }
 

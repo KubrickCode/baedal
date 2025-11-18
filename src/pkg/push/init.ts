@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import picocolors from "picocolors";
+import { logger } from "../../internal/utils/logger.js";
 import { resolveConfigPath } from "./config.js";
 
 const generateTemplate = (syncName: string): string => {
@@ -37,11 +37,11 @@ export const initPushConfig = (syncName: string, baseDir?: string, force = false
 };
 
 export const printInitSuccess = (configPath: string, syncName: string): void => {
-  console.log(picocolors.green("\n✓ Configuration file created!"));
-  console.log(picocolors.dim(`  ${configPath}\n`));
+  logger.success("\n✓ Configuration file created!");
+  logger.log(`  ${configPath}\n`);
 
-  console.log(picocolors.bold("Next steps:"));
-  console.log(`  1. Edit the configuration file`);
-  console.log(`  2. Set your GitHub token in the config`);
-  console.log(`  3. Execute: ${picocolors.cyan(`baedal push ${syncName}`)}\n`);
+  logger.log("Next steps:");
+  logger.log(`  1. Edit the configuration file`);
+  logger.log(`  2. Set your GitHub token in the config`);
+  logger.log(`  3. Execute: baedal push ${syncName}\n`);
 };

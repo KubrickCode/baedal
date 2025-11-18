@@ -1,7 +1,7 @@
 import { Command } from "commander";
-import pc from "picocolors";
 import { adaptCLIOptions } from "./cli/adapter.js";
 import type { PullCLIOptions } from "./cli/types.js";
+import { logger } from "./internal/utils/logger.js";
 import { baedal } from "./pkg/pull/index.js";
 import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./pkg/push/index.js";
 import type { PushInitCLIOptions } from "./pkg/push/types.js";
@@ -9,7 +9,7 @@ import type { PushInitCLIOptions } from "./pkg/push/types.js";
 const program = new Command();
 
 const handleError = (error: unknown): never => {
-  console.error(pc.red("\n✗ Error:"), error instanceof Error ? error.message : String(error));
+  logger.error("\n✗ Error:", error instanceof Error ? error.message : String(error));
   process.exit(1);
 };
 
@@ -34,12 +34,12 @@ program
 
       const result = await baedal(source, destination, baedalOptions);
 
-      console.log(pc.green(`\n✓ Downloaded ${result.files.length} file(s) to ${result.path}`));
+      logger.success(`\n✓ Downloaded ${result.files.length} file(s) to ${result.path}`);
       if (cliOptions.exclude?.length) {
-        console.log(pc.gray(`Excluded patterns: ${cliOptions.exclude.join(", ")}`));
+        logger.log(`Excluded patterns: ${cliOptions.exclude.join(", ")}`);
       }
       if (cliOptions.skipExisting) {
-        console.log(pc.gray(`Skipped existing files`));
+        logger.log(`Skipped existing files`);
       }
     } catch (error) {
       handleError(error);
@@ -51,7 +51,7 @@ program
   .description("Sync files to multiple repositories and create PRs")
   .action(async (syncName: string) => {
     try {
-      console.log(pc.dim(`Loading configuration for '${syncName}'...`));
+      logger.log(`Loading configuration for '${syncName}'...`);
       const config = loadPushConfig(syncName);
 
       const result = await executePush(config, syncName);

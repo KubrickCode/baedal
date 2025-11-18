@@ -28,9 +28,6 @@ importers:
       micromatch:
         specifier: 4.0.8
         version: 4.0.8
-      picocolors:
-        specifier: 1.0.0
-        version: 1.0.0
       tar:
         specifier: 7.5.1
         version: 7.5.1
@@ -5052,12 +5049,6 @@ packages:
       }
     engines: { node: ">=12" }
 
-  picocolors@1.0.0:
-    resolution:
-      {
-        integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==,
-      }
-
   picocolors@1.1.1:
     resolution:
       {
@@ -9624,8 +9615,6 @@ snapshots:
   path-type@4.0.0: {}
 
   path-type@5.0.0: {}
-
-  picocolors@1.0.0: {}
 
   picocolors@1.1.1: {}
 
