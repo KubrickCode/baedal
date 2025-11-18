@@ -1,16 +1,14 @@
-import { Octokit } from "@octokit/rest";
+import type { Octokit } from "@octokit/rest";
+import { createGitHubClient as createOctokitClient } from "../../internal/utils/github-client.js";
 import { GIT_FILE_MODES, type CollectedFile } from "./types.js";
 
 const DEFAULT_BRANCH = "main";
 
 export class GitHubClient {
-  private octokit: Octokit;
+  private readonly octokit: Octokit;
 
   constructor(token: string) {
-    this.octokit = new Octokit({
-      auth: token,
-      userAgent: "baedal-push/1.0",
-    });
+    this.octokit = createOctokitClient(token);
   }
 
   async createBranch(options: {

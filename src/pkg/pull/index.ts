@@ -1,11 +1,11 @@
 import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import pc from "picocolors";
 import type { BaedalOptions, PullResult } from "../../internal/types/index.js";
 import { checkExistingFiles } from "../../internal/utils/check-existing.js";
 import { downloadTarball } from "../../internal/utils/download.js";
 import { extractTarball, getFileListFromTarball } from "../../internal/utils/extract.js";
+import { logger } from "../../internal/utils/logger.js";
 import { parseSource } from "../../internal/utils/parser.js";
 import { confirmOverwrite } from "../../internal/utils/prompt.js";
 
@@ -69,15 +69,15 @@ export const baedal = async (
 
       // Interactive mode (default when not force)
       if (resolvedMode === "interactive") {
-        console.log(pc.yellow(`\n⚠️  The following files will be overwritten:`));
+        logger.warn(`\n⚠️  The following files will be overwritten:`);
         toOverwrite.forEach((file) => {
-          console.log(pc.yellow(`  - ${file}`));
+          logger.warn(`  - ${file}`);
         });
 
         if (toAdd.length > 0) {
-          console.log(pc.green(`\n📁 ${toAdd.length} new file(s) will be added:`));
+          logger.success(`\n📁 ${toAdd.length} new file(s) will be added:`);
           toAdd.forEach((file) => {
-            console.log(pc.green(`  + ${file}`));
+            logger.success(`  + ${file}`);
           });
         }
 

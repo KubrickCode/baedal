@@ -49,11 +49,11 @@
   "dependencies": {
     "@octokit/rest": "22.0.1",
     "commander": "14.0.1",
+    "consola": "3.4.2",
     "globby": "14.0.0",
     "js-yaml": "4.1.0",
     "ky": "1.14.0",
     "micromatch": "4.0.8",
-    "picocolors": "1.0.0",
     "tar": "7.5.1",
     "ts-custom-error": "3.3.1",
     "zod": "4.1.12"
