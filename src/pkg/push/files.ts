@@ -1,6 +1,8 @@
 import { readFile, stat } from "node:fs/promises";
 import { join, normalize, relative } from "node:path";
 import { globby } from "globby";
+import { FileSystemError } from "../../internal/errors/index.js";
+import { logger } from "../../internal/utils/logger.js";
 import type { CollectedFile } from "./types.js";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -29,10 +31,11 @@ const collectSingleFile = async (
   const size = await getFileSize(absolutePath);
 
   if (size > MAX_FILE_SIZE) {
-    throw new Error(
+    throw new FileSystemError(
       `File size (${(size / 1024 / 1024).toFixed(2)}MB) exceeds maximum (${
         MAX_FILE_SIZE / 1024 / 1024
-      }MB)`
+      }MB)`,
+      absolutePath
     );
   }
 
@@ -61,7 +64,7 @@ const collectDirectory = async (
   });
 
   if (filePaths.length === 0) {
-    throw new Error(`No files found in directory: ${originalPath}`);
+    throw new FileSystemError(`No files found in directory: ${originalPath}`, absolutePath);
   }
 
   const collected: CollectedFile[] = [];
@@ -71,7 +74,7 @@ const collectDirectory = async (
       const size = await getFileSize(filePath);
 
       if (size > MAX_FILE_SIZE) {
-        console.warn(
+        logger.warn(
           `Skipping ${filePath}: file size (${(size / 1024 / 1024).toFixed(2)}MB) exceeds maximum`
         );
         continue;
@@ -87,12 +90,15 @@ const collectDirectory = async (
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      console.warn(`Skipping ${filePath}: ${message}`);
+      logger.warn(`Skipping ${filePath}: ${message}`);
     }
   }
 
   if (collected.length === 0) {
-    throw new Error(`No valid files could be collected from: ${originalPath}`);
+    throw new FileSystemError(
+      `No valid files could be collected from: ${originalPath}`,
+      absolutePath
+    );
   }
 
   return collected;
@@ -115,5 +121,8 @@ export const collectFiles = async (
     return await collectDirectory(absoluteSource, base, sourcePath);
   }
 
-  throw new Error(`Path is neither a file nor a directory: ${sourcePath}`);
+  throw new FileSystemError(
+    `Path is neither a file nor a directory: ${sourcePath}`,
+    absoluteSource
+  );
 };

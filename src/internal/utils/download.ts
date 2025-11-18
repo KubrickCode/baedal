@@ -3,6 +3,7 @@ import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import ky from "ky";
 import { getArchiveUrl, getDefaultBranch } from "../../pkg/pull/archive.js";
+import { NetworkError } from "../errors/index.js";
 import type { Provider } from "../types/providers.js";
 
 export const downloadTarball = async (
@@ -30,7 +31,11 @@ export const downloadTarball = async (
   const response = await ky.get(url, { headers });
 
   if (!response.body) {
-    throw new Error(`Failed to download from GitHub: Response body is empty`);
+    throw new NetworkError(
+      "Failed to download from GitHub: Response body is empty",
+      undefined,
+      url
+    );
   }
 
   const stream = Readable.fromWeb(response.body);
