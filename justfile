@@ -59,5 +59,5 @@ release:
     @echo ""
     @echo "📊 Check progress: https://github.com/KubrickCode/baedal/actions"
 
-test:
-    pnpm test
+test *args:
+    pnpm test {{ args }}
