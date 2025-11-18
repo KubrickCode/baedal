@@ -1,6 +1,7 @@
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { FileSystemError } from "../../internal/errors/index.js";
 import { collectFiles, getRelativePath, normalizePath } from "./files.js";
 
 describe("Push Files - Integration Test", () => {
@@ -86,17 +87,29 @@ describe("Push Files - Integration Test", () => {
       expect(files.some((f) => f.path === "src/.gitignore")).toBe(true);
     });
 
-    it("should throw error for file exceeding max size", async () => {
+    it("should throw FileSystemError for file exceeding max size", async () => {
       const largeContent = "x".repeat(MAX_FILE_SIZE_MB * 1024 * 1024);
       await writeFile(join(testDir, "large.ts"), largeContent);
 
-      await expect(collectFiles("large.ts", testDir)).rejects.toThrow("exceeds maximum");
+      try {
+        await collectFiles("large.ts", testDir);
+        fail("Should have thrown FileSystemError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(FileSystemError);
+        expect(error).toHaveProperty("message", expect.stringContaining("exceeds maximum"));
+      }
     });
 
-    it("should throw error when no files found in directory", async () => {
+    it("should throw FileSystemError when no files found in directory", async () => {
       await mkdir(join(testDir, "empty"), { recursive: true });
 
-      await expect(collectFiles("empty", testDir)).rejects.toThrow("No files found");
+      try {
+        await collectFiles("empty", testDir);
+        fail("Should have thrown FileSystemError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(FileSystemError);
+        expect(error).toHaveProperty("message", expect.stringContaining("No files found"));
+      }
     });
 
     it("should throw error for non-existent path", async () => {
