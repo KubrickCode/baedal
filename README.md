@@ -105,15 +105,20 @@ await baedal("user/repo", {
   exclude: ["*.test.ts", "docs/**"],
 });
 
-// File conflict handling
+// File conflict handling (using ConflictMode)
 await baedal("user/repo", "./output", {
-  force: true, // Force overwrite without confirmation
+  conflictMode: { mode: "force" }, // Force overwrite without confirmation
 });
 await baedal("user/repo", "./output", {
-  skipExisting: true, // Skip existing files, only add new files
+  conflictMode: { mode: "skip-existing" }, // Skip existing files, only add new files
 });
 await baedal("user/repo", "./output", {
-  noClobber: true, // Abort if any file would be overwritten
+  conflictMode: { mode: "no-clobber" }, // Abort if any file would be overwritten
+});
+
+// Legacy conflict handling (still supported)
+await baedal("user/repo", "./output", {
+  force: true, // Deprecated: use conflictMode instead
 });
 
 // Private repository with token
@@ -136,6 +141,19 @@ If you'd like to contribute, please contact kubrickcode@gmail.com and we'll adap
 
 - **Commit Format**: Follow [Conventional Commits](https://www.conventionalcommits.org/) specification
 - **Additional Info**: See [CLAUDE.md](./CLAUDE.md) for detailed development guidelines
+
+### Running Tests
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests with coverage
+pnpm test -- --coverage
+
+# Run tests in watch mode
+pnpm test -- --watch
+```
 
 ## License
 

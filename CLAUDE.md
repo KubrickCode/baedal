@@ -44,6 +44,13 @@ Baedal is a TypeScript-based CLI tool and npm library for downloading files/fold
 pnpm build          # Build the project using tsup
 ```
 
+**Test**
+
+```bash
+pnpm test           # Run Jest tests
+pnpm test -- --coverage  # Run tests with coverage report
+```
+
 **Lint**
 
 ```bash
@@ -63,28 +70,63 @@ pnpm prepublishOnly # Auto-runs pnpm build before publishing
 - `src/cli.ts` - CLI entry point (becomes `baedal` command)
 - `src/index.ts` - Library entry point for programmatic use
 
-**Core Flow (src/core/baedal.ts)**
+**Project Structure (NPM Guidelines)**
+
+```
+src/
+├── cli/              # CLI adapter layer
+│   ├── adapter.ts    # CLI options → Library options conversion
+│   └── types.ts      # CLI-specific types
+├── pkg/              # Public API (publishable modules)
+│   ├── pull/         # Pull command (download from GitHub)
+│   │   ├── index.ts  # Main pull logic
+│   │   ├── github.ts # GitHub API integration
+│   │   └── archive.ts # Tarball URL construction
+│   └── push/         # Push command (sync to multiple repos)
+└── internal/         # Private utilities (not exported)
+    ├── errors/       # Custom error classes
+    │   ├── base.ts
+    │   ├── filesystem.ts
+    │   ├── network.ts
+    │   └── validation.ts
+    ├── types/        # Internal type definitions
+    └── utils/        # Shared utilities
+        ├── parser.ts
+        ├── download.ts
+        ├── extract.ts
+        ├── check-existing.ts
+        ├── prompt.ts
+        ├── path-helpers.ts
+        ├── logger.ts
+        └── github-client.ts
+```
+
+**Pull Flow (src/pkg/pull/index.ts)**
+
 The main `baedal()` function orchestrates:
 
 1. Parse source using `parseSource()` to extract owner, repo, subdir
 2. Download tarball from GitHub API to temp directory
-3. Check for existing files and handle conflicts (force/skip/interactive modes)
+3. Check for existing files and handle conflicts via ConflictMode
 4. Extract files with optional subdir filtering and exclude patterns
 5. Clean up temp files
 
-**Provider Architecture (src/core/providers/)**
+**Error Handling Standardization**
 
-- `detector.ts` - Returns "github" (simplified from multi-provider detection)
-- `github.ts` - GitHub API implementation for default branch detection
-- `archive.ts` - Handles GitHub tarball URL construction and branch detection
+All errors inherit from `BaseError` with structured error codes:
 
-**Utilities (src/utils/)**
+- `FileSystemError` - File I/O and extraction errors
+- `NetworkError` - GitHub API and download errors
+- `ValidationError` - Input validation and configuration errors
 
-- `parser.ts` - Parses various input formats (user/repo, github:user/repo, URLs)
-- `download.ts` - Downloads tarballs using ky HTTP client with GitHub authentication
-- `extract.ts` - Extracts tarball contents with filtering support
-- `check-existing.ts` - Checks for file conflicts before extraction
-- `prompt.ts` - Interactive prompts for user confirmation
+**Conflict Resolution**
+
+Uses discriminated union type `ConflictMode` to enforce mutually exclusive options:
+
+- `{ mode: "force" }` - Overwrite without confirmation
+- `{ mode: "skip-existing" }` - Skip existing files
+- `{ mode: "no-clobber" }` - Abort on conflicts
+- `{ mode: "interactive" }` - Ask user (default)
 
 ## Build Configuration
 
@@ -98,12 +140,21 @@ The main `baedal()` function orchestrates:
 
 ## Key Dependencies
 
+**Runtime**
+
 - `commander` - CLI argument parsing
-- `ky` - HTTP client for API requests
+- `@octokit/rest` - GitHub API client
+- `ky` - HTTP client for tarball downloads
 - `tar` - Tarball extraction
 - `micromatch` - Glob pattern matching for exclude option
 - `globby` - File system globbing
 - `picocolors` - Terminal colors
+
+**Development**
+
+- `jest` - Testing framework
+- `@types/jest` - Jest type definitions
+- `ts-jest` - TypeScript Jest preprocessor
 
 ## TypeScript & Linting
 
@@ -120,6 +171,25 @@ The main `baedal()` function orchestrates:
 - Node.js >= 18.0.0
 - ESM modules only (no CommonJS)
 - All imports must use `.js` extension (TypeScript ESM requirement)
+
+## Testing Strategy
+
+**Test Infrastructure**
+
+- Jest with TypeScript support (ts-jest)
+- ESM-compatible configuration
+- Coverage reporting enabled
+
+**Test Patterns**
+
+- Pure functions: Direct unit tests (e.g., `parser.spec.ts`)
+- External dependencies: Mock with jest.mock (e.g., File System, GitHub API)
+- Integration tests: Full flow validation with mocked I/O
+
+**Coverage Goals**
+
+- Overall coverage target: ≥60%
+- Critical paths: Pull flow, Push flow, Error handling
 
 ## Release Management
 
