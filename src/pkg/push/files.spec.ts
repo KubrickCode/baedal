@@ -125,5 +125,20 @@ describe("Push Files - Integration Test", () => {
       expect(files[0]?.content).toBe(content);
       expect(files[0]?.size).toBe(Buffer.byteLength(content));
     });
+
+    it("should skip files exceeding max size and collect valid files", async () => {
+      await mkdir(join(testDir, "src"), { recursive: true });
+
+      const largeContent = "x".repeat(MAX_FILE_SIZE_MB * 1024 * 1024);
+      await writeFile(join(testDir, "src/large.ts"), largeContent);
+      await writeFile(join(testDir, "src/small.ts"), "small content");
+
+      const files = await collectFiles("src", testDir);
+
+      // Should only collect the small file, skipping the large one
+      expect(files).toHaveLength(1);
+      expect(files[0]?.path).toBe("src/small.ts");
+      expect(files[0]?.content).toBe("small content");
+    });
   });
 });
