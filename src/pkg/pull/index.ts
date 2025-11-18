@@ -1,6 +1,7 @@
 import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { FileSystemError, ValidationError } from "../../internal/errors/index.js";
 import type { BaedalOptions, PullResult } from "../../internal/types/index.js";
 import { checkExistingFiles } from "../../internal/utils/check-existing.js";
 import { downloadTarball } from "../../internal/utils/download.js";
@@ -45,7 +46,7 @@ export const baedal = async (
     // Handle different modes
     if (toOverwrite.length > 0) {
       if (resolvedMode === "no-clobber") {
-        throw new Error(
+        throw new FileSystemError(
           `Operation aborted as per --no-clobber: ${toOverwrite.length} file(s) already exist.`
         );
       }
@@ -83,7 +84,7 @@ export const baedal = async (
 
         const confirmed = await confirmOverwrite();
         if (!confirmed) {
-          throw new Error("Operation cancelled by user");
+          throw new ValidationError("Operation cancelled by user");
         }
       }
     }
