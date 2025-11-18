@@ -1,4 +1,5 @@
 import { join, relative } from "node:path";
+import { ConfigError, ValidationError } from "../../internal/errors/index.js";
 import { logger } from "../../internal/utils/logger.js";
 import { collectFiles } from "./files.js";
 import { createGitHubClient } from "./github.js";
@@ -52,7 +53,11 @@ const processRepository = async (options: ProcessRepositoryOptions): Promise<Pus
     const owner = parts[0];
     const repo = parts[1];
     if (!owner || !repo || parts.length !== 2) {
-      throw new Error(`Invalid repository format: ${repoName}. Expected format: owner/repo`);
+      throw new ValidationError(
+        `Invalid repository format: ${repoName}. Expected format: owner/repo`,
+        "repoName",
+        repoName
+      );
     }
 
     const client = createGitHubClient(token);
@@ -96,8 +101,12 @@ export const executePush = async (
   logger.log(`\nExecuting push: ${syncName}`);
   logger.log(`Branch: ${branchName}\n`);
 
-  if (!config.token) {
-    throw new Error("GitHub token is required. Specify 'token' in config file.");
+  if (!config.token || config.token.trim() === "") {
+    throw new ConfigError(
+      "GitHub token is required. Specify 'token' in config file.",
+      "token",
+      undefined
+    );
   }
 
   const promises = config.syncs.flatMap((sync) =>
