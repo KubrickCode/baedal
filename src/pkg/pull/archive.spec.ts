@@ -1,3 +1,4 @@
+import { ValidationError } from "../../internal/errors/validation.js";
 import { getArchiveUrl } from "./archive.js";
 
 describe("getArchiveUrl", () => {
@@ -43,5 +44,25 @@ describe("getArchiveUrl", () => {
     });
 
     expect(url).toBe("https://codeload.github.com/owner/repo/tar.gz/fix/issue-123");
+  });
+
+  it("should throw ValidationError for unsupported provider", () => {
+    expect(() => {
+      getArchiveUrl({
+        branch: "main",
+        owner: "octocat",
+        provider: "gitlab" as any,
+        repo: "hello-world",
+      });
+    }).toThrow(ValidationError);
+
+    expect(() => {
+      getArchiveUrl({
+        branch: "main",
+        owner: "octocat",
+        provider: "gitlab" as any,
+        repo: "hello-world",
+      });
+    }).toThrow("Unsupported provider: gitlab");
   });
 });
