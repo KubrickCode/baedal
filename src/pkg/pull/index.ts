@@ -1,14 +1,20 @@
 import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { FileSystemError, ValidationError } from "../../internal/errors/index.js";
-import type { BaedalOptions, PullResult } from "../../internal/types/index.js";
-import { checkExistingFiles } from "../../internal/utils/check-existing.js";
-import { downloadTarball } from "../../internal/utils/download.js";
-import { extractTarball, getFileListFromTarball } from "../../internal/utils/extract.js";
-import { logger } from "../../internal/utils/logger.js";
-import { parseSource } from "../../internal/utils/parser.js";
-import { confirmOverwrite } from "../../internal/utils/prompt.js";
+import { FileSystemError, ValidationError } from "../../internal/errors";
+import type { BaedalOptions, PullResult } from "../../internal/types";
+import {
+  checkExistingFiles,
+  confirmOverwrite,
+  downloadTarball,
+  extractTarball,
+  getFileListFromTarball,
+  logger,
+  parseSource,
+} from "../../internal/utils";
+
+export { getArchiveUrl, getDefaultBranch } from "./archive";
+export { getGitHubDefaultBranch } from "./github";
 
 const DEFAULT_CONFLICT_MODE = "interactive";
 

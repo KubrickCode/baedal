@@ -1,4 +1,4 @@
-import { parseSource } from "./parser.js";
+import { parseSource } from "./parser";
 
 describe("parseSource", () => {
   describe("basic format (user/repo)", () => {

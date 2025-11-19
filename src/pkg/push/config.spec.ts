@@ -2,7 +2,7 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ZodError } from "zod";
-import { loadPushConfig, resolveConfigPath } from "./config.js";
+import { loadPushConfig, resolveConfigPath } from "./config";
 
 describe("Push Config - Integration Test", () => {
   let testBaseDir: string;

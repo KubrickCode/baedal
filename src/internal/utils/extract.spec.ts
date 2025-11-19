@@ -3,13 +3,8 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import micromatch from "micromatch";
 import { create } from "tar";
-import { ExtractionError, FileSystemError } from "../errors/index.js";
-import {
-  extractDirectly,
-  extractTarball,
-  extractViaTemp,
-  getFileListFromTarball,
-} from "./extract.js";
+import { ExtractionError, FileSystemError } from "../errors";
+import { extractDirectly, extractTarball, extractViaTemp, getFileListFromTarball } from "./extract";
 
 /**
  * Integration test helper for creating real tarballs.

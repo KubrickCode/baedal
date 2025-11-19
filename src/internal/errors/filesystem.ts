@@ -1,4 +1,4 @@
-import { BaseError } from "./base.js";
+import { BaseError } from "./base";
 
 export class FileSystemError extends BaseError {
   constructor(

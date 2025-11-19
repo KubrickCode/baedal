@@ -1,5 +1,5 @@
 import { Octokit } from "@octokit/rest";
-import { createGitHubClient, getTokenFromEnv } from "./github-client.js";
+import { createGitHubClient, getTokenFromEnv } from "./github-client";
 
 describe("github-client", () => {
   const originalEnv = process.env;

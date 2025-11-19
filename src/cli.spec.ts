@@ -1,4 +1,4 @@
-import { program } from "./cli.js";
+import { program } from "./cli";
 
 describe("CLI Command Structure", () => {
   describe("pull command", () => {

@@ -1,11 +1,11 @@
-import { ConfigError } from "../../internal/errors/index.js";
+import { ConfigError } from "../../internal/errors";
 import {
   categorizeResults,
   executePush,
   prepareRepositories,
   validatePushConfig,
-} from "./executor.js";
-import type { PushConfig, PushResult } from "./types.js";
+} from "./executor";
+import type { PushConfig, PushResult } from ".";
 
 describe("executePush", () => {
   describe("Error Handling", () => {

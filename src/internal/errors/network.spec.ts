@@ -1,5 +1,4 @@
-import { BaseError } from "./base.js";
-import { GitHubAPIError, NetworkError } from "./network.js";
+import { BaseError, GitHubAPIError, NetworkError } from ".";
 
 describe("NetworkError", () => {
   it("should create NetworkError with message only", () => {

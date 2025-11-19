@@ -1,10 +1,10 @@
 import { Command } from "commander";
-import { adaptCLIOptions } from "./cli/adapter.js";
-import type { PullCLIOptions } from "./cli/types.js";
-import { logger } from "./internal/utils/logger.js";
-import { baedal } from "./pkg/pull/index.js";
-import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./pkg/push/index.js";
-import type { PushInitCLIOptions } from "./pkg/push/types.js";
+import { adaptCLIOptions } from "./cli/adapter";
+import type { PullCLIOptions } from "./cli/types";
+import { logger } from "./internal/utils";
+import { baedal } from "./pkg/pull";
+import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./pkg/push";
+import type { PushInitCLIOptions } from "./pkg/push/types";
 
 const program = new Command();
 

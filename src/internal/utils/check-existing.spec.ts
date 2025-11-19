@@ -1,7 +1,7 @@
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { checkExistingFiles } from "./check-existing.js";
+import { checkExistingFiles } from "./check-existing";
 
 describe("checkExistingFiles - Integration Test", () => {
   let testDir: string;

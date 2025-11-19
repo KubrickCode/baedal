@@ -1,5 +1,5 @@
-import { adaptCLIOptions } from "./adapter.js";
-import type { PullCLIOptions } from "./types.js";
+import { adaptCLIOptions } from "./adapter";
+import type { PullCLIOptions } from "./types";
 
 describe("adaptCLIOptions", () => {
   const originalEnv = process.env;
