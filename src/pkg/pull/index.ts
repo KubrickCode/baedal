@@ -1,16 +1,11 @@
 import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { FileSystemError, ValidationError } from "../../internal/errors";
-import {
-  checkExistingFiles,
-  confirmOverwrite,
-  downloadTarball,
-  extractTarball,
-  getFileListFromTarball,
-  logger,
-  parseSource,
-} from "../../internal/utils";
+import { FileSystemError, logger, ValidationError } from "../../internal/core/index";
+import { extractTarball, getFileListFromTarball, parseSource } from "../../internal/domain/index";
+import { confirmOverwrite, downloadStream } from "../../internal/infra/index";
+import { checkExistingFiles } from "../../internal/utils/index";
+import { getArchiveUrl, getDefaultBranch } from "./archive";
 import type { BaedalOptions, PullResult } from "./types";
 
 export { getArchiveUrl, getDefaultBranch } from "./archive";
@@ -50,7 +45,15 @@ export const baedal = async (
   const tarballPath = join(tempDir, "archive.tar.gz");
 
   try {
-    await downloadTarball(owner, repo, tarballPath, provider, subdir, opts?.token);
+    const branch = await getDefaultBranch(owner, repo, provider, opts?.token);
+    const url = getArchiveUrl({
+      branch,
+      owner,
+      provider,
+      repo,
+      ...(subdir && { subdir }),
+    });
+    await downloadStream(url, tarballPath, opts?.token);
 
     const needsSubdirExtraction = !!subdir;
 

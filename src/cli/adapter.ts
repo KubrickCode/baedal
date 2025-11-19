@@ -1,4 +1,4 @@
-import { ValidationError } from "../internal/errors";
+import { ValidationError } from "../internal/core/errors/";
 import type { BaedalOptions, ConflictMode } from "../pkg/pull/types";
 import type { PullCLIOptions } from "./types";
 

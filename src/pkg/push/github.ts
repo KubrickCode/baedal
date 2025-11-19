@@ -1,5 +1,5 @@
 import type { Octokit } from "@octokit/rest";
-import { createGitHubClient as createOctokitClient } from "../../internal/utils";
+import { createGitHubClient as createOctokitClient } from "../../internal/infra/index";
 import { GIT_FILE_MODES, type CollectedFile } from "./types";
 
 const DEFAULT_BRANCH = "main";

@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { logger } from "../../internal/utils";
+import { logger } from "../../internal/core/index";
 import { resolveConfigPath } from "./config";
 
 const generateTemplate = (syncName: string): string => {

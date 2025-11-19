@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import micromatch from "micromatch";
 import { create } from "tar";
-import { ExtractionError, FileSystemError } from "../errors";
+import { ExtractionError, FileSystemError } from "../core/errors/index";
 import { extractDirectly, extractTarball, extractViaTemp, getFileListFromTarball } from "./extract";
 
 /**
@@ -80,7 +80,7 @@ describe("extractDirectly", () => {
 
   it("should apply exclude filter when extracting", async () => {
     const files = {
-      "node_modules/lib.js": "lib",
+      "node_modules/lib": "lib",
       "README.md": "# Test",
       "src/index.test.ts": "test",
       "src/index.ts": "export const hello = 'world';",
@@ -100,7 +100,7 @@ describe("extractDirectly", () => {
       await expect(access(join(destination, "README.md"))).resolves.not.toThrow();
       await expect(access(join(destination, "src/index.ts"))).resolves.not.toThrow();
       await expect(access(join(destination, "src/index.test.ts"))).rejects.toThrow();
-      await expect(access(join(destination, "node_modules/lib.js"))).rejects.toThrow();
+      await expect(access(join(destination, "node_modules/lib"))).rejects.toThrow();
     } finally {
       await cleanupTestFiles(dirname(tarballPath), destination);
     }
@@ -132,7 +132,7 @@ describe("extractDirectly", () => {
 describe("extractViaTemp", () => {
   it("should extract subdirectory only", async () => {
     const files = {
-      "lib/index.js": "module.exports = {}",
+      "lib/index": "module.exports = {}",
       "README.md": "# Test",
       "src/index.ts": "export const hello = 'world';",
       "src/utils/helper.ts": "export const helper = () => {}",
@@ -155,7 +155,7 @@ describe("extractViaTemp", () => {
       expect(helperContent).toBe("export const helper = () => {}");
 
       await expect(access(join(destination, "README.md"))).rejects.toThrow();
-      await expect(access(join(destination, "lib/index.js"))).rejects.toThrow();
+      await expect(access(join(destination, "lib/index"))).rejects.toThrow();
     } finally {
       await cleanupTestFiles(dirname(tarballPath), destination);
     }
@@ -288,7 +288,7 @@ describe("extractTarball", () => {
 
     it("should apply exclude patterns", async () => {
       const files = {
-        "node_modules/lib.js": "lib",
+        "node_modules/lib": "lib",
         "README.md": "# Test",
         "src/index.test.ts": "test",
         "src/index.ts": "export const hello = 'world';",
@@ -308,10 +308,10 @@ describe("extractTarball", () => {
         expect(result).toContain("src/index.ts");
         expect(result).toContain("README.md");
         expect(result).not.toContain("src/index.test.ts");
-        expect(result).not.toContain("node_modules/lib.js");
+        expect(result).not.toContain("node_modules/lib");
 
         await expect(access(join(destination, "src/index.test.ts"))).rejects.toThrow();
-        await expect(access(join(destination, "node_modules/lib.js"))).rejects.toThrow();
+        await expect(access(join(destination, "node_modules/lib"))).rejects.toThrow();
       } finally {
         await cleanupTestFiles(dirname(tarballPath), destination);
       }
@@ -345,7 +345,7 @@ describe("extractTarball", () => {
   describe("with subdirectory", () => {
     it("should extract only subdirectory", async () => {
       const files = {
-        "lib/index.js": "module.exports = {}",
+        "lib/index": "module.exports = {}",
         "README.md": "# Test",
         "src/index.ts": "export const hello = 'world';",
         "src/utils/helper.ts": "export const helper = () => {}",
@@ -365,7 +365,7 @@ describe("extractTarball", () => {
         expect(result).toContain("index.ts");
         expect(result).toContain("utils/helper.ts");
         expect(result).not.toContain("README.md");
-        expect(result).not.toContain("lib/index.js");
+        expect(result).not.toContain("lib/index");
       } finally {
         await cleanupTestFiles(dirname(tarballPath), destination);
       }
@@ -549,7 +549,7 @@ describe("getFileListFromTarball", () => {
 
     it("should filter by subdirectory", async () => {
       const files = {
-        "lib/index.js": "module.exports = {}",
+        "lib/index": "module.exports = {}",
         "README.md": "# Test",
         "src/index.ts": "export const hello = 'world';",
         "src/utils/helper.ts": "export const helper = () => {}",
@@ -572,7 +572,7 @@ describe("getFileListFromTarball", () => {
 
     it("should apply exclude patterns", async () => {
       const files = {
-        "node_modules/lib.js": "lib",
+        "node_modules/lib": "lib",
         "README.md": "# Test",
         "src/index.test.ts": "test",
         "src/index.ts": "export const hello = 'world';",
@@ -588,7 +588,7 @@ describe("getFileListFromTarball", () => {
         expect(result).toContain("src/index.ts");
         expect(result).toContain("README.md");
         expect(result).not.toContain("src/index.test.ts");
-        expect(result).not.toContain("node_modules/lib.js");
+        expect(result).not.toContain("node_modules/lib");
       } finally {
         await cleanupTestFiles(dirname(tarballPath));
       }

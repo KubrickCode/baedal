@@ -1,4 +1,4 @@
-import { ConfigError } from "../../internal/errors";
+import { ConfigError } from "../../internal/core/errors/";
 import {
   categorizeResults,
   executePush,

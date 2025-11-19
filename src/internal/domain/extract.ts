@@ -4,8 +4,8 @@ import { basename } from "node:path";
 import { globby } from "globby";
 import micromatch from "micromatch";
 import { extract, list } from "tar";
-import { ExtractionError, FileSystemError } from "../errors";
-import { joinPathSafe, stripRootDirectory } from "./path-helpers";
+import { ExtractionError, FileSystemError } from "../core/errors/index";
+import { joinPathSafe, stripRootDirectory } from "../utils/path-helpers";
 
 const getNormalizedTarPath = (
   entryPath: string,

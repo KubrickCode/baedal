@@ -1,5 +1,5 @@
-import { ValidationError } from "../../internal/errors";
-import { GITHUB_ARCHIVE_URL, type Provider } from "../../internal/types";
+import { ValidationError } from "../../internal/core/errors/";
+import { GITHUB_ARCHIVE_URL, type Provider } from "../../internal/core/types/";
 import { getGitHubDefaultBranch } from "./github";
 
 export const getDefaultBranch = async (

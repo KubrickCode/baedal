@@ -1,7 +1,7 @@
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { FileSystemError } from "../../internal/errors";
+import { FileSystemError } from "../../internal/core/errors/";
 import { collectFiles, getRelativePath, normalizePath } from "./files";
 
 describe("Push Files - Integration Test", () => {

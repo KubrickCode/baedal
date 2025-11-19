@@ -1,8 +1,7 @@
 import { readFile, stat } from "node:fs/promises";
 import { join, normalize, relative } from "node:path";
 import { globby } from "globby";
-import { FileSystemError } from "../../internal/errors";
-import { logger } from "../../internal/utils";
+import { FileSystemError, logger } from "../../internal/core/index";
 import type { CollectedFile } from "./types";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;

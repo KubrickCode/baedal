@@ -1,4 +1,4 @@
-import { ValidationError } from "../../internal/errors";
+import { ValidationError } from "../../internal/core/errors/";
 import { getArchiveUrl } from "./archive";
 
 describe("getArchiveUrl", () => {

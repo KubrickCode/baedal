@@ -1,9 +1,9 @@
 import { Command } from "commander";
 import { adaptCLIOptions } from "./cli/adapter";
 import type { PullCLIOptions } from "./cli/types";
-import { logger } from "./internal/utils";
-import { baedal } from "./pkg/pull";
-import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./pkg/push";
+import { logger } from "./internal/core/index";
+import { baedal } from "./pkg/pull/index";
+import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./pkg/push/index";
 import type { PushInitCLIOptions } from "./pkg/push/types";
 
 const program = new Command();

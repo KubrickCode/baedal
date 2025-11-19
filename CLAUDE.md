@@ -83,23 +83,49 @@ src/
 │   │   ├── github.ts # GitHub API integration
 │   │   └── archive.ts # Tarball URL construction
 │   └── push/         # Push command (sync to multiple repos)
-└── internal/         # Private utilities (not exported)
-    ├── errors/       # Custom error classes
-    │   ├── base.ts
-    │   ├── filesystem.ts
-    │   ├── network.ts
-    │   └── validation.ts
-    ├── types/        # Internal type definitions
-    └── utils/        # Shared utilities
-        ├── parser.ts
-        ├── download.ts
-        ├── extract.ts
-        ├── check-existing.ts
-        ├── prompt.ts
-        ├── path-helpers.ts
-        ├── logger.ts
-        └── github-client.ts
+└── internal/         # Private implementation (not exported)
+    ├── core/         # Core abstractions (high reusability)
+    │   ├── errors/   # Custom error classes (BaseError, ValidationError, etc.)
+    │   ├── types/    # Shared internal types (RepoInfo, Provider, etc.)
+    │   └── logger.ts # Logging abstraction (consola wrapper)
+    ├── domain/       # Domain logic (business rules)
+    │   ├── parser.ts # GitHub source parsing
+    │   └── extract.ts # Tarball extraction strategies
+    ├── infra/        # Infrastructure layer (external systems)
+    │   ├── github-client.ts # GitHub API client (Octokit wrapper)
+    │   ├── download.ts # HTTP download (ky + streams)
+    │   └── prompt.ts # User interaction (readline wrapper)
+    └── utils/        # Pure utility functions
+        ├── path-helpers.ts # Path manipulation helpers
+        └── check-existing.ts # File existence checker
 ```
+
+**Internal Module Organization Principles**
+
+The `src/internal/` directory follows a **hybrid organizational pattern** with four clear categories:
+
+1. **`core/`** - Foundational abstractions used project-wide
+   - Errors, types, and logging that all layers depend on
+   - High reusability, minimal dependencies
+
+2. **`domain/`** - Business logic independent of external systems
+   - Parse GitHub sources, extract tarballs
+   - Domain rules and workflows
+
+3. **`infra/`** - External system integrations
+   - GitHub API, HTTP clients, user I/O
+   - Wraps third-party libraries for testability
+
+4. **`utils/`** - Stateless pure functions
+   - Path manipulation, file checking
+   - No side effects, easily composable
+
+**Module Placement Guidelines:**
+
+- Global abstractions (errors, types, logger) → `core/`
+- Domain rules and workflows → `domain/`
+- External communication → `infra/`
+- Pure helper functions → `utils/`
 
 **Pull Flow (src/pkg/pull/index.ts)**
 

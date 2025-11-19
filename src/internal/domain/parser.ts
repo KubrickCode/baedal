@@ -1,4 +1,4 @@
-import type { RepoInfo } from "../types";
+import type { RepoInfo } from "../core/types/";
 
 export const parseSource = async (source: string): Promise<RepoInfo> => {
   const provider = "github" as const;
