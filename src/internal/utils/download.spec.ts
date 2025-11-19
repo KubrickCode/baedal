@@ -1,4 +1,4 @@
-import { NetworkError } from "../errors/index.js";
+import { NetworkError } from "../errors";
 
 describe("download - Error Validation", () => {
   it("should verify NetworkError is thrown with URL context", () => {

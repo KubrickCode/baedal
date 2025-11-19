@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { logger } from "../../internal/utils/logger.js";
-import { resolveConfigPath } from "./config.js";
+import { logger } from "../../internal/utils";
+import { resolveConfigPath } from "./config";
 
 const generateTemplate = (syncName: string): string => {
   return `# Baedal Push Configuration: ${syncName}

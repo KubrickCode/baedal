@@ -1,4 +1,7 @@
-import type { Provider } from "./providers.js";
+import type { Provider as ProviderType } from "./providers";
+
+export type { Provider } from "./providers";
+export { DEFAULT_BRANCH, GITHUB_API_URL, GITHUB_ARCHIVE_URL } from "./providers";
 
 export type PullResult = {
   files: string[];
@@ -7,7 +10,7 @@ export type PullResult = {
 
 export type RepoInfo = {
   owner: string;
-  provider: Provider;
+  provider: ProviderType;
   repo: string;
   subdir?: string;
 };

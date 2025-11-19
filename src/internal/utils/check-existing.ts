@@ -1,6 +1,6 @@
 import { access, constants } from "node:fs/promises";
 import { join } from "node:path";
-import type { FileCheckResult } from "../types/index.js";
+import type { FileCheckResult } from "../types";
 
 export const checkExistingFiles = async (
   files: string[],

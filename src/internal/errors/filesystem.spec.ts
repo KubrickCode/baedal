@@ -1,5 +1,4 @@
-import { BaseError } from "./base.js";
-import { ExtractionError, FileSystemError } from "./filesystem.js";
+import { BaseError, ExtractionError, FileSystemError } from ".";
 
 describe("FileSystemError", () => {
   it("should create an error with message and path", () => {

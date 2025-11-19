@@ -1,9 +1,9 @@
 import { join, relative } from "node:path";
-import { ConfigError, ValidationError } from "../../internal/errors/index.js";
-import { logger } from "../../internal/utils/logger.js";
-import { collectFiles } from "./files.js";
-import { createGitHubClient } from "./github.js";
-import type { PushConfig, PushExecutionResult, PushResult } from "./types.js";
+import { ConfigError, ValidationError } from "../../internal/errors";
+import { logger } from "../../internal/utils";
+import { collectFiles } from "./files";
+import { createGitHubClient } from "./github";
+import type { PushConfig, PushExecutionResult, PushResult } from "./types";
 
 const BRANCH_PREFIX = "sync";
 const SUMMARY_SEPARATOR_LENGTH = 60;

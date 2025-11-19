@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import yaml from "js-yaml";
-import { PushConfigSchema, type PushConfig } from "./types.js";
+import { PushConfigSchema, type PushConfig } from ".";
 
 const CONFIG_DIR = ".baedal/push";
 

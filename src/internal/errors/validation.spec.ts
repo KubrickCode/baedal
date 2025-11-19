@@ -1,5 +1,4 @@
-import { BaseError } from "./base.js";
-import { ConfigError, ValidationError } from "./validation.js";
+import { BaseError, ConfigError, ValidationError } from ".";
 
 describe("ValidationError", () => {
   it("should create ValidationError with message only", () => {

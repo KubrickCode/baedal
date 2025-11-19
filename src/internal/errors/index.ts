@@ -1,4 +1,4 @@
-export { BaseError } from "./base.js";
-export { ExtractionError, FileSystemError } from "./filesystem.js";
-export { GitHubAPIError, NetworkError } from "./network.js";
-export { ConfigError, ValidationError } from "./validation.js";
+export { BaseError } from "./base";
+export { ExtractionError, FileSystemError } from "./filesystem";
+export { GitHubAPIError, NetworkError } from "./network";
+export { ConfigError, ValidationError } from "./validation";

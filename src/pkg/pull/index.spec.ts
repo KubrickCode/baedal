@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { create } from "tar";
-import { FileSystemError, ValidationError } from "../../internal/errors/index.js";
+import { FileSystemError, ValidationError } from "../../internal/errors";
 
 /**
  * Integration test for pull functionality with focus on decomposed functions.

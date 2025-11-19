@@ -1,4 +1,4 @@
-import { BaseError } from "./base.js";
+import { BaseError } from "./base";
 
 describe("BaseError", () => {
   it("should create an error with message and code", () => {

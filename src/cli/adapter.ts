@@ -1,6 +1,6 @@
-import { ValidationError } from "../internal/errors/index.js";
-import type { BaedalOptions, ConflictMode } from "../internal/types/index.js";
-import type { PullCLIOptions } from "./types.js";
+import { ValidationError } from "../internal/errors";
+import type { BaedalOptions, ConflictMode } from "../internal/types";
+import type { PullCLIOptions } from "./types";
 
 const validateConflictFlags = (options: PullCLIOptions): void => {
   const conflictFlags = [options.force, options.skipExisting, options.noClobber].filter(Boolean);

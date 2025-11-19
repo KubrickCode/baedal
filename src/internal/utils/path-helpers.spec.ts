@@ -1,5 +1,5 @@
 import { sep } from "node:path";
-import { joinPathSafe, normalizeGitHubPath, stripRootDirectory } from "./path-helpers.js";
+import { joinPathSafe, normalizeGitHubPath, stripRootDirectory } from "./path-helpers";
 
 describe("stripRootDirectory", () => {
   describe("basic functionality", () => {

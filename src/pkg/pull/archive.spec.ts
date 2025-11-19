@@ -1,5 +1,5 @@
-import { ValidationError } from "../../internal/errors/validation.js";
-import { getArchiveUrl } from "./archive.js";
+import { ValidationError } from "../../internal/errors";
+import { getArchiveUrl } from "./archive";
 
 describe("getArchiveUrl", () => {
   it("should generate GitHub tarball URL", () => {
