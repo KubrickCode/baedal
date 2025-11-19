@@ -1,3 +1,4 @@
+import { ValidationError } from "../internal/errors/index.js";
 import type { BaedalOptions, ConflictMode } from "../internal/types/index.js";
 import type { PullCLIOptions } from "./types.js";
 
@@ -6,6 +7,15 @@ const validateConflictFlags = (options: PullCLIOptions): void => {
 
   if (conflictFlags.length > 1) {
     throw new Error("Cannot use --force, --skip-existing, and --no-clobber together");
+  }
+};
+
+const validateExcludePatterns = (patterns?: string[]): void => {
+  if (!patterns) return;
+
+  const emptyPatterns = patterns.filter((p) => p.trim() === "");
+  if (emptyPatterns.length > 0) {
+    throw new ValidationError("Exclude patterns cannot be empty strings");
   }
 };
 
@@ -22,6 +32,7 @@ const resolveToken = (cliToken: string | undefined): string | undefined => {
 
 export const adaptCLIOptions = (cliOptions: PullCLIOptions): BaedalOptions => {
   validateConflictFlags(cliOptions);
+  validateExcludePatterns(cliOptions.exclude);
 
   const conflictMode = resolveConflictMode(cliOptions);
   const token = resolveToken(cliOptions.token);

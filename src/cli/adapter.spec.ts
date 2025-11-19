@@ -155,6 +155,37 @@ describe("adaptCLIOptions", () => {
 
       expect(result.exclude).toBeUndefined();
     });
+
+    it("should throw ValidationError when exclude patterns contain empty strings", () => {
+      const cliOptions: PullCLIOptions = {
+        exclude: ["*.test.ts", "", "*.spec.ts"],
+      };
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow("Exclude patterns cannot be empty strings");
+    });
+
+    it("should throw ValidationError when exclude patterns contain only whitespace", () => {
+      const cliOptions: PullCLIOptions = {
+        exclude: ["*.test.ts", "   ", "*.spec.ts"],
+      };
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow("Exclude patterns cannot be empty strings");
+    });
+
+    it("should pass validation when all exclude patterns are valid", () => {
+      const cliOptions: PullCLIOptions = {
+        exclude: ["*.test.ts", "*.spec.ts", "node_modules/**"],
+      };
+
+      expect(() => adaptCLIOptions(cliOptions)).not.toThrow();
+    });
+
+    it("should pass validation when exclude patterns is not provided", () => {
+      const cliOptions: PullCLIOptions = {};
+
+      expect(() => adaptCLIOptions(cliOptions)).not.toThrow();
+      expect(adaptCLIOptions(cliOptions).exclude).toBeUndefined();
+    });
   });
 
   describe("Complete options", () => {
