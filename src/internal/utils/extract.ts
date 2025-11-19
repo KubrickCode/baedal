@@ -55,9 +55,54 @@ const copySubdirectory = async (
   }
 };
 
-/**
- * Extracts a GitHub tarball to the specified directory.
- */
+export const extractDirectly = async (
+  tarballPath: string,
+  destination: string,
+  shouldExclude: ((path: string) => boolean) | null
+): Promise<void> => {
+  await mkdir(destination, { recursive: true });
+
+  await extract({
+    cwd: destination,
+    file: tarballPath,
+    strip: 1,
+    ...(shouldExclude
+      ? {
+          filter: (path) => getNormalizedTarPath(path, undefined, shouldExclude) !== null,
+        }
+      : {}),
+  });
+};
+
+export const extractViaTemp = async (
+  tarballPath: string,
+  destination: string,
+  subdir: string,
+  shouldExclude: ((path: string) => boolean) | null
+): Promise<void> => {
+  const tempExtract = await mkdtemp(joinPathSafe(tmpdir(), "baedal-extract-"));
+
+  try {
+    await mkdir(tempExtract, { recursive: true });
+    await extract({
+      cwd: tempExtract,
+      file: tarballPath,
+      strip: 1,
+      ...(shouldExclude
+        ? {
+            filter: (path) => getNormalizedTarPath(path, subdir, shouldExclude) !== null,
+          }
+        : {}),
+    });
+
+    await copySubdirectory(tempExtract, destination, subdir);
+  } finally {
+    await rm(tempExtract, { force: true, recursive: true }).catch(() => {
+      // Ignore cleanup failures
+    });
+  }
+};
+
 export const extractTarball = async (
   tarballPath: string,
   destination: string,
@@ -69,41 +114,10 @@ export const extractTarball = async (
     : null;
 
   try {
-    if (!subdir) {
-      await mkdir(destination, { recursive: true });
-
-      await extract({
-        cwd: destination,
-        file: tarballPath,
-        strip: 1,
-        ...(shouldExclude
-          ? {
-              filter: (path) => getNormalizedTarPath(path, undefined, shouldExclude) !== null,
-            }
-          : {}),
-      });
+    if (subdir) {
+      await extractViaTemp(tarballPath, destination, subdir, shouldExclude);
     } else {
-      const tempExtract = await mkdtemp(joinPathSafe(tmpdir(), "baedal-extract-"));
-
-      try {
-        await mkdir(tempExtract, { recursive: true });
-        await extract({
-          cwd: tempExtract,
-          file: tarballPath,
-          strip: 1,
-          ...(shouldExclude
-            ? {
-                filter: (path) => getNormalizedTarPath(path, subdir, shouldExclude) !== null,
-              }
-            : {}),
-        });
-
-        await copySubdirectory(tempExtract, destination, subdir);
-      } finally {
-        await rm(tempExtract, { force: true, recursive: true }).catch(() => {
-          // Ignore cleanup failures
-        });
-      }
+      await extractDirectly(tarballPath, destination, shouldExclude);
     }
 
     return await globby("**/*", {
@@ -123,9 +137,6 @@ export const extractTarball = async (
   }
 };
 
-/**
- * Lists files in a tarball without extracting.
- */
 export const getFileListFromTarball = async (
   tarballPath: string,
   subdir?: string,

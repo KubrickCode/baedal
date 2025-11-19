@@ -1,9 +1,15 @@
-import { access, mkdir, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import micromatch from "micromatch";
 import { create } from "tar";
 import { ExtractionError, FileSystemError } from "../errors/index.js";
-import { extractTarball, getFileListFromTarball } from "./extract.js";
+import {
+  extractDirectly,
+  extractTarball,
+  extractViaTemp,
+  getFileListFromTarball,
+} from "./extract.js";
 
 /**
  * Integration test helper for creating real tarballs.
@@ -49,6 +55,214 @@ const cleanupTestFiles = async (...paths: string[]) => {
     }
   }
 };
+
+describe("extractDirectly", () => {
+  it("should extract tarball without subdirectory filtering", async () => {
+    const files = {
+      "package.json": '{"name":"test"}',
+      "README.md": "# Test",
+      "src/index.ts": "export const hello = 'world';",
+    };
+
+    const tarballPath = await createTestTarball(files);
+    const destination = join(
+      tmpdir(),
+      `baedal-dest-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    );
+
+    try {
+      await extractDirectly(tarballPath, destination, null);
+
+      const readmeContent = await readFile(join(destination, "README.md"), "utf-8");
+      expect(readmeContent).toBe("# Test");
+
+      const indexContent = await readFile(join(destination, "src/index.ts"), "utf-8");
+      expect(indexContent).toBe("export const hello = 'world';");
+    } finally {
+      await cleanupTestFiles(dirname(tarballPath), destination);
+    }
+  });
+
+  it("should apply exclude filter when extracting", async () => {
+    const files = {
+      "node_modules/lib.js": "lib",
+      "README.md": "# Test",
+      "src/index.test.ts": "test",
+      "src/index.ts": "export const hello = 'world';",
+    };
+
+    const tarballPath = await createTestTarball(files);
+    const destination = join(
+      tmpdir(),
+      `baedal-dest-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    );
+    const exclude = ["**/*.test.ts", "node_modules/**"];
+    const shouldExclude = (path: string) => micromatch.isMatch(path, exclude);
+
+    try {
+      await extractDirectly(tarballPath, destination, shouldExclude);
+
+      await expect(access(join(destination, "README.md"))).resolves.not.toThrow();
+      await expect(access(join(destination, "src/index.ts"))).resolves.not.toThrow();
+      await expect(access(join(destination, "src/index.test.ts"))).rejects.toThrow();
+      await expect(access(join(destination, "node_modules/lib.js"))).rejects.toThrow();
+    } finally {
+      await cleanupTestFiles(dirname(tarballPath), destination);
+    }
+  });
+
+  it("should create destination directory if not exists", async () => {
+    const files = {
+      "README.md": "# Test",
+    };
+
+    const tarballPath = await createTestTarball(files);
+    const destination = join(
+      tmpdir(),
+      `baedal-dest-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      "nested",
+      "path"
+    );
+
+    try {
+      await extractDirectly(tarballPath, destination, null);
+
+      await expect(access(join(destination, "README.md"))).resolves.not.toThrow();
+    } finally {
+      await cleanupTestFiles(dirname(tarballPath), dirname(dirname(destination)));
+    }
+  });
+});
+
+describe("extractViaTemp", () => {
+  it("should extract subdirectory only", async () => {
+    const files = {
+      "lib/index.js": "module.exports = {}",
+      "README.md": "# Test",
+      "src/index.ts": "export const hello = 'world';",
+      "src/utils/helper.ts": "export const helper = () => {}",
+    };
+
+    const tarballPath = await createTestTarball(files);
+    const destination = join(
+      tmpdir(),
+      `baedal-dest-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    );
+    const subdir = "src";
+
+    try {
+      await extractViaTemp(tarballPath, destination, subdir, null);
+
+      const indexContent = await readFile(join(destination, "index.ts"), "utf-8");
+      expect(indexContent).toBe("export const hello = 'world';");
+
+      const helperContent = await readFile(join(destination, "utils/helper.ts"), "utf-8");
+      expect(helperContent).toBe("export const helper = () => {}");
+
+      await expect(access(join(destination, "README.md"))).rejects.toThrow();
+      await expect(access(join(destination, "lib/index.js"))).rejects.toThrow();
+    } finally {
+      await cleanupTestFiles(dirname(tarballPath), destination);
+    }
+  });
+
+  it("should extract single file as subdirectory", async () => {
+    const files = {
+      "README.md": "# Test Project",
+      "src/index.ts": "export const hello = 'world';",
+    };
+
+    const tarballPath = await createTestTarball(files);
+    const destination = join(
+      tmpdir(),
+      `baedal-dest-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    );
+    const subdir = "README.md";
+
+    try {
+      await extractViaTemp(tarballPath, destination, subdir, null);
+
+      const readmeContent = await readFile(join(destination, "README.md"), "utf-8");
+      expect(readmeContent).toBe("# Test Project");
+
+      await expect(access(join(destination, "src/index.ts"))).rejects.toThrow();
+    } finally {
+      await cleanupTestFiles(dirname(tarballPath), destination);
+    }
+  });
+
+  it("should apply exclude filter when extracting subdirectory", async () => {
+    const files = {
+      "README.md": "# Test",
+      "src/index.spec.ts": "test",
+      "src/index.ts": "export const hello = 'world';",
+      "src/utils/helper.ts": "export const helper = () => {}",
+    };
+
+    const tarballPath = await createTestTarball(files);
+    const destination = join(
+      tmpdir(),
+      `baedal-dest-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    );
+    const subdir = "src";
+    const exclude = ["*.spec.ts"];
+    const shouldExclude = (path: string) => micromatch.isMatch(path, exclude);
+
+    try {
+      await extractViaTemp(tarballPath, destination, subdir, shouldExclude);
+
+      await expect(access(join(destination, "index.ts"))).resolves.not.toThrow();
+      await expect(access(join(destination, "utils/helper.ts"))).resolves.not.toThrow();
+      await expect(access(join(destination, "index.spec.ts"))).rejects.toThrow();
+    } finally {
+      await cleanupTestFiles(dirname(tarballPath), destination);
+    }
+  });
+
+  it("should throw FileSystemError for nonexistent subdirectory", async () => {
+    const files = {
+      "src/index.ts": "export const hello = 'world';",
+    };
+
+    const tarballPath = await createTestTarball(files);
+    const destination = join(
+      tmpdir(),
+      `baedal-dest-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    );
+    const subdir = "nonexistent-dir";
+
+    try {
+      await expect(extractViaTemp(tarballPath, destination, subdir, null)).rejects.toThrow(
+        FileSystemError
+      );
+    } finally {
+      await cleanupTestFiles(dirname(tarballPath), destination);
+    }
+  });
+
+  it("should clean up temporary directory after extraction", async () => {
+    const files = {
+      "src/index.ts": "export const hello = 'world';",
+    };
+
+    const tarballPath = await createTestTarball(files);
+    const destination = join(
+      tmpdir(),
+      `baedal-dest-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    );
+    const subdir = "src";
+
+    try {
+      await extractViaTemp(tarballPath, destination, subdir, null);
+
+      // Temp directory should be cleaned up
+      const tempDirs = await readFile(join(tmpdir()), "utf-8").catch(() => "");
+      expect(tempDirs).not.toContain("baedal-extract-");
+    } finally {
+      await cleanupTestFiles(dirname(tarballPath), destination);
+    }
+  });
+});
 
 describe("extractTarball", () => {
   describe("without subdirectory", () => {
