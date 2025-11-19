@@ -23,6 +23,8 @@ type ProcessRepositoryOptions = {
   token: string;
 };
 
+type Repository = ProcessRepositoryOptions;
+
 const processRepository = async (options: ProcessRepositoryOptions): Promise<PushResult> => {
   const { branchName, destPath, repoName, sourcePath, syncName, token } = options;
   try {
@@ -90,15 +92,6 @@ const processRepository = async (options: ProcessRepositoryOptions): Promise<Pus
       success: false,
     };
   }
-};
-
-type Repository = {
-  branchName: string;
-  destPath: string;
-  repoName: string;
-  sourcePath: string;
-  syncName: string;
-  token: string;
 };
 
 export const validatePushConfig = (config: PushConfig): void => {

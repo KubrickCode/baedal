@@ -34,7 +34,7 @@ export const baedal = async (
   const destPath = typeof destination === "string" ? destination : ".";
   const opts = typeof destination === "string" ? options : destination;
 
-  const { owner, provider, repo, subdir } = await parseSource(source, opts?.token);
+  const { owner, provider, repo, subdir } = await parseSource(source);
   const outputPath = resolve(destPath);
 
   await mkdir(outputPath, { recursive: true });
