@@ -1,5 +1,5 @@
 import { ValidationError } from "../internal/errors";
-import type { BaedalOptions, ConflictMode } from "../internal/types";
+import type { BaedalOptions, ConflictMode } from "../pkg/pull/types";
 import type { PullCLIOptions } from "./types";
 
 const validateConflictFlags = (options: PullCLIOptions): void => {

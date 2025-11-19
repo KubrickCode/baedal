@@ -1,4 +1,4 @@
-import type { BaedalOptions, ConflictMode } from "./index";
+import type { BaedalOptions, ConflictMode } from "./types";
 
 describe("ConflictMode", () => {
   test("should accept force mode", () => {

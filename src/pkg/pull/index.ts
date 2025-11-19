@@ -2,7 +2,6 @@ import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { FileSystemError, ValidationError } from "../../internal/errors";
-import type { BaedalOptions, PullResult } from "../../internal/types";
 import {
   checkExistingFiles,
   confirmOverwrite,
@@ -12,9 +11,11 @@ import {
   logger,
   parseSource,
 } from "../../internal/utils";
+import type { BaedalOptions, PullResult } from "./types";
 
 export { getArchiveUrl, getDefaultBranch } from "./archive";
 export { getGitHubDefaultBranch } from "./github";
+export type * from "./types";
 
 const DEFAULT_CONFLICT_MODE = "interactive";
 
