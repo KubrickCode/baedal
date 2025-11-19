@@ -84,6 +84,8 @@ Create a GitHub Personal Access Token at Settings > Developer settings > Persona
 - Automatic branch detection (main/master)
 - Multiple input formats (prefix, URL, or simple user/repo)
 - Zero configuration
+- Robust error handling with structured error classes
+- Standardized logging for better debugging
 
 ## Library Usage
 
