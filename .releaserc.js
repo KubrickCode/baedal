@@ -9,17 +9,22 @@ const mainTemplate = `{{#if noteGroups}}
 {{/each}}
 {{/if}}
 
-{{#if commitGroups}}
-{{~#each commitGroups}}
-
-{{~#if @first}}
+{{#if highlightGroups}}
 ## 🎯 Highlights
+{{~#each highlightGroups}}
 
+### {{title}}
+
+{{#each commits}}
+* {{#if scope}}**{{scope}}:** {{/if}}{{subject}}{{#if hash}} ([{{hash}}]({{../../../repositoryUrl}}/commit/{{hash}})){{/if}}
+{{/each}}
+{{/each}}
 {{/if}}
-{{~#with (lookup ../commitGroups 3)}}{{#if this}}{{#if @first}}{{else}}
-## 🔧 Maintenance
 
-{{/if}}{{/if}}{{/with}}
+{{#if maintenanceGroups}}
+## 🔧 Maintenance
+{{~#each maintenanceGroups}}
+
 ### {{title}}
 
 {{#each commits}}
@@ -71,13 +76,6 @@ export default {
         writerOpts: {
           groupBy: "type",
           commitGroupsSort(a, b) {
-            const highlightTypes = ["✨ Features", "🐛 Bug Fixes", "⚡ Performance"];
-            const aIsHighlight = highlightTypes.includes(a.title);
-            const bIsHighlight = highlightTypes.includes(b.title);
-
-            if (aIsHighlight && !bIsHighlight) return -1;
-            if (!aIsHighlight && bIsHighlight) return 1;
-
             const typeOrder = [
               "✨ Features",
               "🐛 Bug Fixes",
@@ -93,6 +91,17 @@ export default {
             return typeOrder.indexOf(a.title) - typeOrder.indexOf(b.title);
           },
           commitsSort: ["scope", "subject"],
+          finalizeContext(context) {
+            const highlightTypes = ["✨ Features", "🐛 Bug Fixes", "⚡ Performance"];
+
+            context.highlightGroups =
+              context.commitGroups?.filter((group) => highlightTypes.includes(group.title)) || [];
+
+            context.maintenanceGroups =
+              context.commitGroups?.filter((group) => !highlightTypes.includes(group.title)) || [];
+
+            return context;
+          },
           mainTemplate,
         },
       },
