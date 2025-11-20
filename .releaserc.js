@@ -1,3 +1,33 @@
+const mainTemplate = `{{#if noteGroups}}
+{{#each noteGroups}}
+
+### {{title}}
+
+{{#each notes}}
+* {{text}}
+{{/each}}
+{{/each}}
+{{/if}}
+
+{{#if commitGroups}}
+{{~#each commitGroups}}
+
+{{~#if @first}}
+## 🎯 Highlights
+
+{{/if}}
+{{~#if (equal @index 3)}}
+## 🔧 Maintenance
+
+{{/if}}
+### {{title}}
+
+{{#each commits}}
+* {{#if scope}}**{{scope}}:** {{/if}}{{subject}}{{#if hash}} ([{{hash}}]({{../../../repositoryUrl}}/commit/{{hash}})){{/if}}
+{{/each}}
+{{/each}}
+{{/if}}`;
+
 export default {
   branches: ["release"],
   repositoryUrl: "https://github.com/KubrickCode/baedal.git",
@@ -39,28 +69,31 @@ export default {
           ],
         },
         writerOpts: {
-          transform(commit) {
-            const highlightTypes = ["feat", "fix", "perf"];
-
-            const modifiedCommit = { ...commit };
-
-            if (highlightTypes.includes(commit.type)) {
-              modifiedCommit.category = "🎯 Highlights";
-            } else {
-              modifiedCommit.category = "🔧 Maintenance";
-            }
-
-            return modifiedCommit;
-          },
-          groupBy: "category",
+          groupBy: "type",
           commitGroupsSort(a, b) {
-            const priority = {
-              "🎯 Highlights": 1,
-              "🔧 Maintenance": 2,
-            };
-            return (priority[a.title] || 999) - (priority[b.title] || 999);
+            const highlightTypes = ["✨ Features", "🐛 Bug Fixes", "⚡ Performance"];
+            const aIsHighlight = highlightTypes.includes(a.title);
+            const bIsHighlight = highlightTypes.includes(b.title);
+
+            if (aIsHighlight && !bIsHighlight) return -1;
+            if (!aIsHighlight && bIsHighlight) return 1;
+
+            const typeOrder = [
+              "✨ Features",
+              "🐛 Bug Fixes",
+              "⚡ Performance",
+              "🔧 Internal Fixes",
+              "📚 Documentation",
+              "💄 Styles",
+              "♻️ Refactoring",
+              "✅ Tests",
+              "🔧 CI/CD",
+              "🔨 Chore",
+            ];
+            return typeOrder.indexOf(a.title) - typeOrder.indexOf(b.title);
           },
           commitsSort: ["scope", "subject"],
+          mainTemplate,
         },
       },
     ],
