@@ -16,10 +16,10 @@ const mainTemplate = `{{#if noteGroups}}
 ## 🎯 Highlights
 
 {{/if}}
-{{~#if (equal @index 3)}}
+{{~#with (lookup ../commitGroups 3)}}{{#if this}}{{#if @first}}{{else}}
 ## 🔧 Maintenance
 
-{{/if}}
+{{/if}}{{/if}}{{/with}}
 ### {{title}}
 
 {{#each commits}}
