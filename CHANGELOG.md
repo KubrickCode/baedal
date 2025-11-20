@@ -2,6 +2,51 @@
 
 ### ✨ Features
 
+- **test:** add dummy feature for release notes validation ([3ffd82be86318678afc795bfe43925e9bb779ced](/commit/3ffd82be86318678afc795bfe43925e9bb779ced))
+
+### 🐛 Bug Fixes
+
+- **test:** resolve dummy bug for release notes validation ([7108e927dd04447d57f97c8b1164ba841c14412c](/commit/7108e927dd04447d57f97c8b1164ba841c14412c))
+
+### ⚡ Performance
+
+- **test:** improve dummy performance for release notes validation ([5bd301cce49f03a77284489537dfd718814c3107](/commit/5bd301cce49f03a77284489537dfd718814c3107))
+
+## 🔧 Maintenance
+
+### 🔧 Internal Fixes
+
+- split commit groups with finalizeContext for 2-tier release notes ([06c8112957c1a46066226922ce8a513621e63a1e](/commit/06c8112957c1a46066226922ce8a513621e63a1e))
+- **test:** fix dummy internal issue for release notes validation ([155b520a336b31b5326c5202e0a4d37227e295b2](/commit/155b520a336b31b5326c5202e0a4d37227e295b2))
+
+### 📚 Documentation
+
+- **test:** update dummy documentation for release notes validation ([45111ea18d1d1aafbf0df7ac7f3c695293f353cb](/commit/45111ea18d1d1aafbf0df7ac7f3c695293f353cb))
+
+### 💄 Styles
+
+- **test:** apply dummy style changes for release notes validation ([c94db14af6540bdf5e1600586ab786ad5ea4943e](/commit/c94db14af6540bdf5e1600586ab786ad5ea4943e))
+
+### ♻️ Refactoring
+
+- **test:** refactor dummy code for release notes validation ([e3c94cc9f01428cd9c735fb58d50c63fbf3b41d2](/commit/e3c94cc9f01428cd9c735fb58d50c63fbf3b41d2))
+
+### ✅ Tests
+
+- **test:** add dummy test for release notes validation ([752c68e649424630730c13b320822d8d01330819](/commit/752c68e649424630730c13b320822d8d01330819))
+
+### 🔧 CI/CD
+
+- **test:** update dummy CI config for release notes validation ([963d161cdb8bc9002bc2809c59f5741fbf4528cb](/commit/963d161cdb8bc9002bc2809c59f5741fbf4528cb))
+
+### 🔨 Chore
+
+- **test:** update dummy chore for release notes validation ([4b8be7e31d9689cb60838f021e80a0da3bc2cecd](/commit/4b8be7e31d9689cb60838f021e80a0da3bc2cecd))
+
+## 🎯 Highlights
+
+### ✨ Features
+
 - **test:** add dummy feature for release notes validation ([4b22d01d42d73fddde0fef054220a49f836a7e94](/commit/4b22d01d42d73fddde0fef054220a49f836a7e94))
 
 ## 🔧 Maintenance
