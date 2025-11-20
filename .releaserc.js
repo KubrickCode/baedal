@@ -42,13 +42,15 @@ export default {
           transform(commit) {
             const highlightTypes = ["feat", "fix", "perf"];
 
+            const modifiedCommit = { ...commit };
+
             if (highlightTypes.includes(commit.type)) {
-              commit.category = "🎯 Highlights";
+              modifiedCommit.category = "🎯 Highlights";
             } else {
-              commit.category = "🔧 Maintenance";
+              modifiedCommit.category = "🔧 Maintenance";
             }
 
-            return commit;
+            return modifiedCommit;
           },
           groupBy: "category",
           commitGroupsSort(a, b) {
