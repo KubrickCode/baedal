@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
+import { FileSystemError } from "../../internal/core/errors/";
 import { logger } from "../../internal/core/index";
 import { resolveConfigPath } from "./config";
 
@@ -22,7 +23,9 @@ export const initPushConfig = (syncName: string, baseDir?: string, force = false
   const configPath = resolveConfigPath(syncName, baseDir);
 
   if (existsSync(configPath) && !force) {
-    throw new Error(`Configuration file already exists: ${configPath}\nUse --force to overwrite.`);
+    throw new FileSystemError(
+      `Configuration file already exists: ${configPath}\nUse --force to overwrite.`
+    );
   }
 
   const dir = dirname(configPath);

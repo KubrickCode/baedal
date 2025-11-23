@@ -1,3 +1,4 @@
+import { ValidationError } from "../core/errors/";
 import { parseSource } from "./parser";
 
 describe("parseSource", () => {
@@ -102,6 +103,14 @@ describe("parseSource", () => {
 
     it("should throw error for URL without owner/repo", async () => {
       await expect(parseSource("https://github.com/")).rejects.toThrow("Invalid source format");
+    });
+
+    it("should throw ValidationError for invalid source", async () => {
+      await expect(parseSource("invalid")).rejects.toThrow(ValidationError);
+    });
+
+    it("should throw ValidationError for empty owner", async () => {
+      await expect(parseSource("/repo")).rejects.toThrow(ValidationError);
     });
   });
 

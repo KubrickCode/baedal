@@ -1,3 +1,4 @@
+import { ValidationError } from "../core/errors/";
 import type { RepoInfo } from "../core/types/";
 
 export const parseSource = async (source: string): Promise<RepoInfo> => {
@@ -8,13 +9,17 @@ export const parseSource = async (source: string): Promise<RepoInfo> => {
   const parts = cleanSource.split("/");
 
   if (parts.length < 2) {
-    throw new Error("Invalid source format. Use: user/repo, github:user/repo, or GitHub URL");
+    throw new ValidationError(
+      "Invalid source format. Use: user/repo, github:user/repo, or GitHub URL"
+    );
   }
 
   const [owner, repo, ...subdirParts] = parts;
 
   if (!owner || !repo) {
-    throw new Error("Invalid source format. Use: user/repo, github:user/repo, or GitHub URL");
+    throw new ValidationError(
+      "Invalid source format. Use: user/repo, github:user/repo, or GitHub URL"
+    );
   }
 
   const subdir = subdirParts.join("/");

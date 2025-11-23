@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import yaml from "js-yaml";
+import { ConfigError } from "../../internal/core/errors/";
 import { PushConfigSchema, type PushConfig } from ".";
 
 const CONFIG_DIR = ".baedal/push";
@@ -14,7 +15,7 @@ export const loadPushConfig = (syncName: string, baseDir?: string): PushConfig =
   const configPath = resolveConfigPath(syncName, baseDir);
 
   if (!existsSync(configPath)) {
-    throw new Error(`Configuration file not found: ${configPath}`);
+    throw new ConfigError(`Configuration file not found: ${configPath}`);
   }
 
   const yamlContent = readFileSync(configPath, "utf-8");

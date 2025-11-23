@@ -1,3 +1,4 @@
+import { ValidationError } from "../internal/core/errors/";
 import { adaptCLIOptions } from "./adapter";
 import type { PullCLIOptions } from "./types";
 
@@ -52,6 +53,15 @@ describe("adaptCLIOptions", () => {
       expect(() => adaptCLIOptions(cliOptions)).toThrow(
         "Cannot use --force, --skip-existing, and --no-clobber together"
       );
+    });
+
+    it("should throw ValidationError for conflicting flags", () => {
+      const cliOptions: PullCLIOptions = {
+        force: true,
+        skipExisting: true,
+      };
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(ValidationError);
     });
 
     it("should throw error when force and noClobber are both set", () => {

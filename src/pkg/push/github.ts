@@ -1,4 +1,5 @@
 import type { Octokit } from "@octokit/rest";
+import { ValidationError } from "../../internal/core/errors/";
 import { createGitHubClient as createOctokitClient } from "../../internal/infra/index";
 import { GIT_FILE_MODES, type CollectedFile } from "./types";
 
@@ -150,7 +151,7 @@ export class GitHubClient {
 
 export const createGitHubClient = (token: string): GitHubClient => {
   if (!token || token.trim() === "") {
-    throw new Error("GitHub token is required");
+    throw new ValidationError("GitHub token is required");
   }
 
   return new GitHubClient(token);
