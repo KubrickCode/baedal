@@ -24,7 +24,9 @@ export const initPushConfig = (syncName: string, baseDir?: string, force = false
 
   if (existsSync(configPath) && !force) {
     throw new FileSystemError(
-      `Configuration file already exists: ${configPath}\nUse --force to overwrite.`
+      `Configuration file already exists: ${configPath}
+To overwrite: baedal push:init ${syncName} --force
+To edit:      open ${configPath}`
     );
   }
 

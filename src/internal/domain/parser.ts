@@ -7,18 +7,14 @@ export const parseSource = async (source: string): Promise<RepoInfo> => {
   const cleanSource = source.replace(/^github:/, "").replace(/^https?:\/\/github\.com\//, "");
 
   const parts = cleanSource.split("/");
-
-  if (parts.length < 2) {
-    throw new ValidationError(
-      "Invalid source format. Use: user/repo, github:user/repo, or GitHub URL"
-    );
-  }
-
   const [owner, repo, ...subdirParts] = parts;
 
   if (!owner || !repo) {
     throw new ValidationError(
-      "Invalid source format. Use: user/repo, github:user/repo, or GitHub URL"
+      `Invalid source format.
+Try: user/repo
+Or:  github:user/repo
+Or:  https://github.com/user/repo`
     );
   }
 

@@ -151,7 +151,10 @@ export class GitHubClient {
 
 export const createGitHubClient = (token: string): GitHubClient => {
   if (!token || token.trim() === "") {
-    throw new ValidationError("GitHub token is required");
+    throw new ValidationError(
+      `GitHub token is required.
+Please set the 'token' field in your push configuration file (e.g., .baedal/push/your-sync-name.yml).`
+    );
   }
 
   return new GitHubClient(token);

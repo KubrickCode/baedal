@@ -77,6 +77,12 @@ syncs:
       );
     });
 
+    it("should include init command hint in error message", () => {
+      expect(() => loadPushConfig("nonexistent", testBaseDir)).toThrow(
+        /Try: baedal push:init nonexistent/
+      );
+    });
+
     it("should throw error for invalid YAML", async () => {
       const invalidYaml = `
 token: test

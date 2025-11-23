@@ -6,7 +6,13 @@ const validateConflictFlags = (options: PullCLIOptions): void => {
   const conflictFlags = [options.force, options.skipExisting, options.noClobber].filter(Boolean);
 
   if (conflictFlags.length > 1) {
-    throw new ValidationError("Cannot use --force, --skip-existing, and --no-clobber together");
+    throw new ValidationError(
+      `Cannot use --force, --skip-existing, and --no-clobber together.
+Choose one conflict resolution mode:
+  --force           Overwrite without asking
+  --skip-existing   Keep existing files
+  --no-clobber      Abort if conflicts exist`
+    );
   }
 };
 
