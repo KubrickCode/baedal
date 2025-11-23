@@ -146,9 +146,18 @@ The main `baedal()` function orchestrates:
 
 All errors inherit from `BaseError` with structured error codes:
 
-- `FileSystemError` - File I/O and extraction errors
-- `NetworkError` - GitHub API and download errors
+- `FileSystemError` - File I/O and extraction errors (with path context)
+- `NetworkError` - GitHub API and download errors (with URL context)
 - `ValidationError` - Input validation and configuration errors
+- `ConfigError` - Configuration file errors
+
+**Recent Improvements**:
+
+- All error throwing unified to BaseError hierarchy (download.ts, files.ts)
+- Logging standardized with `logger` utility (removed direct console usage)
+- Provider type utilized for extensibility (archive.ts supports provider-based branching)
+- CLI input validation enhanced (validateExcludePatterns in adapter.ts)
+- Extract logic simplified with strategy pattern (extractDirectly/extractViaTemp)
 
 **Conflict Resolution**
 
