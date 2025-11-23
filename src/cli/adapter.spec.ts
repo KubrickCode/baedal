@@ -97,6 +97,26 @@ describe("adaptCLIOptions", () => {
         "Cannot use --force, --skip-existing, and --no-clobber together"
       );
     });
+
+    it("should include flag descriptions in error message", () => {
+      const cliOptions: PullCLIOptions = {
+        force: true,
+        skipExisting: true,
+      };
+
+      try {
+        adaptCLIOptions(cliOptions);
+        fail("Expected adaptCLIOptions to throw an error.");
+      } catch (e) {
+        if (!(e instanceof Error)) {
+          fail("Expected an Error to be thrown");
+        }
+        expect(e.message).toMatch(/Choose one conflict resolution mode/);
+        expect(e.message).toMatch(/--force.*Overwrite without asking/);
+        expect(e.message).toMatch(/--skip-existing.*Keep existing files/);
+        expect(e.message).toMatch(/--no-clobber.*Abort if conflicts exist/);
+      }
+    });
   });
 
   describe("Token resolution", () => {

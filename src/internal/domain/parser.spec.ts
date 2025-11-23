@@ -112,6 +112,20 @@ describe("parseSource", () => {
     it("should throw ValidationError for empty owner", async () => {
       await expect(parseSource("/repo")).rejects.toThrow(ValidationError);
     });
+
+    it("should include all format options in error message for invalid source", async () => {
+      try {
+        await parseSource("invalid");
+        fail("Expected parseSource to throw an error.");
+      } catch (e) {
+        if (!(e instanceof Error)) {
+          fail("Expected an Error to be thrown");
+        }
+        expect(e.message).toMatch(/Try: user\/repo/);
+        expect(e.message).toMatch(/Or:.*github:user\/repo/);
+        expect(e.message).toMatch(/Or:.*https:\/\/github\.com\/user\/repo/);
+      }
+    });
   });
 
   describe("edge cases", () => {

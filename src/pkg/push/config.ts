@@ -15,7 +15,11 @@ export const loadPushConfig = (syncName: string, baseDir?: string): PushConfig =
   const configPath = resolveConfigPath(syncName, baseDir);
 
   if (!existsSync(configPath)) {
-    throw new ConfigError(`Configuration file not found: ${configPath}`);
+    throw new ConfigError(
+      `Configuration file not found: ${configPath}
+Try: baedal push:init ${syncName}
+This will create the config file at ${configPath}`
+    );
   }
 
   const yamlContent = readFileSync(configPath, "utf-8");
