@@ -5,7 +5,7 @@ import {
   prepareRepositories,
   validatePushConfig,
 } from "./executor";
-import type { PushConfig, PushResult } from ".";
+import type { PushConfig, PushResult } from "./types";
 
 describe("executePush", () => {
   describe("Error Handling", () => {

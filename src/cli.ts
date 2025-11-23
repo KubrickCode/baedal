@@ -1,16 +1,38 @@
 import { Command } from "commander";
 import { adaptCLIOptions } from "./cli/adapter";
 import type { PullCLIOptions } from "./cli/types";
+import {
+  ConfigError,
+  FileSystemError,
+  NetworkError,
+  ValidationError,
+} from "./internal/core/errors/";
 import { logger } from "./internal/core/index";
 import { baedal } from "./pkg/pull/index";
 import { executePush, initPushConfig, loadPushConfig, printInitSuccess } from "./pkg/push/index";
 import type { PushInitCLIOptions } from "./pkg/push/types";
 
+const EXIT_CODES = {
+  CONFIG_ERROR: 4,
+  FILESYSTEM_ERROR: 3,
+  NETWORK_ERROR: 2,
+  SUCCESS: 0,
+  UNKNOWN_ERROR: 99,
+  VALIDATION_ERROR: 1,
+} as const;
+
 const program = new Command();
 
 const handleError = (error: unknown): never => {
   logger.error("\n✗ Error:", error instanceof Error ? error.message : String(error));
-  process.exit(1);
+
+  let exitCode: number = EXIT_CODES.UNKNOWN_ERROR;
+  if (error instanceof ConfigError) exitCode = EXIT_CODES.CONFIG_ERROR;
+  else if (error instanceof ValidationError) exitCode = EXIT_CODES.VALIDATION_ERROR;
+  else if (error instanceof NetworkError) exitCode = EXIT_CODES.NETWORK_ERROR;
+  else if (error instanceof FileSystemError) exitCode = EXIT_CODES.FILESYSTEM_ERROR;
+
+  process.exit(exitCode);
 };
 
 program.name("baedal");

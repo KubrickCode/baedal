@@ -2,7 +2,13 @@ import { join, relative } from "node:path";
 import { ConfigError, logger, ValidationError } from "../../internal/core/index";
 import { collectFiles } from "./files";
 import { createGitHubClient } from "./github";
-import type { PushConfig, PushExecutionResult, PushResult } from "./types";
+import type {
+  CategorizedResults,
+  ProcessRepositoryOptions,
+  PushConfig,
+  PushExecutionResult,
+  PushResult,
+} from "./types";
 
 const BRANCH_PREFIX = "sync";
 const SUMMARY_SEPARATOR_LENGTH = 60;
@@ -12,17 +18,6 @@ const generateBranchName = (syncName: string): string => {
   const sanitized = syncName.replace(/[^a-zA-Z0-9-]/g, "-");
   return `${BRANCH_PREFIX}/${sanitized}-${timestamp}`;
 };
-
-type ProcessRepositoryOptions = {
-  branchName: string;
-  destPath: string;
-  repoName: string;
-  sourcePath: string;
-  syncName: string;
-  token: string;
-};
-
-type Repository = ProcessRepositoryOptions;
 
 const processRepository = async (options: ProcessRepositoryOptions): Promise<PushResult> => {
   const { branchName, destPath, repoName, sourcePath, syncName, token } = options;
@@ -107,7 +102,7 @@ export const prepareRepositories = (
   config: PushConfig,
   branchName: string,
   syncName: string
-): Repository[] => {
+): ProcessRepositoryOptions[] => {
   return config.syncs.flatMap((sync) =>
     sync.repos.map((repo) => ({
       branchName,
@@ -120,14 +115,9 @@ export const prepareRepositories = (
   );
 };
 
-const executeParallelPush = async (repos: Repository[]): Promise<PushResult[]> => {
+const executeParallelPush = async (repos: ProcessRepositoryOptions[]): Promise<PushResult[]> => {
   const promises = repos.map((repo) => processRepository(repo));
   return await Promise.all(promises);
-};
-
-type CategorizedResults = {
-  failed: PushResult[];
-  successful: PushResult[];
 };
 
 export const categorizeResults = (results: PushResult[]): CategorizedResults => {
