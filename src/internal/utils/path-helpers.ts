@@ -1,7 +1,9 @@
 import { join } from "node:path";
+import { compact } from "es-toolkit";
+import { isEmpty } from "es-toolkit/compat";
 
 export const joinPathSafe = (...paths: string[]): string => {
-  const validPaths = paths.filter((p) => p && p.length > 0);
+  const validPaths = compact(paths);
 
   if (validPaths.length === 0) {
     return "";
@@ -15,7 +17,7 @@ export const joinPathSafe = (...paths: string[]): string => {
  * GitHub API always uses forward slashes, not backslashes.
  */
 export const normalizeGitHubPath = (path: string): string => {
-  if (!path) {
+  if (isEmpty(path)) {
     return "";
   }
 
@@ -30,7 +32,7 @@ export const normalizeGitHubPath = (path: string): string => {
  * GitHub tarballs always include a root directory like "owner-repo-ref/".
  */
 export const stripRootDirectory = (path: string): string => {
-  if (!path) {
+  if (isEmpty(path)) {
     return "";
   }
 

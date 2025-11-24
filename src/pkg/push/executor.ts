@@ -1,4 +1,6 @@
 import { join, relative } from "node:path";
+import { partition } from "es-toolkit";
+import { isEmpty } from "es-toolkit/compat";
 import { ConfigError, logger, ValidationError } from "../../internal/core/index";
 import { collectFiles } from "./files";
 import { createGitHubClient } from "./github";
@@ -89,7 +91,7 @@ const processRepository = async (options: ProcessRepositoryOptions): Promise<Pus
 };
 
 export const validatePushConfig = (config: PushConfig): void => {
-  if (!config.token || config.token.trim() === "") {
+  if (isEmpty(config.token?.trim())) {
     throw new ConfigError(
       "GitHub token is required. Specify 'token' in config file.",
       "token",
@@ -121,17 +123,7 @@ const executeParallelPush = async (repos: ProcessRepositoryOptions[]): Promise<P
 };
 
 export const categorizeResults = (results: PushResult[]): CategorizedResults => {
-  const successful: PushResult[] = [];
-  const failed: PushResult[] = [];
-
-  for (const result of results) {
-    if (result.success) {
-      successful.push(result);
-    } else {
-      failed.push(result);
-    }
-  }
-
+  const [successful, failed] = partition(results, (result) => result.success);
   return { failed, successful };
 };
 
