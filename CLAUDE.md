@@ -151,6 +151,25 @@ All errors inherit from `BaseError` with structured error codes:
 - `ValidationError` - Input validation and configuration errors
 - `ConfigError` - Configuration file errors
 
+**Error Handling Guidelines**:
+
+- **NEVER use generic `Error` class** - ESLint rule enforces this
+- Always use appropriate BaseError subclass based on error category
+- Import from `src/internal/core/errors/`
+- Provide actionable error messages with context
+
+Example:
+
+```typescript
+// Bad - generic Error (linter will reject)
+throw new Error("Download failed");
+
+// Good - specific error with context
+throw new NetworkError("Failed to download tarball", "DOWNLOAD_FAILED", {
+  url: tarballUrl,
+});
+```
+
 **Recent Improvements**:
 
 - All error throwing unified to BaseError hierarchy (download.ts, files.ts)
@@ -158,6 +177,7 @@ All errors inherit from `BaseError` with structured error codes:
 - Provider type utilized for extensibility (archive.ts supports provider-based branching)
 - CLI input validation enhanced (validateExcludePatterns in adapter.ts)
 - Extract logic simplified with strategy pattern (extractDirectly/extractViaTemp)
+- ESLint rule enforces BaseError usage (no-restricted-syntax)
 
 **Conflict Resolution**
 

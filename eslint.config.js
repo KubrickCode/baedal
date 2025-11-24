@@ -39,6 +39,15 @@ export default [
           varsIgnorePattern: "^_",
         },
       ],
+      "no-restricted-syntax": [
+        "error",
+        {
+          message:
+            "Use BaseError subclasses (ValidationError, NetworkError, FileSystemError, ConfigError) instead of generic Error. Import from 'src/internal/core/errors/'.",
+          selector:
+            "ThrowStatement > NewExpression[callee.name='Error']:not([callee.object])",
+        },
+      ],
       "import/order": [
         "error",
         {
