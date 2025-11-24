@@ -242,4 +242,52 @@ describe("adaptCLIOptions", () => {
       expect(Object.keys(result)).toHaveLength(0);
     });
   });
+
+  describe("Zod validation", () => {
+    it("should reject unknown properties", () => {
+      const cliOptions = {
+        force: true,
+        unknownProp: "value",
+      } as any;
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(ValidationError);
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(/Invalid CLI options/);
+    });
+
+    it("should reject non-boolean force", () => {
+      const cliOptions = {
+        force: "true",
+      } as any;
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(ValidationError);
+    });
+
+    it("should reject non-array exclude", () => {
+      const cliOptions = {
+        exclude: "*.log",
+      } as any;
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(ValidationError);
+    });
+
+    it("should reject non-string token", () => {
+      const cliOptions = {
+        token: 123,
+      } as any;
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(ValidationError);
+    });
+
+    it("should accept all valid CLI options", () => {
+      const cliOptions: PullCLIOptions = {
+        exclude: ["*.log"],
+        force: true,
+        noClobber: false,
+        skipExisting: false,
+        token: "ghp_token",
+      };
+
+      expect(() => adaptCLIOptions(cliOptions)).not.toThrow();
+    });
+  });
 });
