@@ -6,8 +6,10 @@ export const parseSource = async (source: string): Promise<RepoInfo> => {
 
   const cleanSource = source.replace(/^github:/, "").replace(/^https?:\/\/github\.com\//, "");
 
-  const parts = cleanSource.split("/");
-  const [owner, repo, ...subdirParts] = parts;
+  // Split by # to handle fragments (e.g., user/repo#subdir)
+  const [repoPath = "", fragment] = cleanSource.split("#");
+  const parts = repoPath.split("/");
+  const [owner, repo] = parts;
 
   if (!owner || !repo) {
     throw new ValidationError(
@@ -18,7 +20,9 @@ Or:  https://github.com/user/repo`
     );
   }
 
-  const subdir = subdirParts.join("/");
+  // Subdir can come from path (user/repo/subdir) or fragment (user/repo#subdir)
+  const pathSubdir = parts.slice(2).join("/");
+  const subdir = fragment || pathSubdir;
 
   return subdir ? { owner, provider, repo, subdir } : { owner, provider, repo };
 };
