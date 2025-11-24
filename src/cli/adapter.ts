@@ -1,34 +1,12 @@
-import { ValidationError } from "../internal/core/errors/";
+import { parseWithZod } from "../internal/utils/";
 import type { BaedalOptions, ConflictMode } from "../pkg/pull/types";
 import type { PullCLIOptions } from "./types";
-
-const validateConflictFlags = (options: PullCLIOptions): void => {
-  const conflictFlags = [options.force, options.skipExisting, options.noClobber].filter(Boolean);
-
-  if (conflictFlags.length > 1) {
-    throw new ValidationError(
-      `Cannot use --force, --skip-existing, and --no-clobber together.
-Choose one conflict resolution mode:
-  --force           Overwrite without asking
-  --skip-existing   Keep existing files
-  --no-clobber      Abort if conflicts exist`
-    );
-  }
-};
-
-const validateExcludePatterns = (patterns?: string[]): void => {
-  if (!patterns) return;
-
-  const emptyPatterns = patterns.filter((p) => p.trim() === "");
-  if (emptyPatterns.length > 0) {
-    throw new ValidationError("Exclude patterns cannot be empty strings");
-  }
-};
+import { PullCLIOptionsSchema } from "./types";
 
 const resolveConflictMode = (options: PullCLIOptions): ConflictMode | undefined => {
   if (options.force) return { mode: "force" };
   if (options.skipExisting) return { mode: "skip-existing" };
-  if (options.noClobber) return { mode: "no-clobber" };
+  if (options.noClobber || options.clobber === false) return { mode: "no-clobber" };
   return undefined; // Library defaults to interactive
 };
 
@@ -37,8 +15,7 @@ const resolveToken = (cliToken: string | undefined): string | undefined => {
 };
 
 export const adaptCLIOptions = (cliOptions: PullCLIOptions): BaedalOptions => {
-  validateConflictFlags(cliOptions);
-  validateExcludePatterns(cliOptions.exclude);
+  parseWithZod(PullCLIOptionsSchema, cliOptions, "CLI options");
 
   const conflictMode = resolveConflictMode(cliOptions);
   const token = resolveToken(cliOptions.token);

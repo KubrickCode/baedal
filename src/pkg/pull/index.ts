@@ -4,10 +4,10 @@ import { join, resolve } from "node:path";
 import { FileSystemError, logger, ValidationError } from "../../internal/core/index";
 import { extractTarball, getFileListFromTarball, parseSource } from "../../internal/domain/index";
 import { confirmOverwrite, downloadStream } from "../../internal/infra/index";
-import { checkExistingFiles } from "../../internal/utils/index";
+import { checkExistingFiles, parseWithZod } from "../../internal/utils/index";
 import { getArchiveUrl, getDefaultBranch } from "./archive";
 import type { BaedalOptions, PullResult } from "./types";
-import { validateBaedalOptions } from "./validation";
+import { BaedalOptionsSchema } from "./types";
 
 export { getArchiveUrl, getDefaultBranch } from "./archive";
 export { getGitHubDefaultBranch } from "./github";
@@ -37,7 +37,19 @@ export const baedal = async (
   const destPath = typeof destination === "string" ? destination : ".";
   const opts = typeof destination === "string" ? options : destination;
 
-  validateBaedalOptions(source, destPath, opts);
+  if (!source || source.trim() === "") {
+    throw new ValidationError(
+      "Source cannot be empty.\nTry: user/repo\nOr:  github:user/repo\nOr:  https://github.com/user/repo"
+    );
+  }
+
+  if (!destPath || destPath.trim() === "") {
+    throw new ValidationError("Destination cannot be empty. Try: . or ./my-folder");
+  }
+
+  if (opts) {
+    parseWithZod(BaedalOptionsSchema, opts, "options");
+  }
 
   const { owner, provider, repo, subdir } = await parseSource(source);
   const outputPath = resolve(destPath);
