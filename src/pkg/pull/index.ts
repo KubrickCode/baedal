@@ -7,6 +7,7 @@ import { confirmOverwrite, downloadStream } from "../../internal/infra/index";
 import { checkExistingFiles } from "../../internal/utils/index";
 import { getArchiveUrl, getDefaultBranch } from "./archive";
 import type { BaedalOptions, PullResult } from "./types";
+import { validateBaedalOptions } from "./validation";
 
 export { getArchiveUrl, getDefaultBranch } from "./archive";
 export { getGitHubDefaultBranch } from "./github";
@@ -35,6 +36,8 @@ export const baedal = async (
 ): Promise<PullResult> => {
   const destPath = typeof destination === "string" ? destination : ".";
   const opts = typeof destination === "string" ? options : destination;
+
+  validateBaedalOptions(source, destPath, opts);
 
   const { owner, provider, repo, subdir } = await parseSource(source);
   const outputPath = resolve(destPath);
