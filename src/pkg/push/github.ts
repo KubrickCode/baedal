@@ -1,4 +1,5 @@
 import type { Octokit } from "@octokit/rest";
+import { isEmpty } from "es-toolkit/compat";
 import { ValidationError } from "../../internal/core/errors/";
 import { createGitHubClient as createOctokitClient } from "../../internal/infra/index";
 import { GIT_FILE_MODES, type CollectedFile } from "./types";
@@ -150,7 +151,7 @@ export class GitHubClient {
 }
 
 export const createGitHubClient = (token: string): GitHubClient => {
-  if (!token || token.trim() === "") {
+  if (isEmpty(token?.trim())) {
     throw new ValidationError(
       `GitHub token is required.
 Please set the 'token' field in your push configuration file (e.g., .baedal/push/your-sync-name.yml).`

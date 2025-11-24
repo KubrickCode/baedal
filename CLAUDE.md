@@ -178,6 +178,38 @@ throw new NetworkError("Failed to download tarball", "DOWNLOAD_FAILED", {
 - CLI input validation enhanced (validateExcludePatterns in adapter.ts)
 - Extract logic simplified with strategy pattern (extractDirectly/extractViaTemp)
 - ESLint rule enforces BaseError usage (no-restricted-syntax)
+- Code quality enhanced with es-toolkit utilities (partition, compact, isEmpty)
+
+**Utility Functions**
+
+**MANDATORY**: Use es-toolkit for array/object/string utilities
+
+- Array operations: Use `partition`, `compact`, `chunk`, `uniq` instead of manual loops
+- Null checks: Use `isEmpty` (from `es-toolkit/compat`) instead of `!value` or `value?.length === 0`
+- Type-safe: es-toolkit provides better TypeScript inference
+
+Example:
+
+```typescript
+// Bad - manual array filtering and null checks
+const valid = items.filter((x) => x && x.length > 0);
+if (!value || value.length === 0) return;
+
+// Good - es-toolkit utilities
+import { compact } from "es-toolkit";
+import { isEmpty } from "es-toolkit/compat";
+const valid = compact(items);
+if (isEmpty(value)) return;
+```
+
+Rationale:
+
+- Consistent patterns across codebase
+- Better null safety (handles edge cases like `null`, `undefined`, `""`, `0`, `false`)
+- Industry-standard library (battle-tested)
+- Tree-shakeable (only used functions bundled)
+
+See: https://es-toolkit.slash.page
 
 **Conflict Resolution**
 
