@@ -64,6 +64,39 @@
       "terminalName": "Release"
     },
     {
+      "name": "Build",
+      "color": "hotpink",
+      "shortcut": "b",
+      "command": "just build",
+      "terminalName": "Build"
+    },
+    {
+      "name": "Utils",
+      "shortcut": "u",
+      "color": "teal",
+      "group": [
+        {
+          "name": "Deps",
+          "command": "just deps",
+          "terminalName": "Deps",
+          "shortcut": "d"
+        },
+        {
+          "name": "Lint",
+          "command": "just lint",
+          "terminalName": "Lint",
+          "shortcut": "l"
+        }
+      ]
+    },
+    {
+      "name": "Test",
+      "color": "tomato",
+      "command": "just test",
+      "terminalName": "Test",
+      "shortcut": "t"
+    },
+    {
       "name": "Claude",
       "color": "blue",
       "shortcut": "c",
