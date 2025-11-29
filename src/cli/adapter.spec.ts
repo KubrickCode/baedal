@@ -51,7 +51,7 @@ describe("adaptCLIOptions", () => {
       };
 
       expect(() => adaptCLIOptions(cliOptions)).toThrow(
-        "Cannot use --force, --skip-existing, and --no-clobber together"
+        "Cannot use --force, --modified-only, --no-clobber, and --skip-existing together"
       );
     });
 
@@ -71,7 +71,7 @@ describe("adaptCLIOptions", () => {
       };
 
       expect(() => adaptCLIOptions(cliOptions)).toThrow(
-        "Cannot use --force, --skip-existing, and --no-clobber together"
+        "Cannot use --force, --modified-only, --no-clobber, and --skip-existing together"
       );
     });
 
@@ -82,19 +82,20 @@ describe("adaptCLIOptions", () => {
       };
 
       expect(() => adaptCLIOptions(cliOptions)).toThrow(
-        "Cannot use --force, --skip-existing, and --no-clobber together"
+        "Cannot use --force, --modified-only, --no-clobber, and --skip-existing together"
       );
     });
 
-    it("should throw error when all three flags are set", () => {
+    it("should throw error when all flags are set", () => {
       const cliOptions: PullCLIOptions = {
         force: true,
+        modifiedOnly: true,
         noClobber: true,
         skipExisting: true,
       };
 
       expect(() => adaptCLIOptions(cliOptions)).toThrow(
-        "Cannot use --force, --skip-existing, and --no-clobber together"
+        "Cannot use --force, --modified-only, --no-clobber, and --skip-existing together"
       );
     });
 

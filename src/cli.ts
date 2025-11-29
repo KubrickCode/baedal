@@ -48,8 +48,9 @@ program
     "Authentication token for private repositories (GitHub Personal Access Token)"
   )
   .option("-f, --force", "Force overwrite without confirmation")
-  .option("-s, --skip-existing", "Skip existing files, only add new files")
+  .option("-m, --modified-only", "Only update files that exist locally and have changed")
   .option("-n, --no-clobber", "Abort if any file would be overwritten")
+  .option("-s, --skip-existing", "Skip existing files, only add new files")
   .action(async (source: string, destination: string, cliOptions: PullCLIOptions) => {
     try {
       const baedalOptions = adaptCLIOptions(cliOptions);

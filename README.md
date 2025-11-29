@@ -33,8 +33,9 @@ baedal pull user/repo ./output --exclude "test/**" "docs/**"
 
 # File conflict handling
 baedal pull user/repo --force                # Force overwrite without confirmation
-baedal pull user/repo --skip-existing        # Skip existing files, only add new files
+baedal pull user/repo --modified-only        # Update only modified files (ignore new files)
 baedal pull user/repo --no-clobber          # Abort if any file would be overwritten
+baedal pull user/repo --skip-existing        # Skip existing files, only add new files
 
 # Explicit GitHub prefix
 baedal pull github:user/repo
@@ -80,7 +81,7 @@ Create a GitHub Personal Access Token at Settings > Developer settings > Persona
 - Support for private repositories with authentication tokens
 - Support for specific folders/files
 - Exclude specific files or patterns using glob patterns
-- File conflict handling modes (force, skip-existing, no-clobber)
+- File conflict handling modes (force, modified-only, no-clobber, skip-existing)
 - Automatic branch detection (main/master)
 - Multiple input formats (prefix, URL, or simple user/repo)
 - Zero configuration
@@ -114,10 +115,13 @@ await baedal("user/repo", "./output", {
   conflictMode: { mode: "force" }, // Force overwrite without confirmation
 });
 await baedal("user/repo", "./output", {
-  conflictMode: { mode: "skip-existing" }, // Skip existing files, only add new files
+  conflictMode: { mode: "modified-only" }, // Update only modified files (ignore new files)
 });
 await baedal("user/repo", "./output", {
   conflictMode: { mode: "no-clobber" }, // Abort if any file would be overwritten
+});
+await baedal("user/repo", "./output", {
+  conflictMode: { mode: "skip-existing" }, // Skip existing files, only add new files
 });
 
 // Legacy conflict handling (still supported)
