@@ -13,7 +13,7 @@ const getFileSize = async (filePath: string): Promise<number> => {
 
 export const normalizePath = (path: string): string => {
   let normalized = normalize(path);
-  normalized = normalized.replace(/^[./\\]+/, "");
+  normalized = normalized.replace(/^\.[\\/]+/, "");
   normalized = normalized.replace(/\\/g, "/");
   return normalized;
 };
