@@ -156,4 +156,46 @@ describe("parseSource", () => {
       });
     });
   });
+
+  describe("fragment format (user/repo#subdir)", () => {
+    it("should parse user/repo#subdir format", async () => {
+      const result = await parseSource("octocat/hello-world#src/components");
+      expect(result).toEqual({
+        owner: "octocat",
+        provider: "github",
+        repo: "hello-world",
+        subdir: "src/components",
+      });
+    });
+
+    it("should parse user/repo#nested/subdir format", async () => {
+      const result = await parseSource("owner/repo#a/b/c");
+      expect(result).toEqual({
+        owner: "owner",
+        provider: "github",
+        repo: "repo",
+        subdir: "a/b/c",
+      });
+    });
+
+    it("should prefer fragment over path subdir", async () => {
+      const result = await parseSource("owner/repo/path#fragment");
+      expect(result).toEqual({
+        owner: "owner",
+        provider: "github",
+        repo: "repo",
+        subdir: "fragment",
+      });
+    });
+
+    it("should handle github: prefix with fragment", async () => {
+      const result = await parseSource("github:owner/repo#subdir");
+      expect(result).toEqual({
+        owner: "owner",
+        provider: "github",
+        repo: "repo",
+        subdir: "subdir",
+      });
+    });
+  });
 });

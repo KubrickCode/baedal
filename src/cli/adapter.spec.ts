@@ -35,6 +35,20 @@ describe("adaptCLIOptions", () => {
       expect(result.conflictMode).toEqual({ mode: "no-clobber" });
     });
 
+    it("should convert clobber=false to no-clobber mode", () => {
+      const cliOptions: PullCLIOptions = { clobber: false };
+      const result = adaptCLIOptions(cliOptions);
+
+      expect(result.conflictMode).toEqual({ mode: "no-clobber" });
+    });
+
+    it("should convert modifiedOnly flag to modified-only mode", () => {
+      const cliOptions: PullCLIOptions = { modifiedOnly: true };
+      const result = adaptCLIOptions(cliOptions);
+
+      expect(result.conflictMode).toEqual({ mode: "modified-only" });
+    });
+
     it("should return undefined conflictMode when no flags are set", () => {
       const cliOptions: PullCLIOptions = {};
       const result = adaptCLIOptions(cliOptions);

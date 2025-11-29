@@ -1,5 +1,21 @@
 import { ValidationError } from "../../internal/core/errors/";
-import { getArchiveUrl } from "./archive";
+import { getArchiveUrl, getDefaultBranch } from "./archive";
+
+describe("getDefaultBranch", () => {
+  describe("error cases", () => {
+    it("should throw ValidationError for unsupported provider", async () => {
+      await expect(getDefaultBranch("owner", "repo", "gitlab" as "github")).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it("should throw ValidationError with provider name in message", async () => {
+      await expect(getDefaultBranch("owner", "repo", "bitbucket" as "github")).rejects.toThrow(
+        "Unsupported provider: bitbucket"
+      );
+    });
+  });
+});
 
 describe("getArchiveUrl", () => {
   it("should generate GitHub tarball URL", () => {
