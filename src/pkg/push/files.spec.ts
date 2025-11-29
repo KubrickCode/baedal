@@ -28,6 +28,22 @@ describe("Push Files - Integration Test", () => {
     it("should handle already normalized paths", () => {
       expect(normalizePath("src/index.ts")).toBe("src/index.ts");
     });
+
+    it("should preserve dot-prefixed paths like .claude", () => {
+      expect(normalizePath(".claude")).toBe(".claude");
+    });
+
+    it("should preserve dot-prefixed paths with subdirectories", () => {
+      expect(normalizePath(".claude/commands")).toBe(".claude/commands");
+    });
+
+    it("should preserve .github path", () => {
+      expect(normalizePath(".github/workflows")).toBe(".github/workflows");
+    });
+
+    it("should handle ./ prefix with dot-prefixed path", () => {
+      expect(normalizePath("./.claude")).toBe(".claude");
+    });
   });
 
   describe("getRelativePath", () => {

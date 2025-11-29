@@ -21,6 +21,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Always use workspace's package manager (detect from lock files: pnpm-lock.yaml → pnpm, yarn.lock → yarn, package-lock.json → npm)
   - Prefer just commands when task exists in justfile or adding recurring tasks
   - Direct command execution acceptable for one-off operations
+- Dependencies: exact versions only (`package@1.2.3`), forbid `^`, `~`, `latest`, ranges
+  - New installs: check latest stable version first, then pin it (e.g., `pnpm add --save-exact package@1.2.3`)
+  - CI must use frozen mode (`npm ci`, `pnpm install --frozen-lockfile`)
+- Clean up background processes: always kill dev servers, watchers, etc. after use (prevent port conflicts)
 
 **IMPORTANT**
 
@@ -102,7 +106,8 @@ src/
     │   └── prompt.ts # User interaction (readline wrapper)
     └── utils/        # Pure utility functions
         ├── path-helpers.ts # Path manipulation helpers
-        └── check-existing.ts # File existence checker
+        ├── check-existing.ts # File existence checker
+        └── file-compare.ts # File hash comparison (SHA-256)
 ```
 
 **Internal Module Organization Principles**
@@ -146,18 +151,81 @@ The main `baedal()` function orchestrates:
 
 All errors inherit from `BaseError` with structured error codes:
 
-- `FileSystemError` - File I/O and extraction errors
-- `NetworkError` - GitHub API and download errors
+- `FileSystemError` - File I/O and extraction errors (with path context)
+- `NetworkError` - GitHub API and download errors (with URL context)
 - `ValidationError` - Input validation and configuration errors
+- `ConfigError` - Configuration file errors
+
+**Error Handling Guidelines**:
+
+- **NEVER use generic `Error` class** - ESLint rule enforces this
+- Always use appropriate BaseError subclass based on error category
+- Import from `src/internal/core/errors/`
+- Provide actionable error messages with context
+
+Example:
+
+```typescript
+// Bad - generic Error (linter will reject)
+throw new Error("Download failed");
+
+// Good - specific error with context
+throw new NetworkError("Failed to download tarball", "DOWNLOAD_FAILED", {
+  url: tarballUrl,
+});
+```
+
+**Recent Improvements**:
+
+- All error throwing unified to BaseError hierarchy (download.ts, files.ts)
+- Logging standardized with `logger` utility (removed direct console usage)
+- Provider type utilized for extensibility (archive.ts supports provider-based branching)
+- CLI input validation enhanced (validateExcludePatterns in adapter.ts)
+- Extract logic simplified with strategy pattern (extractDirectly/extractViaTemp)
+- ESLint rule enforces BaseError usage (no-restricted-syntax)
+- Code quality enhanced with es-toolkit utilities (partition, compact, isEmpty)
+- Modified-only conflict mode added (SHA-256 hash-based file comparison for selective updates)
+
+**Utility Functions**
+
+**MANDATORY**: Use es-toolkit for array/object/string utilities
+
+- Array operations: Use `partition`, `compact`, `chunk`, `uniq` instead of manual loops
+- Null checks: Use `isEmpty` (from `es-toolkit/compat`) instead of `!value` or `value?.length === 0`
+- Type-safe: es-toolkit provides better TypeScript inference
+
+Example:
+
+```typescript
+// Bad - manual array filtering and null checks
+const valid = items.filter((x) => x && x.length > 0);
+if (!value || value.length === 0) return;
+
+// Good - es-toolkit utilities
+import { compact } from "es-toolkit";
+import { isEmpty } from "es-toolkit/compat";
+const valid = compact(items);
+if (isEmpty(value)) return;
+```
+
+Rationale:
+
+- Consistent patterns across codebase
+- Better null safety (handles edge cases like `null`, `undefined`, `""`, `0`, `false`)
+- Industry-standard library (battle-tested)
+- Tree-shakeable (only used functions bundled)
+
+See: https://es-toolkit.slash.page
 
 **Conflict Resolution**
 
 Uses discriminated union type `ConflictMode` to enforce mutually exclusive options:
 
 - `{ mode: "force" }` - Overwrite without confirmation
-- `{ mode: "skip-existing" }` - Skip existing files
-- `{ mode: "no-clobber" }` - Abort on conflicts
 - `{ mode: "interactive" }` - Ask user (default)
+- `{ mode: "modified-only" }` - Update only modified files (ignore new files, SHA-256 hash comparison)
+- `{ mode: "no-clobber" }` - Abort on conflicts
+- `{ mode: "skip-existing" }` - Skip existing files (add new files only)
 
 ## Build Configuration
 

@@ -1,79 +1,6 @@
 import { ConfigError } from "../../internal/core/errors/";
-import {
-  categorizeResults,
-  executePush,
-  prepareRepositories,
-  validatePushConfig,
-} from "./executor";
-import type { PushConfig, PushResult } from ".";
-
-describe("executePush", () => {
-  describe("Error Handling", () => {
-    it("should throw ConfigError when token is missing", async () => {
-      const config = {
-        syncs: [
-          {
-            dest: "/dest",
-            repos: ["owner/repo"],
-            source: "/source",
-          },
-        ],
-        token: "",
-      } as PushConfig;
-
-      await expect(executePush(config, "test-sync")).rejects.toThrow(ConfigError);
-      await expect(executePush(config, "test-sync")).rejects.toThrow("GitHub token is required");
-    });
-
-    it("should throw ConfigError with correct properties", async () => {
-      const config = {
-        syncs: [],
-        token: "",
-      } as PushConfig;
-
-      try {
-        await executePush(config, "test-sync");
-        fail("Should have thrown ConfigError");
-      } catch (error) {
-        expect(error).toBeInstanceOf(ConfigError);
-        if (error instanceof ConfigError) {
-          expect(error.code).toBe("CONFIG_ERROR");
-          expect(error.field).toBe("token");
-          expect(error.value).toBeUndefined();
-          expect(error.message).toContain("GitHub token is required");
-        }
-      }
-    });
-
-    it("should throw ConfigError when token is whitespace only", async () => {
-      const config = {
-        syncs: [],
-        token: "   ",
-      } as PushConfig;
-
-      await expect(executePush(config, "test-sync")).rejects.toThrow(ConfigError);
-    });
-  });
-
-  describe("Error Classes", () => {
-    it("ConfigError should extend Error", () => {
-      const error = new ConfigError("Test message", "testField", "testValue");
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toBe("Test message");
-    });
-
-    it("ConfigError should have correct code property", () => {
-      const error = new ConfigError("Test", "field", "value");
-      expect(error.code).toBe("CONFIG_ERROR");
-    });
-
-    it("ConfigError should capture field and value", () => {
-      const error = new ConfigError("Test", "myField", 123);
-      expect(error.field).toBe("myField");
-      expect(error.value).toBe(123);
-    });
-  });
-});
+import { categorizeResults, prepareRepositories, validatePushConfig } from "./executor";
+import type { PushConfig, PushResult } from "./types";
 
 describe("validatePushConfig", () => {
   it("should not throw when token is valid", () => {
@@ -121,6 +48,15 @@ describe("validatePushConfig", () => {
         expect(error.value).toBeUndefined();
       }
     }
+  });
+
+  it("should throw ConfigError with undefined value", () => {
+    const config = {
+      syncs: [],
+      token: undefined,
+    } as unknown as PushConfig;
+
+    expect(() => validatePushConfig(config)).toThrow(ConfigError);
   });
 });
 
@@ -219,6 +155,30 @@ describe("prepareRepositories", () => {
 
     expect(result).toEqual([]);
   });
+
+  it("should preserve all sync properties in output", () => {
+    const config = {
+      syncs: [
+        {
+          dest: "custom/dest/path",
+          repos: ["org/project"],
+          source: "/local/source",
+        },
+      ],
+      token: "my-token",
+    } as PushConfig;
+
+    const result = prepareRepositories(config, "sync/branch-123", "my-sync");
+
+    expect(result[0]).toEqual({
+      branchName: "sync/branch-123",
+      destPath: "custom/dest/path",
+      repoName: "org/project",
+      sourcePath: "/local/source",
+      syncName: "my-sync",
+      token: "my-token",
+    });
+  });
 });
 
 describe("categorizeResults", () => {
@@ -273,5 +233,57 @@ describe("categorizeResults", () => {
 
     expect(categorized.successful).toEqual([]);
     expect(categorized.failed).toEqual([]);
+  });
+
+  it("should preserve all result properties", () => {
+    const results: PushResult[] = [
+      { prUrl: "https://github.com/owner/repo/pull/1", repo: "owner/repo", success: true },
+      { error: "Network timeout", repo: "owner/repo2", success: false },
+    ];
+
+    const categorized = categorizeResults(results);
+
+    expect(categorized.successful[0]?.prUrl).toBe("https://github.com/owner/repo/pull/1");
+    expect(categorized.failed[0]?.error).toBe("Network timeout");
+  });
+});
+
+describe("ConfigError", () => {
+  it("should extend Error", () => {
+    const error = new ConfigError("Test message", "testField", "testValue");
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toBe("Test message");
+  });
+
+  it("should have correct code property", () => {
+    const error = new ConfigError("Test", "field", "value");
+    expect(error.code).toBe("CONFIG_ERROR");
+  });
+
+  it("should capture field and value", () => {
+    const error = new ConfigError("Test", "myField", 123);
+    expect(error.field).toBe("myField");
+    expect(error.value).toBe(123);
+  });
+
+  it("should have correct name property", () => {
+    const error = new ConfigError("Test", "field", "value");
+    expect(error.name).toBe("ConfigError");
+  });
+
+  it("should handle undefined value", () => {
+    const error = new ConfigError("Test", "field", undefined);
+    expect(error.value).toBeUndefined();
+  });
+
+  it("should handle null value", () => {
+    const error = new ConfigError("Test", "field", null);
+    expect(error.value).toBeNull();
+  });
+
+  it("should handle object value", () => {
+    const objValue = { key: "value" };
+    const error = new ConfigError("Test", "field", objValue);
+    expect(error.value).toBe(objValue);
   });
 });

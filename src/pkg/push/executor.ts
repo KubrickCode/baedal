@@ -1,8 +1,16 @@
 import { join, relative } from "node:path";
+import { partition } from "es-toolkit";
+import { isEmpty } from "es-toolkit/compat";
 import { ConfigError, logger, ValidationError } from "../../internal/core/index";
 import { collectFiles } from "./files";
 import { createGitHubClient } from "./github";
-import type { PushConfig, PushExecutionResult, PushResult } from "./types";
+import type {
+  CategorizedResults,
+  ProcessRepositoryOptions,
+  PushConfig,
+  PushExecutionResult,
+  PushResult,
+} from "./types";
 
 const BRANCH_PREFIX = "sync";
 const SUMMARY_SEPARATOR_LENGTH = 60;
@@ -12,17 +20,6 @@ const generateBranchName = (syncName: string): string => {
   const sanitized = syncName.replace(/[^a-zA-Z0-9-]/g, "-");
   return `${BRANCH_PREFIX}/${sanitized}-${timestamp}`;
 };
-
-type ProcessRepositoryOptions = {
-  branchName: string;
-  destPath: string;
-  repoName: string;
-  sourcePath: string;
-  syncName: string;
-  token: string;
-};
-
-type Repository = ProcessRepositoryOptions;
 
 const processRepository = async (options: ProcessRepositoryOptions): Promise<PushResult> => {
   const { branchName, destPath, repoName, sourcePath, syncName, token } = options;
@@ -94,7 +91,7 @@ const processRepository = async (options: ProcessRepositoryOptions): Promise<Pus
 };
 
 export const validatePushConfig = (config: PushConfig): void => {
-  if (!config.token || config.token.trim() === "") {
+  if (isEmpty(config.token?.trim())) {
     throw new ConfigError(
       "GitHub token is required. Specify 'token' in config file.",
       "token",
@@ -107,7 +104,7 @@ export const prepareRepositories = (
   config: PushConfig,
   branchName: string,
   syncName: string
-): Repository[] => {
+): ProcessRepositoryOptions[] => {
   return config.syncs.flatMap((sync) =>
     sync.repos.map((repo) => ({
       branchName,
@@ -120,28 +117,13 @@ export const prepareRepositories = (
   );
 };
 
-const executeParallelPush = async (repos: Repository[]): Promise<PushResult[]> => {
+const executeParallelPush = async (repos: ProcessRepositoryOptions[]): Promise<PushResult[]> => {
   const promises = repos.map((repo) => processRepository(repo));
   return await Promise.all(promises);
 };
 
-type CategorizedResults = {
-  failed: PushResult[];
-  successful: PushResult[];
-};
-
 export const categorizeResults = (results: PushResult[]): CategorizedResults => {
-  const successful: PushResult[] = [];
-  const failed: PushResult[] = [];
-
-  for (const result of results) {
-    if (result.success) {
-      successful.push(result);
-    } else {
-      failed.push(result);
-    }
-  }
-
+  const [successful, failed] = partition(results, (result) => result.success);
   return { failed, successful };
 };
 

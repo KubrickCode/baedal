@@ -50,6 +50,7 @@
     "@octokit/rest": "22.0.1",
     "commander": "14.0.1",
     "consola": "3.4.2",
+    "es-toolkit": "1.42.0",
     "globby": "14.0.0",
     "js-yaml": "4.1.0",
     "ky": "1.14.0",
@@ -84,6 +85,6 @@
     "ts-jest": "29.2.5",
     "tsup": "8.0.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.46.3"
+    "typescript-eslint": "8.48.0"
   }
 }

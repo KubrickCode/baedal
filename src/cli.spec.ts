@@ -1,5 +1,20 @@
 import { program } from "./cli";
 
+describe("CLI Program", () => {
+  describe("program basics", () => {
+    it("should be named baedal", () => {
+      expect(program.name()).toBe("baedal");
+    });
+
+    it("should have all main commands", () => {
+      const commandNames = program.commands.map((cmd) => cmd.name());
+      expect(commandNames).toContain("pull");
+      expect(commandNames).toContain("push");
+      expect(commandNames).toContain("push:init");
+    });
+  });
+});
+
 describe("CLI Command Structure", () => {
   describe("pull command", () => {
     it("should be registered as default command", () => {
@@ -52,6 +67,41 @@ describe("CLI Command Structure", () => {
     it("should support force option", () => {
       const pushInitCommand = program.commands.find((cmd) => cmd.name() === "push:init");
       expect(pushInitCommand?.options.map((opt) => opt.long)).toContain("--force");
+    });
+
+    it("should have description", () => {
+      const pushInitCommand = program.commands.find((cmd) => cmd.name() === "push:init");
+      expect(pushInitCommand?.description()).toContain("configuration");
+    });
+  });
+
+  describe("pull command details", () => {
+    it("should have description mentioning Git repositories", () => {
+      const pullCommand = program.commands.find((cmd) => cmd.name() === "pull");
+      expect(pullCommand?.description()).toContain("Git");
+    });
+
+    it("should have modified-only option", () => {
+      const pullCommand = program.commands.find((cmd) => cmd.name() === "pull");
+      expect(pullCommand?.options.map((opt) => opt.long)).toContain("--modified-only");
+    });
+
+    it("should have short option flags", () => {
+      const pullCommand = program.commands.find((cmd) => cmd.name() === "pull");
+      const shortFlags = pullCommand?.options.map((opt) => opt.short);
+      expect(shortFlags).toContain("-e");
+      expect(shortFlags).toContain("-t");
+      expect(shortFlags).toContain("-f");
+      expect(shortFlags).toContain("-m");
+      expect(shortFlags).toContain("-n");
+      expect(shortFlags).toContain("-s");
+    });
+  });
+
+  describe("push command details", () => {
+    it("should have description mentioning PRs", () => {
+      const pushCommand = program.commands.find((cmd) => cmd.name() === "push");
+      expect(pushCommand?.description()).toContain("PR");
     });
   });
 });

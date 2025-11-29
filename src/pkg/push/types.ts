@@ -25,18 +25,9 @@ export const PushConfigSchema = z.object({
 });
 export type PushConfig = z.infer<typeof PushConfigSchema>;
 
-export type PushResult = {
-  error?: string;
-  prUrl?: string;
-  repo: string;
-  success: boolean;
-};
-
-export type PushExecutionResult = {
-  failureCount: number;
-  results: PushResult[];
-  successCount: number;
-  totalCount: number;
+export type CategorizedResults = {
+  failed: PushResult[];
+  successful: PushResult[];
 };
 
 export type CollectedFile = {
@@ -46,6 +37,29 @@ export type CollectedFile = {
   size: number;
 };
 
+export type ProcessRepositoryOptions = {
+  branchName: string;
+  destPath: string;
+  repoName: string;
+  sourcePath: string;
+  syncName: string;
+  token: string;
+};
+
+export type PushExecutionResult = {
+  failureCount: number;
+  results: PushResult[];
+  successCount: number;
+  totalCount: number;
+};
+
 export type PushInitCLIOptions = {
   force?: boolean;
+};
+
+export type PushResult = {
+  error?: string;
+  prUrl?: string;
+  repo: string;
+  success: boolean;
 };

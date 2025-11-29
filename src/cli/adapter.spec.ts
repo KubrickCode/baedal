@@ -1,3 +1,4 @@
+import { ValidationError } from "../internal/core/errors/";
 import { adaptCLIOptions } from "./adapter";
 import type { PullCLIOptions } from "./types";
 
@@ -34,6 +35,20 @@ describe("adaptCLIOptions", () => {
       expect(result.conflictMode).toEqual({ mode: "no-clobber" });
     });
 
+    it("should convert clobber=false to no-clobber mode", () => {
+      const cliOptions: PullCLIOptions = { clobber: false };
+      const result = adaptCLIOptions(cliOptions);
+
+      expect(result.conflictMode).toEqual({ mode: "no-clobber" });
+    });
+
+    it("should convert modifiedOnly flag to modified-only mode", () => {
+      const cliOptions: PullCLIOptions = { modifiedOnly: true };
+      const result = adaptCLIOptions(cliOptions);
+
+      expect(result.conflictMode).toEqual({ mode: "modified-only" });
+    });
+
     it("should return undefined conflictMode when no flags are set", () => {
       const cliOptions: PullCLIOptions = {};
       const result = adaptCLIOptions(cliOptions);
@@ -50,8 +65,17 @@ describe("adaptCLIOptions", () => {
       };
 
       expect(() => adaptCLIOptions(cliOptions)).toThrow(
-        "Cannot use --force, --skip-existing, and --no-clobber together"
+        "Cannot use --force, --modified-only, --no-clobber, and --skip-existing together"
       );
+    });
+
+    it("should throw ValidationError for conflicting flags", () => {
+      const cliOptions: PullCLIOptions = {
+        force: true,
+        skipExisting: true,
+      };
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(ValidationError);
     });
 
     it("should throw error when force and noClobber are both set", () => {
@@ -61,7 +85,7 @@ describe("adaptCLIOptions", () => {
       };
 
       expect(() => adaptCLIOptions(cliOptions)).toThrow(
-        "Cannot use --force, --skip-existing, and --no-clobber together"
+        "Cannot use --force, --modified-only, --no-clobber, and --skip-existing together"
       );
     });
 
@@ -72,20 +96,41 @@ describe("adaptCLIOptions", () => {
       };
 
       expect(() => adaptCLIOptions(cliOptions)).toThrow(
-        "Cannot use --force, --skip-existing, and --no-clobber together"
+        "Cannot use --force, --modified-only, --no-clobber, and --skip-existing together"
       );
     });
 
-    it("should throw error when all three flags are set", () => {
+    it("should throw error when all flags are set", () => {
       const cliOptions: PullCLIOptions = {
         force: true,
+        modifiedOnly: true,
         noClobber: true,
         skipExisting: true,
       };
 
       expect(() => adaptCLIOptions(cliOptions)).toThrow(
-        "Cannot use --force, --skip-existing, and --no-clobber together"
+        "Cannot use --force, --modified-only, --no-clobber, and --skip-existing together"
       );
+    });
+
+    it("should include flag descriptions in error message", () => {
+      const cliOptions: PullCLIOptions = {
+        force: true,
+        skipExisting: true,
+      };
+
+      try {
+        adaptCLIOptions(cliOptions);
+        fail("Expected adaptCLIOptions to throw an error.");
+      } catch (e) {
+        if (!(e instanceof Error)) {
+          fail("Expected an Error to be thrown");
+        }
+        expect(e.message).toMatch(/Choose one conflict resolution mode/);
+        expect(e.message).toMatch(/--force.*Overwrite without asking/);
+        expect(e.message).toMatch(/--skip-existing.*Keep existing files/);
+        expect(e.message).toMatch(/--no-clobber.*Abort if conflicts exist/);
+      }
     });
   });
 
@@ -210,6 +255,54 @@ describe("adaptCLIOptions", () => {
       const result = adaptCLIOptions(cliOptions);
 
       expect(Object.keys(result)).toHaveLength(0);
+    });
+  });
+
+  describe("Zod validation", () => {
+    it("should reject unknown properties", () => {
+      const cliOptions = {
+        force: true,
+        unknownProp: "value",
+      } as any;
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(ValidationError);
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(/Invalid CLI options/);
+    });
+
+    it("should reject non-boolean force", () => {
+      const cliOptions = {
+        force: "true",
+      } as any;
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(ValidationError);
+    });
+
+    it("should reject non-array exclude", () => {
+      const cliOptions = {
+        exclude: "*.log",
+      } as any;
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(ValidationError);
+    });
+
+    it("should reject non-string token", () => {
+      const cliOptions = {
+        token: 123,
+      } as any;
+
+      expect(() => adaptCLIOptions(cliOptions)).toThrow(ValidationError);
+    });
+
+    it("should accept all valid CLI options", () => {
+      const cliOptions: PullCLIOptions = {
+        exclude: ["*.log"],
+        force: true,
+        noClobber: false,
+        skipExisting: false,
+        token: "ghp_token",
+      };
+
+      expect(() => adaptCLIOptions(cliOptions)).not.toThrow();
     });
   });
 });

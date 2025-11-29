@@ -3,11 +3,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { create } from "tar";
 import { FileSystemError, ValidationError } from "../../internal/core/errors/";
+import { baedal } from "./index";
 
-/**
- * Integration test for pull functionality with focus on decomposed functions.
- * These tests verify custom error classes and ConflictMode handling.
- */
 const createTestTarball = async (files: Record<string, string>, prefix = "test-repo-main") => {
   const tempDir = join(
     tmpdir(),
@@ -40,22 +37,43 @@ describe("baedal", () => {
     }
   });
 
+  describe("input validation", () => {
+    it("should throw ValidationError for empty source", async () => {
+      await expect(baedal("", ".")).rejects.toThrow(ValidationError);
+      await expect(baedal("", ".")).rejects.toThrow("Source cannot be empty");
+    });
+
+    it("should throw ValidationError for whitespace-only source", async () => {
+      await expect(baedal("   ", ".")).rejects.toThrow(ValidationError);
+    });
+
+    it("should throw ValidationError for empty destination", async () => {
+      await expect(baedal("owner/repo", "")).rejects.toThrow(ValidationError);
+      await expect(baedal("owner/repo", "")).rejects.toThrow("Destination cannot be empty");
+    });
+
+    it("should throw ValidationError for whitespace-only destination", async () => {
+      await expect(baedal("owner/repo", "   ")).rejects.toThrow(ValidationError);
+    });
+
+    it("should throw ValidationError for invalid options", async () => {
+      await expect(
+        baedal("owner/repo", ".", { exclude: "not-an-array" as unknown as string[] })
+      ).rejects.toThrow(ValidationError);
+    });
+  });
+
   describe("FileSystemError", () => {
     it("should throw FileSystemError with FILE_CONFLICT code in no-clobber mode", async () => {
-      // Create a temp directory with existing file
       testTempDir = await mkdtemp(join(tmpdir(), "baedal-dest-"));
       const existingFile = join(testTempDir, "README.md");
       await writeFile(existingFile, "existing content", "utf-8");
 
-      // Create tarball with same file
       const { tempDir } = await createTestTarball({
         "README.md": "new content",
       });
 
       try {
-        // This would fail in real scenario, but demonstrates error type
-        // by checking the actual implementation throws correct error
-
         await expect(async () => {
           throw new FileSystemError(
             "Operation aborted as per --no-clobber: 1 file(s) already exist."
