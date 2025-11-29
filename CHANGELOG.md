@@ -2,6 +2,57 @@
 
 ### ✨ Features
 
+- add input validation for baedal function ([314b01e03414a9c7a0e2a9c410cae9f7480c32d9](/commit/314b01e03414a9c7a0e2a9c410cae9f7480c32d9))
+- add modified-only mode to update only changed files ([be56e469f9526b44b0b83b54ae20949b98899868](/commit/be56e469f9526b44b0b83b54ae20949b98899868))
+- add zod runtime validation for external APIs and user inputs ([f9e37bae8fcfe9b9ed9f9dde54ec43a541f86b17](/commit/f9e37bae8fcfe9b9ed9f9dde54ec43a541f86b17))
+
+### 🐛 Bug Fixes
+
+- dot-prefixed paths not recognized correctly ([e1fe9ecc9f26b64d2f95f161ef96fd5edd98c102](/commit/e1fe9ecc9f26b64d2f95f161ef96fd5edd98c102))
+- downloads proceeding without clear error for non-existent repositories ([6847586698d953c35c38687c4b036e2d4f239a31](/commit/6847586698d953c35c38687c4b036e2d4f239a31))
+- **release:** breaking change commits not triggering major version bump ([7d85097d91290c2cd5c0a42b36189b2d7a41192f](/commit/7d85097d91290c2cd5c0a42b36189b2d7a41192f))
+- subdirectory and exclude pattern handling errors ([67e4147d446e09819a7306abea4066c9c2dae337](/commit/67e4147d446e09819a7306abea4066c9c2dae337))
+
+## 🔧 Maintenance
+
+### 📚 Documentation
+
+- Remove subagent assignment model ([2f9686b3c4a3dfbcfc44cfebb6a16deea86ec949](/commit/2f9686b3c4a3dfbcfc44cfebb6a16deea86ec949))
+- sync ai documentation from the ai-config-toolkit repository ([72329bc472d9f0ea980f1d68a479933b609019a5](/commit/72329bc472d9f0ea980f1d68a479933b609019a5))
+- synchronizing documentation from the ai-config-toolkit repository ([d84179a9a0c288605b396d448cc949fe19982c07](/commit/d84179a9a0c288605b396d448cc949fe19982c07))
+- Synchronizing documentation from the ai-config-toolkit repository ([c8492ccb8db1f9db4cde3debf5506ac4655ace8b](/commit/c8492ccb8db1f9db4cde3debf5506ac4655ace8b))
+- update docs ([62115abcdc7ed4c7c83783f1f7e83c91dbb89968](/commit/62115abcdc7ed4c7c83783f1f7e83c91dbb89968))
+
+### ♻️ Refactoring
+
+- add actionable hints to error messages ([9e60d67b6b6ed02eff7698456caa254a48818658](/commit/9e60d67b6b6ed02eff7698456caa254a48818658))
+- centralize types and add exit codes ([59c0d7f58d726d6e1c4dc5f37545b2e5fdcdbd4b](/commit/59c0d7f58d726d6e1c4dc5f37545b2e5fdcdbd4b))
+- improve code quality with es-toolkit utilities ([69eb93467a9fd64269deb897b2fa5b6174ab5d43](/commit/69eb93467a9fd64269deb897b2fa5b6174ab5d43))
+- replace generic Error with BaseError hierarchy ([e7496270a771f564d6f183fd79d99a995a8102d4](/commit/e7496270a771f564d6f183fd79d99a995a8102d4))
+- Switch to using reusable workflows from the workflow-toolkit repository ([aab5fc99cda543fc3c938aa276e39766e661fd5b](/commit/aab5fc99cda543fc3c938aa276e39766e661fd5b))
+
+### ✅ Tests
+
+- increase coverage ([3340a8261169a6db98272ffea24fb49c28cd2067](/commit/3340a8261169a6db98272ffea24fb49c28cd2067))
+
+### 🔨 Chore
+
+- Add git pull to the action button ([bb75727e36984bd7990db4ff0a46d23ac7ba5393](/commit/bb75727e36984bd7990db4ff0a46d23ac7ba5393))
+- Add useful action button commands ([57dc258a825455196d3f41a709e2140ecb2eefee](/commit/57dc258a825455196d3f41a709e2140ecb2eefee))
+- Adding to the GitHub CLI container default settings ([419fbb46c841d7da1096375cbb9d068a1b274d94](/commit/419fbb46c841d7da1096375cbb9d068a1b274d94))
+- **deps:** bump actions/checkout from 5 to 6 ([81b12a182bac55bac6305347c32addcc173a8021](/commit/81b12a182bac55bac6305347c32addcc173a8021))
+- enforce BaseError usage with ESLint rule ([c4af78d12acdbb7c7022ac379d0954817352d9de](/commit/c4af78d12acdbb7c7022ac379d0954817352d9de))
+- excluding lock files from the lint command ([65609838df35ea427ad93d1992e0db7a55a0fcf1](/commit/65609838df35ea427ad93d1992e0db7a55a0fcf1))
+- just simplify installation ([d9257e12d3d386f493c05ce471391a2bc9bb8fad](/commit/d9257e12d3d386f493c05ce471391a2bc9bb8fad))
+- Modified to require user confirmation when executing the release command ([9c5fd2eae321b58cd0a6a1aba814a4d6fe84d3ac](/commit/9c5fd2eae321b58cd0a6a1aba814a4d6fe84d3ac))
+- remove docker-in-docker feature ([3265411794bde285e06109e0b514e9c75766ee82](/commit/3265411794bde285e06109e0b514e9c75766ee82))
+- simplifying gitignore ([c4768fb24023f53e62ba541f3fa13bc0f23aea76](/commit/c4768fb24023f53e62ba541f3fa13bc0f23aea76))
+- syncing documentation from the ai-config-toolkit repository ([0fdd6a113b115cfab67739017c10de1eaa201e1f](/commit/0fdd6a113b115cfab67739017c10de1eaa201e1f))
+
+## 🎯 Highlights
+
+### ✨ Features
+
 - **test:** add dummy feature for release notes validation ([3ffd82be86318678afc795bfe43925e9bb779ced](/commit/3ffd82be86318678afc795bfe43925e9bb779ced))
 
 ### 🐛 Bug Fixes
