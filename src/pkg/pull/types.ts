@@ -7,9 +7,10 @@ export type PullResult = {
 
 export type ConflictMode =
   | { mode: "force" }
-  | { mode: "skip-existing" }
+  | { mode: "interactive" }
+  | { mode: "modified-only" }
   | { mode: "no-clobber" }
-  | { mode: "interactive" };
+  | { mode: "skip-existing" };
 
 export type BaedalOptions = {
   conflictMode?: ConflictMode;
@@ -21,7 +22,7 @@ export const BaedalOptionsSchema = z
   .object({
     conflictMode: z
       .object({
-        mode: z.enum(["force", "skip-existing", "no-clobber", "interactive"]),
+        mode: z.enum(["force", "interactive", "modified-only", "no-clobber", "skip-existing"]),
       })
       .optional(),
     exclude: z

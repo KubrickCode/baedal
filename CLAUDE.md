@@ -106,7 +106,8 @@ src/
     │   └── prompt.ts # User interaction (readline wrapper)
     └── utils/        # Pure utility functions
         ├── path-helpers.ts # Path manipulation helpers
-        └── check-existing.ts # File existence checker
+        ├── check-existing.ts # File existence checker
+        └── file-compare.ts # File hash comparison (SHA-256)
 ```
 
 **Internal Module Organization Principles**
@@ -183,6 +184,7 @@ throw new NetworkError("Failed to download tarball", "DOWNLOAD_FAILED", {
 - Extract logic simplified with strategy pattern (extractDirectly/extractViaTemp)
 - ESLint rule enforces BaseError usage (no-restricted-syntax)
 - Code quality enhanced with es-toolkit utilities (partition, compact, isEmpty)
+- Modified-only conflict mode added (SHA-256 hash-based file comparison for selective updates)
 
 **Utility Functions**
 
@@ -220,9 +222,10 @@ See: https://es-toolkit.slash.page
 Uses discriminated union type `ConflictMode` to enforce mutually exclusive options:
 
 - `{ mode: "force" }` - Overwrite without confirmation
-- `{ mode: "skip-existing" }` - Skip existing files
-- `{ mode: "no-clobber" }` - Abort on conflicts
 - `{ mode: "interactive" }` - Ask user (default)
+- `{ mode: "modified-only" }` - Update only modified files (ignore new files, SHA-256 hash comparison)
+- `{ mode: "no-clobber" }` - Abort on conflicts
+- `{ mode: "skip-existing" }` - Skip existing files (add new files only)
 
 ## Build Configuration
 

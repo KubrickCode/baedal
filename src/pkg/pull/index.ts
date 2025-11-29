@@ -1,10 +1,11 @@
-import { mkdir, mkdtemp, rm } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { partition } from "es-toolkit";
 import { FileSystemError, logger, ValidationError } from "../../internal/core/index";
 import { extractTarball, getFileListFromTarball, parseSource } from "../../internal/domain/index";
 import { confirmOverwrite, downloadStream } from "../../internal/infra/index";
-import { checkExistingFiles, parseWithZod } from "../../internal/utils/index";
+import { checkExistingFiles, compareFileHash, parseWithZod } from "../../internal/utils/index";
 import { getArchiveUrl, getDefaultBranch } from "./archive";
 import type { BaedalOptions, PullResult } from "./types";
 import { BaedalOptionsSchema } from "./types";
@@ -14,8 +15,18 @@ export { getGitHubDefaultBranch } from "./github";
 export type * from "./types";
 
 const DEFAULT_CONFLICT_MODE = "interactive";
+const TEMP_DIR_PREFIX_MODIFIED = "baedal-modified-";
 
 type HandleSkipExistingModeParams = {
+  excludePatterns: string[];
+  outputPath: string;
+  subdir: string | undefined;
+  tarballPath: string;
+  toAdd: string[];
+  toOverwrite: string[];
+};
+
+type HandleModifiedOnlyModeParams = {
   excludePatterns: string[];
   outputPath: string;
   subdir: string | undefined;
@@ -97,6 +108,17 @@ export const baedal = async (
       });
     }
 
+    if (resolvedMode === "modified-only") {
+      return await handleModifiedOnlyMode({
+        excludePatterns: opts?.exclude ?? [],
+        outputPath,
+        subdir: needsSubdirExtraction ? subdir : undefined,
+        tarballPath,
+        toAdd,
+        toOverwrite,
+      });
+    }
+
     if (resolvedMode === "interactive" && toOverwrite.length > 0) {
       await handleInteractiveMode({ toAdd, toOverwrite });
     }
@@ -135,6 +157,61 @@ const handleSkipExistingMode = async (
     files: toAdd,
     path: outputPath,
   };
+};
+
+const handleModifiedOnlyMode = async (
+  params: HandleModifiedOnlyModeParams
+): Promise<PullResult> => {
+  const { excludePatterns, outputPath, subdir, tarballPath, toAdd, toOverwrite } = params;
+
+  const tempExtract = await mkdtemp(join(tmpdir(), TEMP_DIR_PREFIX_MODIFIED));
+
+  try {
+    const allExcludePatterns = [...excludePatterns, ...toAdd];
+    await extractTarball(tarballPath, tempExtract, subdir, allExcludePatterns);
+
+    const comparisonResults = await Promise.all(
+      toOverwrite.map(async (file) => {
+        const existingPath = join(outputPath, file);
+        const newPath = join(tempExtract, file);
+        const areIdentical = await compareFileHash(existingPath, newPath);
+        return { areIdentical, file };
+      })
+    );
+
+    const [changedResults, unchangedResults] = partition(
+      comparisonResults,
+      (result) => !result.areIdentical
+    );
+    const changedFiles = changedResults.map((result) => result.file);
+    const unchangedFiles = unchangedResults.map((result) => result.file);
+
+    for (const file of changedFiles) {
+      const sourcePath = join(tempExtract, file);
+      const destPath = join(outputPath, file);
+
+      await mkdir(dirname(destPath), { recursive: true });
+      await copyFile(sourcePath, destPath);
+    }
+
+    if (changedFiles.length > 0) {
+      logger.info(`\n✅ Updated ${changedFiles.length} modified file(s):`);
+      changedFiles.forEach((file) => {
+        logger.info(`  ✓ ${file}`);
+      });
+    }
+
+    if (unchangedFiles.length > 0) {
+      logger.info(`\n⏭️  Skipped ${unchangedFiles.length} unchanged file(s)`);
+    }
+
+    return {
+      files: changedFiles,
+      path: outputPath,
+    };
+  } finally {
+    await rm(tempExtract, { force: true, recursive: true });
+  }
 };
 
 const handleInteractiveMode = async (params: HandleInteractiveModeParams): Promise<void> => {

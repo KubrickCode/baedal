@@ -5,8 +5,9 @@ import { PullCLIOptionsSchema } from "./types";
 
 const resolveConflictMode = (options: PullCLIOptions): ConflictMode | undefined => {
   if (options.force) return { mode: "force" };
-  if (options.skipExisting) return { mode: "skip-existing" };
+  if (options.modifiedOnly) return { mode: "modified-only" };
   if (options.noClobber || options.clobber === false) return { mode: "no-clobber" };
+  if (options.skipExisting) return { mode: "skip-existing" };
   return undefined; // Library defaults to interactive
 };
 
