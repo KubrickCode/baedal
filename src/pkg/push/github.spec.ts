@@ -74,10 +74,10 @@ describe("createGitHubClient", () => {
     it("should include token usage hints in error message", () => {
       try {
         createGitHubClient("");
-        fail("Expected createGitHubClient to throw an error.");
+        expect.fail("Expected createGitHubClient to throw an error.");
       } catch (e) {
         if (!(e instanceof Error)) {
-          fail("Expected an Error to be thrown");
+          expect.fail("Expected an Error to be thrown");
         }
         expect(e.message).toMatch(/GitHub token is required/);
         expect(e.message).toMatch(/token.*field.*push configuration file/);
@@ -87,7 +87,7 @@ describe("createGitHubClient", () => {
     it("should throw ValidationError with correct properties", () => {
       try {
         createGitHubClient("");
-        fail("Expected createGitHubClient to throw an error.");
+        expect.fail("Expected createGitHubClient to throw an error.");
       } catch (e) {
         expect(e).toBeInstanceOf(ValidationError);
         if (e instanceof ValidationError) {

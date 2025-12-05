@@ -86,7 +86,7 @@ describe("parseGitHubResponse", () => {
 
       try {
         parseGitHubResponse(GitHubRepositorySchema, invalidData, "GET /repos/user/repo");
-        fail("Expected parseGitHubResponse to throw an error");
+        expect.fail("Expected parseGitHubResponse to throw an error");
       } catch (error) {
         expect(error).toBeInstanceOf(NetworkError);
         if (error instanceof NetworkError) {

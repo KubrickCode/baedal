@@ -60,7 +60,7 @@ describe("parseWithZod", () => {
 
       try {
         parseWithZod(testSchema, input, "user");
-        fail("Expected ValidationError to be thrown");
+        expect.fail("Expected ValidationError to be thrown");
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError);
         if (error instanceof ValidationError) {
@@ -74,7 +74,7 @@ describe("parseWithZod", () => {
 
       try {
         parseWithZod(testSchema, input, "user");
-        fail("Expected ValidationError to be thrown");
+        expect.fail("Expected ValidationError to be thrown");
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError);
         if (error instanceof ValidationError) {
@@ -113,7 +113,7 @@ describe("parseWithZod", () => {
 
       try {
         parseWithZod(testSchema, input, "GET /users/123", "network");
-        fail("Expected NetworkError to be thrown");
+        expect.fail("Expected NetworkError to be thrown");
       } catch (error) {
         expect(error).toBeInstanceOf(NetworkError);
         if (error instanceof NetworkError) {
@@ -174,7 +174,7 @@ describe("parseWithZod", () => {
 
       try {
         parseWithZod(stringSchema, input, "value");
-        fail("Expected ValidationError to be thrown");
+        expect.fail("Expected ValidationError to be thrown");
       } catch (error) {
         expect(error).toBeInstanceOf(ValidationError);
       }

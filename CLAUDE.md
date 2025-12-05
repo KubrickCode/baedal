@@ -56,8 +56,8 @@ pnpm build          # Build the project using tsup
 **Test**
 
 ```bash
-pnpm test           # Run Jest tests
-pnpm test -- --coverage  # Run tests with coverage report
+pnpm test                  # Run Vitest tests
+pnpm test -- --coverage    # Run tests with coverage report
 ```
 
 **Lint**
@@ -251,9 +251,7 @@ Uses discriminated union type `ConflictMode` to enforce mutually exclusive optio
 
 **Development**
 
-- `jest` - Testing framework
-- `@types/jest` - Jest type definitions
-- `ts-jest` - TypeScript Jest preprocessor
+- `vitest` - Testing framework (fast, ESM-native)
 
 ## TypeScript & Linting
 
@@ -275,14 +273,14 @@ Uses discriminated union type `ConflictMode` to enforce mutually exclusive optio
 
 **Test Infrastructure**
 
-- Jest with TypeScript support (ts-jest)
-- ESM-compatible configuration
-- Coverage reporting enabled
+- Vitest with native TypeScript/ESM support
+- Globals enabled (`describe`, `it`, `expect` available without import)
+- V8 coverage provider
 
 **Test Patterns**
 
 - Pure functions: Direct unit tests (e.g., `parser.spec.ts`)
-- External dependencies: Mock with jest.mock (e.g., File System, GitHub API)
+- External dependencies: Mock with `vi.mock` (e.g., File System, GitHub API)
 - Integration tests: Full flow validation with mocked I/O
 
 **Coverage Goals**

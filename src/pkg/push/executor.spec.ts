@@ -39,7 +39,7 @@ describe("validatePushConfig", () => {
 
     try {
       validatePushConfig(config);
-      fail("Should have thrown ConfigError");
+      expect.fail("Should have thrown ConfigError");
     } catch (error) {
       expect(error).toBeInstanceOf(ConfigError);
       if (error instanceof ConfigError) {

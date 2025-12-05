@@ -109,7 +109,7 @@ describe("Push Files - Integration Test", () => {
 
       try {
         await collectFiles("large.ts", testDir);
-        fail("Should have thrown FileSystemError");
+        expect.fail("Should have thrown FileSystemError");
       } catch (error) {
         expect(error).toBeInstanceOf(FileSystemError);
         expect(error).toHaveProperty("message", expect.stringContaining("exceeds maximum"));
@@ -121,7 +121,7 @@ describe("Push Files - Integration Test", () => {
 
       try {
         await collectFiles("empty", testDir);
-        fail("Should have thrown FileSystemError");
+        expect.fail("Should have thrown FileSystemError");
       } catch (error) {
         expect(error).toBeInstanceOf(FileSystemError);
         expect(error).toHaveProperty("message", expect.stringContaining("No files found"));

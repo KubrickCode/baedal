@@ -24,10 +24,10 @@ describe("initPushConfig", () => {
     it("should throw a comprehensive error when config already exists", () => {
       try {
         initPushConfig("test-sync", testBaseDir);
-        fail("Expected initPushConfig to throw an error.");
+        expect.fail("Expected initPushConfig to throw an error.");
       } catch (e) {
         if (!(e instanceof FileSystemError)) {
-          fail("Expected a FileSystemError to be thrown");
+          expect.fail("Expected a FileSystemError to be thrown");
         }
         expect(e.message).toMatch(/Configuration file already exists/);
         expect(e.message).toMatch(/To overwrite:.*baedal push:init test-sync --force/);

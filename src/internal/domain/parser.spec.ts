@@ -116,10 +116,10 @@ describe("parseSource", () => {
     it("should include all format options in error message for invalid source", async () => {
       try {
         await parseSource("invalid");
-        fail("Expected parseSource to throw an error.");
+        expect.fail("Expected parseSource to throw an error.");
       } catch (e) {
         if (!(e instanceof Error)) {
-          fail("Expected an Error to be thrown");
+          expect.fail("Expected an Error to be thrown");
         }
         expect(e.message).toMatch(/Try: user\/repo/);
         expect(e.message).toMatch(/Or:.*github:user\/repo/);

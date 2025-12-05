@@ -9,14 +9,14 @@ on:
       - unlocked
     paths:
       - "src/**"
-      - "jest.config.js"
+      - "vitest.config.ts"
       - "package.json"
   push:
     branches:
       - main
     paths:
       - "src/**"
-      - "jest.config.js"
+      - "vitest.config.ts"
       - "package.json"
   workflow_dispatch:
 
