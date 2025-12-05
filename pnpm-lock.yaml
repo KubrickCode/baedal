@@ -58,8 +58,8 @@ importers:
         specifier: 10.0.1
         version: 10.0.1(semantic-release@24.2.0(typescript@5.9.3))
       '@semantic-release/github':
-        specifier: 11.0.1
-        version: 11.0.1(semantic-release@24.2.0(typescript@5.9.3))
+        specifier: 12.0.2
+        version: 12.0.2(semantic-release@24.2.0(typescript@5.9.3))
       '@semantic-release/npm':
         specifier: 13.1.2
         version: 13.1.2(semantic-release@24.2.0(typescript@5.9.3))
@@ -677,6 +677,18 @@ packages:
     peerDependencies:
       '@octokit/core': '>=6'
 
+  '@octokit/plugin-retry@8.0.3':
+    resolution: {integrity: sha512-vKGx1i3MC0za53IzYBSBXcrhmd+daQDzuZfYDd52X5S0M2otf3kVZTVP8bLA3EkU0lTvd1WEC2OlNNa4G+dohA==}
+    engines: {node: '>= 20'}
+    peerDependencies:
+      '@octokit/core': '>=7'
+
+  '@octokit/plugin-throttling@11.0.3':
+    resolution: {integrity: sha512-34eE0RkFCKycLl2D2kq7W+LovheM/ex3AwZCYN8udpi6bxsyjZidb2McXs69hZhLmJlDqTSP8cH+jSRpiaijBg==}
+    engines: {node: '>= 20'}
+    peerDependencies:
+      '@octokit/core': ^7.0.0
+
   '@octokit/plugin-throttling@9.6.1':
     resolution: {integrity: sha512-bt3EBUkeKUzDQXRCcFrR9SWVqlLFRRqcCrr6uAorWt6NXTyjMKqcGrFmXqJy9NCbnKgiIZ2OXWq04theFc76Jg==}
     engines: {node: '>= 18'}
@@ -875,6 +887,12 @@ packages:
   '@semantic-release/github@11.0.1':
     resolution: {integrity: sha512-Z9cr0LgU/zgucbT9cksH0/pX9zmVda9hkDPcgIE0uvjMQ8w/mElDivGjx1w1pEQ+MuQJ5CBq3VCF16S6G4VH3A==}
     engines: {node: '>=20.8.1'}
+    peerDependencies:
+      semantic-release: '>=24.1.0'
+
+  '@semantic-release/github@12.0.2':
+    resolution: {integrity: sha512-qyqLS+aSGH1SfXIooBKjs7mvrv0deg8v+jemegfJg1kq6ji+GJV8CO08VJDEsvjp3O8XJmTTIAjjZbMzagzsdw==}
+    engines: {node: ^22.14.0 || >= 24.10.0}
     peerDependencies:
       semantic-release: '>=24.1.0'
 
@@ -3619,6 +3637,10 @@ packages:
     resolution: {integrity: sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==}
     engines: {node: '>=14.0'}
 
+  undici@7.16.0:
+    resolution: {integrity: sha512-QEg3HPMll0o3t2ourKwOeUAZ159Kn9mx5pnzHRQO8+Wixmh88YdZRiIwat0iNzNNXn0yoEtXJqFpyW7eM8BV7g==}
+    engines: {node: '>=20.18.1'}
+
   unicode-emoji-modifier-base@1.0.0:
     resolution: {integrity: sha512-yLSH4py7oFH3oG/9K+XWrz1pSi3dfUrWEnInbxMfArOfc1+33BlGPQtLsOYwvdMy11AwUBetYuaRxSPqgkq+8g==}
     engines: {node: '>=4'}
@@ -4395,6 +4417,19 @@ snapshots:
       '@octokit/types': 14.1.0
       bottleneck: 2.19.5
 
+  '@octokit/plugin-retry@8.0.3(@octokit/core@7.0.6)':
+    dependencies:
+      '@octokit/core': 7.0.6
+      '@octokit/request-error': 7.1.0
+      '@octokit/types': 16.0.0
+      bottleneck: 2.19.5
+
+  '@octokit/plugin-throttling@11.0.3(@octokit/core@7.0.6)':
+    dependencies:
+      '@octokit/core': 7.0.6
+      '@octokit/types': 16.0.0
+      bottleneck: 2.19.5
+
   '@octokit/plugin-throttling@9.6.1(@octokit/core@6.1.6)':
     dependencies:
       '@octokit/core': 6.1.6
@@ -4596,6 +4631,29 @@ snapshots:
       mime: 4.1.0
       p-filter: 4.1.0
       semantic-release: 24.2.0(typescript@5.9.3)
+      url-join: 5.0.0
+    transitivePeerDependencies:
+      - supports-color
+
+  '@semantic-release/github@12.0.2(semantic-release@24.2.0(typescript@5.9.3))':
+    dependencies:
+      '@octokit/core': 7.0.6
+      '@octokit/plugin-paginate-rest': 14.0.0(@octokit/core@7.0.6)
+      '@octokit/plugin-retry': 8.0.3(@octokit/core@7.0.6)
+      '@octokit/plugin-throttling': 11.0.3(@octokit/core@7.0.6)
+      '@semantic-release/error': 4.0.0
+      aggregate-error: 5.0.0
+      debug: 4.4.3
+      dir-glob: 3.0.1
+      http-proxy-agent: 7.0.2
+      https-proxy-agent: 7.0.6
+      issue-parser: 7.0.1
+      lodash-es: 4.17.21
+      mime: 4.1.0
+      p-filter: 4.1.0
+      semantic-release: 24.2.0(typescript@5.9.3)
+      tinyglobby: 0.2.15
+      undici: 7.16.0
       url-join: 5.0.0
     transitivePeerDependencies:
       - supports-color
@@ -7659,6 +7717,8 @@ snapshots:
   undici@5.29.0:
     dependencies:
       '@fastify/busboy': 2.1.1
+
+  undici@7.16.0: {}
 
   unicode-emoji-modifier-base@1.0.0: {}
 
