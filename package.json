@@ -51,7 +51,7 @@
     "commander": "14.0.1",
     "consola": "3.4.2",
     "es-toolkit": "1.42.0",
-    "globby": "14.0.0",
+    "globby": "16.0.0",
     "js-yaml": "4.1.0",
     "ky": "1.14.0",
     "micromatch": "4.0.8",
