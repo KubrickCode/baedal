@@ -1,5 +1,42 @@
 # Changelog
 
+## [1.3.1](https://github.com/KubrickCode/baedal/compare/v1.3.0...v1.3.1) (2025-12-20)
+
+### 🔧 Maintenance
+
+#### 🔧 Internal Fixes
+
+- **release:** fix broken commit links and long hash display in release notes ([899f110](https://github.com/KubrickCode/baedal/commit/899f110c4d5b35d690169c4c591b354d5e18a9ce))
+
+#### 📚 Documentation
+
+- add missing version headers and improve CHANGELOG hierarchy ([2468b2e](https://github.com/KubrickCode/baedal/commit/2468b2e10b8bf3aae6aff740ed2e2b1a4fd649e6))
+- sync ai-config-toolkit ([fd693b4](https://github.com/KubrickCode/baedal/commit/fd693b45dd85c275a1e5fd17b3dcb5f7c67e7799))
+
+#### 🔨 Chore
+
+- add action buttons icon ([c131415](https://github.com/KubrickCode/baedal/commit/c1314159dca7da7ba56a403845f7ecdce2e9f05f))
+- adding recommended extensions ([86d6b47](https://github.com/KubrickCode/baedal/commit/86d6b473a88205ac6d62d77f2eff7cc14ddfd429))
+- ai-config-toolkit sync ([0412110](https://github.com/KubrickCode/baedal/commit/0412110b3da33d6a152c20f3e38800a27c18073e))
+- ai-config-toolkit sync ([46939a7](https://github.com/KubrickCode/baedal/commit/46939a79b2c2dc21a29d678c685252ecaa57139e))
+- ai-config-toolkit syncchore: ai-config-toolkit sync ([bfa18d7](https://github.com/KubrickCode/baedal/commit/bfa18d787be7f22473723ea048a14e75a84edde8))
+- changing the environment variable name for accessing GitHub MCP ([2543b9f](https://github.com/KubrickCode/baedal/commit/2543b9f8242629edd445b6ba5d8bb6ae91066c2b))
+- delete unused mcp ([7adc92a](https://github.com/KubrickCode/baedal/commit/7adc92add980cf7d3fba777aef42eb96a8fbe53b))
+- **deps-dev:** bump @semantic-release/commit-analyzer ([6672271](https://github.com/KubrickCode/baedal/commit/6672271e07f5a87d806ae91d876a5e29a5fc11dc))
+- **deps-dev:** bump @semantic-release/github from 11.0.1 to 12.0.2 ([d5a7eda](https://github.com/KubrickCode/baedal/commit/d5a7eda6770c1249fd9a9a39b2a995d2aa9f2e85))
+- **deps-dev:** bump @types/micromatch from 4.0.9 to 4.0.10 ([f48188b](https://github.com/KubrickCode/baedal/commit/f48188b477dacad635e5c1fb0f939b071f41279d))
+- **deps-dev:** bump conventional-changelog-conventionalcommits ([751b199](https://github.com/KubrickCode/baedal/commit/751b19963183394f59b9027b6b4f574ae277f673))
+- **deps-dev:** bump semantic-release from 24.2.0 to 25.0.2 ([747f35f](https://github.com/KubrickCode/baedal/commit/747f35f178a0b43994c3c09e5f95902b7efddaee))
+- **deps-dev:** bump ts-jest from 29.2.5 to 29.4.6 ([5cd71e1](https://github.com/KubrickCode/baedal/commit/5cd71e143be10f8c22bd9aa5ccac90cdb39c0d05))
+- **deps-dev:** bump typescript-eslint from 8.48.0 to 8.48.1 ([7986ba2](https://github.com/KubrickCode/baedal/commit/7986ba2e2610d7e852afb86719f220620c59624d))
+- **deps:** bump globby from 14.0.0 to 16.0.0 ([36249c4](https://github.com/KubrickCode/baedal/commit/36249c42ee6db4f8ed2b185af51a8aebbfa17743))
+- **deps:** bump tar from 7.5.1 to 7.5.2 ([8391da4](https://github.com/KubrickCode/baedal/commit/8391da4e61a3de788f689aebfb138743eede6640))
+- migrate test framework from Jest to Vitest ([0e2d7ef](https://github.com/KubrickCode/baedal/commit/0e2d7ef9f7a12384d83fc873ad8775906ba77601))
+- modified container structure to support codespaces ([3bf5029](https://github.com/KubrickCode/baedal/commit/3bf50292bcdede4238e5bd23038032c7d4663b96))
+- sort action buttons ([bdec557](https://github.com/KubrickCode/baedal/commit/bdec55793edff10847e1e7ef7ddce96b5d47464c))
+- sync ai-config-toolkit ([c6150cd](https://github.com/KubrickCode/baedal/commit/c6150cdf398e9fad1e9b6d4e67afb8576f4fe6ea))
+- syncing documents from ai-config-toolkit ([1753127](https://github.com/KubrickCode/baedal/commit/1753127afef261768626bb7a0587672c868e48f5))
+
 ## [1.0.6](https://github.com/KubrickCode/baedal/compare/v1.0.5...v1.0.6) (2025-12-20)
 
 ### 🎯 Highlights
