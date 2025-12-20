@@ -1,6 +1,7 @@
 {
   "name": "baedal",
   "dockerComposeFile": "docker-compose.yml",
+  "initializeCommand": "touch ${HOME}/.env.secrets",
   "service": "workspace",
   "workspaceFolder": "/workspaces/baedal",
   "features": {
