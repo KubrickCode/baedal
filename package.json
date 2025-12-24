@@ -52,7 +52,7 @@
     "consola": "3.4.2",
     "es-toolkit": "1.42.0",
     "globby": "16.0.0",
-    "js-yaml": "4.1.0",
+    "js-yaml": "4.1.1",
     "ky": "1.14.0",
     "micromatch": "4.0.8",
     "tar": "7.5.2",
@@ -80,7 +80,7 @@
     "lint-staged": "15.2.11",
     "prettier": "3.6.2",
     "semantic-release": "25.0.2",
-    "tsup": "8.0.0",
+    "tsup": "8.3.5",
     "typescript": "5.9.3",
     "typescript-eslint": "8.48.1",
     "vitest": "4.0.15"
