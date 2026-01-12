@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@octokit/rest": "22.0.1",
-    "commander": "14.0.1",
+    "commander": "14.0.2",
     "consola": "3.4.2",
     "es-toolkit": "1.42.0",
     "globby": "16.0.0",
